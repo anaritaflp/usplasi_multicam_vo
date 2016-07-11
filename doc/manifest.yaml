@@ -1,0 +1,27 @@
+actions: []
+authors: ''
+brief: ''
+bugtracker: ''
+depends:
+- nav_msgs
+- image_geometry
+- catkin
+- roscpp
+- ladybug2
+- sensor_msgs
+- std_msgs
+- image_transport
+- cmake_modules
+- geometry_msgs
+- camera_calibration_parsers
+- tf
+- cv_bridge
+- eigen
+description: The multicam_vo package
+license: TODO
+maintainers: anaritapereira <anaritap44@gmail.com>
+msgs: []
+package_type: package
+repo_url: ''
+srvs: []
+url: ''

@@ -1,0 +1,8 @@
+ORB_maxFeatures: 500
+ORB_scale: 1.2
+ORB_nLevels: 8
+ORB_edgeThreshold: 31
+ORB_firstLevel: 0
+ORB_wtak: 2
+ORB_scoreType: 1
+ORB_patchSize: 31
