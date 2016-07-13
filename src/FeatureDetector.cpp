@@ -1,35 +1,18 @@
 #include <multicam_vo/FeatureDetector.h>
 
-/** Default FeatureDetector constructor. 
+/** Default FeatureDetector constructor. By default, Shi-Tomasi corners are detected and an ORB descriptor is extracted.
  * @param void
  * @return FeatureDetector object */
-FeatureDetector::FeatureDetector()
+FeatureDetector::FeatureDetector(): node_("~")
 {
-    
-}
 
-/** Default FeatureDetector constructor. By default, Shi-Tomasi corners are detected and an ORB descriptor is extracted.
- * @param ros::NodeHandle ROS node
- * @return FeatureDetector object */
-FeatureDetector::FeatureDetector(ros::NodeHandle node): node_(node)
-{
-    ROS_WARN("No detection method or descriptor type specified. Using ORB detection and ORB descriptor by default.");
-    
-    detectionMethod_ = SHI_TOMASI;
-    descriptorType_ = ORB;
-    
-    detectPtr_ = &FeatureDetector::detectFeatures_ShiTomasi;
-    computeDescriptorPtr_ = &FeatureDetector::computeDescriptor_ORB;
-    
-    FeatureDetector::getParams(detectionMethod_);
 }
 
 /** FeatureDetector constructor with arguments. User may choose detection and descriptor extraction methods.
- * @param ros::NodeHandle ROS node
  * @param std::string detection method
  * @param std::string descriptor type
  * @return FeatureDetector object */
-FeatureDetector::FeatureDetector(ros::NodeHandle node, std::string detectionMethod, std::string descriptorType): node_(node)
+FeatureDetector::FeatureDetector(std::string detectionMethod, std::string descriptorType): node_("~")
 {
     // if both detection method and descriptor extractor are valid, set function pointers to the corresponding detection and feature extraction methods
     if((detectionMethod == FAST || detectionMethod == BRISK || detectionMethod == ORB || detectionMethod == SHI_TOMASI) && (descriptorType == BRISK || descriptorType == BRIEF || descriptorType == ORB))

@@ -31,6 +31,9 @@
 </div><!--header-->
 <div class="contents">
 
+<p>Class responsible for computing the multi-camera system's motion given a set of feature matches.  
+ <a href="classMulticamOdometer.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -48,8 +51,10 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:aaaf635492570e3b0e3b6ebc46290d19d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad22694ef53e2d1346c678eed594c9c8e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#ad22694ef53e2d1346c678eed594c9c8e">EtoRt</a> (Eigen::Matrix3f E, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr, std::vector&lt; <a class="el" href="classMatch.html">Match</a> &gt; matches, Eigen::Matrix3f &amp;R, Eigen::Vector3f &amp;t, Eigen::Matrix&lt; float, 4, Eigen::Dynamic &gt; &amp;points3D)</td></tr>
 <tr class="separator:ad22694ef53e2d1346c678eed594c9c8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a05864be626de414a63b1d6d296829568"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix3f&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#a05864be626de414a63b1d6d296829568">getEssentialMatrix</a> (Eigen::Matrix3f F, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr)</td></tr>
-<tr class="separator:a05864be626de414a63b1d6d296829568"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a795c60595e1daffe5b9620811fb741e5"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix3f&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#a795c60595e1daffe5b9620811fb741e5">F2E</a> (Eigen::Matrix3f F, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr)</td></tr>
+<tr class="separator:a795c60595e1daffe5b9620811fb741e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5b267e2747b9477b4ab0b8b48bcfac3"><td class="memItemLeft" align="right" valign="top">std::vector&lt; Eigen::Vector4f &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#af5b267e2747b9477b4ab0b8b48bcfac3">getClosePoints</a> (std::vector&lt; Eigen::Vector4f &gt; points, double &amp;median)</td></tr>
+<tr class="separator:af5b267e2747b9477b4ab0b8b48bcfac3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae291286faff1b494326190e307cd1136"><td class="memItemLeft" align="right" valign="top">Eigen::Matrix3f&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#ae291286faff1b494326190e307cd1136">getFundamentalMatrix</a> (std::vector&lt; <a class="el" href="classMatch.html">Match</a> &gt; matches, std::vector&lt; int &gt; indices)</td></tr>
 <tr class="separator:ae291286faff1b494326190e307cd1136"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af3caf50096487b211e9fe0f888dc1b0f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#af3caf50096487b211e9fe0f888dc1b0f">getInliers</a> (std::vector&lt; <a class="el" href="classMatch.html">Match</a> &gt; matches, Eigen::Matrix3f F)</td></tr>
@@ -58,6 +63,8 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:aa2b0f77bd87345714a2069a2c6aa4018"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04e21f7891bc6547479070c60b62cb71"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#a04e21f7891bc6547479070c60b62cb71">getRandomSample</a> (int totalNumber, int sampleSize)</td></tr>
 <tr class="separator:a04e21f7891bc6547479070c60b62cb71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a965bccc88661205dc8a250234a8786da"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#a965bccc88661205dc8a250234a8786da">getTranslationScale</a> (std::vector&lt; Eigen::Vector4f &gt; points3D, double median, double pitch, double height)</td></tr>
+<tr class="separator:a965bccc88661205dc8a250234a8786da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acd4ba11a67c0977d4e37b9dac6afe192"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classMatch.html">Match</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#acd4ba11a67c0977d4e37b9dac6afe192">normalize2DPoints</a> (std::vector&lt; <a class="el" href="classMatch.html">Match</a> &gt; matches, Eigen::Matrix3f &amp;NormTPrev, Eigen::Matrix3f &amp;NormTCurr)</td></tr>
 <tr class="separator:acd4ba11a67c0977d4e37b9dac6afe192"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac17dcbd639fe5f730f7bf530085df8c0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#ac17dcbd639fe5f730f7bf530085df8c0">triangulate</a> (std::vector&lt; <a class="el" href="classMatch.html">Match</a> &gt; matches, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr, Eigen::Matrix3f R, Eigen::Vector3f t, Eigen::Matrix&lt; float, 4, Eigen::Dynamic &gt; &amp;points3D)</td></tr>
@@ -67,16 +74,35 @@ Private Member Functions</h2></td></tr>
 Private Attributes</h2></td></tr>
 <tr class="memitem:a2bcaeca0ee5d1e86217bcf5bfb0342aa"><td class="memItemLeft" align="right" valign="top">ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#a2bcaeca0ee5d1e86217bcf5bfb0342aa">node_</a></td></tr>
 <tr class="separator:a2bcaeca0ee5d1e86217bcf5bfb0342aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afda4872d814af6d8fbb1f0b63c9e2046"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#afda4872d814af6d8fbb1f0b63c9e2046">param_cameraHeights_</a></td></tr>
+<tr class="separator:afda4872d814af6d8fbb1f0b63c9e2046"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a44a0e61a740930a0980d8b1d2b2feab3"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#a44a0e61a740930a0980d8b1d2b2feab3">param_cameraPitches_</a></td></tr>
+<tr class="separator:a44a0e61a740930a0980d8b1d2b2feab3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c60ad455aa54b400c95f7f6b41e07b5"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#a9c60ad455aa54b400c95f7f6b41e07b5">param_extrinsicsCam0_</a></td></tr>
+<tr class="separator:a9c60ad455aa54b400c95f7f6b41e07b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a59c18b365962b7380ac25b935b9d7e5e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#a59c18b365962b7380ac25b935b9d7e5e">param_extrinsicsCam1_</a></td></tr>
+<tr class="separator:a59c18b365962b7380ac25b935b9d7e5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fa3a7736937ed474a8fa6fc022e707d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#a7fa3a7736937ed474a8fa6fc022e707d">param_extrinsicsCam2_</a></td></tr>
+<tr class="separator:a7fa3a7736937ed474a8fa6fc022e707d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6799b2dadcc92da0d49749db11ee7325"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#a6799b2dadcc92da0d49749db11ee7325">param_extrinsicsCam3_</a></td></tr>
+<tr class="separator:a6799b2dadcc92da0d49749db11ee7325"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad6c12832fb2a758b62ca037a1ac09c1a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#ad6c12832fb2a758b62ca037a1ac09c1a">param_extrinsicsCam4_</a></td></tr>
+<tr class="separator:ad6c12832fb2a758b62ca037a1ac09c1a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7513920126a5bc9bf03007867df873bd"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#a7513920126a5bc9bf03007867df873bd">param_extrinsicsCam5_</a></td></tr>
+<tr class="separator:a7513920126a5bc9bf03007867df873bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a249a787ca26340bceba26e9d88e01997"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#a249a787ca26340bceba26e9d88e01997">param_odometerInlierThreshold_</a></td></tr>
 <tr class="separator:a249a787ca26340bceba26e9d88e01997"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c1249bca1f8ebeb4f1e984ff570beea"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#a1c1249bca1f8ebeb4f1e984ff570beea">param_odometerMinNumberMatches_</a></td></tr>
 <tr class="separator:a1c1249bca1f8ebeb4f1e984ff570beea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6b2352322987f44270fc41ddf0629fe7"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#a6b2352322987f44270fc41ddf0629fe7">param_odometerMotionThreshold_</a></td></tr>
+<tr class="separator:a6b2352322987f44270fc41ddf0629fe7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaac3c5aa2ea19e631bbabcf1a699d65e"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classMulticamOdometer.html#aaac3c5aa2ea19e631bbabcf1a699d65e">param_odometerRansacIters_</a></td></tr>
 <tr class="separator:aaac3c5aa2ea19e631bbabcf1a699d65e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p>Definition at line <a class="el" href="MulticamOdometer_8h_source.html#l00017">17</a> of file <a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>.</p>
+<div class="textblock"><p>Class responsible for computing the multi-camera system's motion given a set of feature matches. </p>
+
+<p>Definition at line <a class="el" href="MulticamOdometer_8h_source.html#l00025">25</a> of file <a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a0a6cca562e36090c410953d8a18f7228"></a>
 <div class="memitem">
@@ -91,8 +117,16 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p><a class="el" href="classMulticamOdometer.html" title="Class responsible for computing the multi-camera system&#39;s motion given a set of feature matches...">MulticamOdometer</a> constructor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ros::NodeHandle</td><td>ROS node </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classMulticamOdometer.html" title="Class responsible for computing the multi-camera system&#39;s motion given a set of feature matches...">MulticamOdometer</a> object </dd></dl>
 
-<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00003">3</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00006">6</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
 
 </div>
 </div>
@@ -108,8 +142,9 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p><a class="el" href="classMulticamOdometer.html" title="Class responsible for computing the multi-camera system&#39;s motion given a set of feature matches...">MulticamOdometer</a> destructor. </p>
 
-<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00010">10</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00027">27</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
 
 </div>
 </div>
@@ -145,8 +180,17 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Check if a given integer x exists in a vector of integers, vec </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">std::vector&lt;int&gt;</td><td>vector vec with integers </td></tr>
+    <tr><td class="paramname">int</td><td>integer x to be searched </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>bool true if x is in vec, false otherwise </dd></dl>
 
-<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00165">165</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00315">315</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
 
 </div>
 </div>
@@ -179,8 +223,18 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Estimate the motion of the multi-camera system. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">std::vector&lt;std::vector&lt;Match&gt;&gt;</td><td>a vector with each camera's matches </td></tr>
+    <tr><td class="paramname">int</td><td>number of cameras that form the omnidirectional system </td></tr>
+    <tr><td class="paramname">std::vector&lt;image_geometry::PinholeCameraModel&gt;</td><td>vector with each camera's intrinsic parameters </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Eigen::Matrix4f transformation with the relative motion of the multi-camera system </dd></dl>
 
-<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00015">15</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00037">37</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
 
 </div>
 </div>
@@ -245,12 +299,26 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Extract rotation (R) and translation (t) from a given essential matrix and triangulate feature matches. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Eigen::Matrix3f</td><td>essential matrix </td></tr>
+    <tr><td class="paramname">Eigen::Matrix3f</td><td>intrinsic matrix of the camera of the previous frame </td></tr>
+    <tr><td class="paramname">Eigen::Matrix3f</td><td>intrinsic matrix of the camera of the current frame </td></tr>
+    <tr><td class="paramname">std::vector&lt;Match&gt;</td><td>vector with matches </td></tr>
+    <tr><td class="paramname">Eigen::Matrix3f</td><td>output rotation matrix </td></tr>
+    <tr><td class="paramname">Eigen::Vector3f</td><td>output translation vector </td></tr>
+    <tr><td class="paramname">Eigen::Matrix&lt;float,4,Eigen::Dynamic&gt;</td><td>output matrix with computed 3D points </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
-<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00255">255</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00436">436</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a05864be626de414a63b1d6d296829568"></a>
+<a class="anchor" id="a795c60595e1daffe5b9620811fb741e5"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -258,7 +326,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">Eigen::Matrix3f MulticamOdometer::getEssentialMatrix </td>
+          <td class="memname">Eigen::Matrix3f MulticamOdometer::F2E </td>
           <td>(</td>
           <td class="paramtype">Eigen::Matrix3f&#160;</td>
           <td class="paramname"><em>F</em>, </td>
@@ -287,8 +355,63 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Compute essential matrix out of a given fundamental matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Eigen::Matrix3f</td><td>fundamental matrix </td></tr>
+    <tr><td class="paramname">Eigen::Matrix3f</td><td>intrinsic matrix of the camera of the previous frame </td></tr>
+    <tr><td class="paramname">Eigen::Matrix3f</td><td>intrinsic matrix of the camera of the current frame </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Eigen::Matrix3f essential matrix </dd></dl>
 
-<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00242">242</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00412">412</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="af5b267e2747b9477b4ab0b8b48bcfac3"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; Eigen::Vector4f &gt; MulticamOdometer::getClosePoints </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; Eigen::Vector4f &gt;&#160;</td>
+          <td class="paramname"><em>points</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double &amp;&#160;</td>
+          <td class="paramname"><em>median</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get points that are closer to the camera than the median distanced point. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">std::vector&lt;Eigen::Vector4f&gt;</td><td>vector with all 3D points </td></tr>
+    <tr><td class="paramname">double</td><td>output median depth of all points </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;Eigen::Vector4f&gt; vector with close points only </dd></dl>
+
+<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00572">572</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
 
 </div>
 </div>
@@ -323,8 +446,17 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Compute fundamental matrix out of eight feature correspondences between the previous and current frame. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">std::vector&lt;Match&gt;</td><td>vector with feature matches </td></tr>
+    <tr><td class="paramname">std::vector&lt;int&gt;</td><td>vector with eight indices of the vector with matches </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Eigen::Matrix3f fundamental matrix </dd></dl>
 
-<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00177">177</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00331">331</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
 
 </div>
 </div>
@@ -359,8 +491,17 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Get the inliers among all matches that comply with a given fundamental matrix. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">std::vector&lt;Match&gt;</td><td>vector with feature matches </td></tr>
+    <tr><td class="paramname">Eigen::Matrix3f</td><td>fundamental matrix </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;int&gt; vector with indices of the inliers </dd></dl>
 
-<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00215">215</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00375">375</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
 
 </div>
 </div>
@@ -401,8 +542,18 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Get projection matrix out of an intrinsic matrix, a rotation matrix and a translation vector. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">Eigen::Matrix3f</td><td>intrinsic matrix </td></tr>
+    <tr><td class="paramname">Eigen::Matrix3f</td><td>rotation matrix </td></tr>
+    <tr><td class="paramname">Eigen::Vector3f</td><td>translation vector </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Eigen::Matrix&lt;float, 3, 4&gt; projection matrix </dd></dl>
 
-<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00345">345</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00557">557</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
 
 </div>
 </div>
@@ -437,8 +588,76 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Get samplesize random integers between zero and totalNumber-1 </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">int</td><td>maximum possibly sectected number + 1 </td></tr>
+    <tr><td class="paramname">int</td><td>number of random integers to be selected </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;int&gt; vector with the random integers </dd></dl>
 
-<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00150">150</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00295">295</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a965bccc88661205dc8a250234a8786da"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double MulticamOdometer::getTranslationScale </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; Eigen::Vector4f &gt;&#160;</td>
+          <td class="paramname"><em>points3D</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>median</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>pitch</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">double&#160;</td>
+          <td class="paramname"><em>height</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Compute optimal translation scale. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">std::vector&lt;Eigen::Vector4f&gt;</td><td>vector with 3D points </td></tr>
+    <tr><td class="paramname">double</td><td>median depth of all points </td></tr>
+    <tr><td class="paramname">camera</td><td>pitch angle </td></tr>
+    <tr><td class="paramname">camera</td><td>height </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>double optimal scale </dd></dl>
+
+<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00621">621</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
 
 </div>
 </div>
@@ -479,8 +698,18 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Normalize 2D feature points </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">std::vector&lt;Match&gt;</td><td>vector with matches </td></tr>
+    <tr><td class="paramname">Eigen::Matrix3f&amp;</td><td>output normalization matrix of features in the previous frame </td></tr>
+    <tr><td class="paramname">Eigen::Matrix3f&amp;</td><td>output normalization matrix of features in the current frame </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;Match&gt; vector with normalized matches </dd></dl>
 
-<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00100">100</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00221">221</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
 
 </div>
 </div>
@@ -539,8 +768,21 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Triangulate 3D points. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">std::vector&lt;Match&gt;</td><td>vector with matches </td></tr>
+    <tr><td class="paramname">Eigen::Matrix3f</td><td>intrinsic matrix of the camera of the previous frame </td></tr>
+    <tr><td class="paramname">Eigen::Matrix3f</td><td>intrinsic matrix of the camera of the current frame </td></tr>
+    <tr><td class="paramname">Eigen::Matrix3f</td><td>rotation matrix </td></tr>
+    <tr><td class="paramname">Eigen::Vector3f</td><td>translation vector </td></tr>
+    <tr><td class="paramname">Eigen::Matrix&lt;float,4,Eigen::Dynamic&gt;</td><td>output matrix with computed 3D points </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>int number of inliers, i.e., points that satisfy the Chirality constraint </dd></dl>
 
-<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00300">300</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MulticamOdometer_8cpp_source.html#l00499">499</a> of file <a class="el" href="MulticamOdometer_8cpp_source.html">MulticamOdometer.cpp</a>.</p>
 
 </div>
 </div>
@@ -562,8 +804,200 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Compute transform out of vector with extrinsic parameters, i.e., Euler angles and translation components. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">std::vector&lt;double&gt;</td><td>vector with extrinsic parameters </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Eigen::Matrix4f transform ROS node for reading odometer parameters </dd></dl>
 
-<p>Definition at line <a class="el" href="MulticamOdometer_8h_source.html#l00032">32</a> of file <a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>.</p>
+<p>Definition at line <a class="el" href="MulticamOdometer_8h_source.html#l00131">131</a> of file <a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="afda4872d814af6d8fbb1f0b63c9e2046"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; MulticamOdometer::param_cameraHeights_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Camera parameter: each camera's height </p>
+
+<p>Definition at line <a class="el" href="MulticamOdometer_8h_source.html#l00139">139</a> of file <a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a44a0e61a740930a0980d8b1d2b2feab3"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; MulticamOdometer::param_cameraPitches_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Camera parameter: each camera's pitch </p>
+
+<p>Definition at line <a class="el" href="MulticamOdometer_8h_source.html#l00138">138</a> of file <a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9c60ad455aa54b400c95f7f6b41e07b5"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; MulticamOdometer::param_extrinsicsCam0_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Camera parameter: Camera 0's extrinsic parameters </p>
+
+<p>Definition at line <a class="el" href="MulticamOdometer_8h_source.html#l00141">141</a> of file <a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a59c18b365962b7380ac25b935b9d7e5e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; MulticamOdometer::param_extrinsicsCam1_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Camera parameter: Camera 1's extrinsic parameters </p>
+
+<p>Definition at line <a class="el" href="MulticamOdometer_8h_source.html#l00142">142</a> of file <a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7fa3a7736937ed474a8fa6fc022e707d"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; MulticamOdometer::param_extrinsicsCam2_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Camera parameter: Camera 2's extrinsic parameters </p>
+
+<p>Definition at line <a class="el" href="MulticamOdometer_8h_source.html#l00143">143</a> of file <a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6799b2dadcc92da0d49749db11ee7325"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; MulticamOdometer::param_extrinsicsCam3_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Camera parameter: Camera 3's extrinsic parameters </p>
+
+<p>Definition at line <a class="el" href="MulticamOdometer_8h_source.html#l00144">144</a> of file <a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad6c12832fb2a758b62ca037a1ac09c1a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; MulticamOdometer::param_extrinsicsCam4_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Camera parameter: Camera 4's extrinsic parameters </p>
+
+<p>Definition at line <a class="el" href="MulticamOdometer_8h_source.html#l00145">145</a> of file <a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7513920126a5bc9bf03007867df873bd"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;double&gt; MulticamOdometer::param_extrinsicsCam5_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Camera parameter: Camera 5's extrinsic parameters </p>
+
+<p>Definition at line <a class="el" href="MulticamOdometer_8h_source.html#l00146">146</a> of file <a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>.</p>
 
 </div>
 </div>
@@ -584,8 +1018,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Odometer parameter: inlier threshold </p>
 
-<p>Definition at line <a class="el" href="MulticamOdometer_8h_source.html#l00037">37</a> of file <a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>.</p>
+<p>Definition at line <a class="el" href="MulticamOdometer_8h_source.html#l00135">135</a> of file <a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>.</p>
 
 </div>
 </div>
@@ -606,8 +1041,32 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Odometer parameter: minimum number of points required </p>
 
-<p>Definition at line <a class="el" href="MulticamOdometer_8h_source.html#l00035">35</a> of file <a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>.</p>
+<p>Definition at line <a class="el" href="MulticamOdometer_8h_source.html#l00133">133</a> of file <a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a6b2352322987f44270fc41ddf0629fe7"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double MulticamOdometer::param_odometerMotionThreshold_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Odometer parameter: motion threshold </p>
+
+<p>Definition at line <a class="el" href="MulticamOdometer_8h_source.html#l00136">136</a> of file <a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>.</p>
 
 </div>
 </div>
@@ -628,8 +1087,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Odometer parameter: number of RANSAC iterations </p>
 
-<p>Definition at line <a class="el" href="MulticamOdometer_8h_source.html#l00036">36</a> of file <a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>.</p>
+<p>Definition at line <a class="el" href="MulticamOdometer_8h_source.html#l00134">134</a> of file <a class="el" href="MulticamOdometer_8h_source.html">MulticamOdometer.h</a>.</p>
 
 </div>
 </div>
@@ -643,7 +1103,7 @@ Private Attributes</h2></td></tr>
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/multicam_vo">multicam_vo</a><br />
 Author(s): </br />
-<small>autogenerated on Wed Jul 6 2016 14:03:30</small>
+<small>autogenerated on Tue Jul 12 2016 09:29:05</small>
 </div>
 </body>
 </html>

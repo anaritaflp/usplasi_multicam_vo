@@ -32,66 +32,72 @@
 <a href="Feature_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef FEATURE_H</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define FEATURE_H</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;opencv2/imgproc/imgproc.hpp&gt;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;opencv2/highgui/highgui.hpp&gt;</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &quot;opencv2/features2d/features2d.hpp&quot;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
-<div class="line"><a name="l00009"></a><span class="lineno"><a class="line" href="classFeature.html">    9</a></span>&#160;<span class="keyword">class </span><a class="code" href="classFeature.html">Feature</a></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;{</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    </div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;        <a class="code" href="classFeature.html#a06d191f6daea88e0029440a2137f2e07">Feature</a>();    </div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    </div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        <a class="code" href="classFeature.html#a06d191f6daea88e0029440a2137f2e07">Feature</a>(cv::KeyPoint keypoint, cv::Mat descriptor, <span class="keywordtype">int</span> seqNumber, <span class="keywordtype">int</span> camNumber);</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        </div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;        <a class="code" href="classFeature.html#ac74e4360e975b5003f6d9e1bed6cc4be">~Feature</a>();</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    </div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;        cv::KeyPoint <a class="code" href="classFeature.html#a6e3cf8a317c57bf5058e2e07425ae7bb">getKeypoint</a>();</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    </div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        cv::Mat <a class="code" href="classFeature.html#a24d690361b69180242ea069106671e10">getDescriptor</a>();</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    </div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        <span class="keywordtype">int</span> <a class="code" href="classFeature.html#a8ee28daca95a473a712b6e5ad3dd27b2">getSeqNumber</a>();</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    </div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        <span class="keywordtype">int</span> <a class="code" href="classFeature.html#ab9c5109acf8d86e2863741c20b1fff9a">getCamNumber</a>();</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classFeature.html#abbba061ee51963d636e621868a4ba79e">setKeypoint</a>(cv::KeyPoint keypoint);</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classFeature.html#ae047a1f1f32b27b741187e777d3647f1">setDescriptor</a>(cv::Mat descriptor);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classFeature.html#aaa20bce7f8f1e32cf1a59025dfe9807b">setSeqNumber</a>(<span class="keywordtype">int</span> seqNumber);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    </div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classFeature.html#a8de772d6bb49f074420f9dbd7e0152b4">setCamNumber</a>(<span class="keywordtype">int</span> camNumber);</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    </div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="classFeature.html#ae5e472a6f32528d9c50ec56b89fa7f2d">   69</a></span>&#160;        cv::KeyPoint <a class="code" href="classFeature.html#ae5e472a6f32528d9c50ec56b89fa7f2d">keypoint_</a>;     </div>
-<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="classFeature.html#a8361f65a8c30832c5c60bde57e9731db">   70</a></span>&#160;        cv::Mat <a class="code" href="classFeature.html#a8361f65a8c30832c5c60bde57e9731db">descriptor_</a>;        </div>
-<div class="line"><a name="l00071"></a><span class="lineno"><a class="line" href="classFeature.html#ad966289c482f7e8036fb110744bcf2aa">   71</a></span>&#160;        <span class="keywordtype">int</span> <a class="code" href="classFeature.html#ad966289c482f7e8036fb110744bcf2aa">seqNumber_</a>;             </div>
-<div class="line"><a name="l00072"></a><span class="lineno"><a class="line" href="classFeature.html#a6262d3a50af1e429301e873b54f8bbff">   72</a></span>&#160;        <span class="keywordtype">int</span> <a class="code" href="classFeature.html#a6262d3a50af1e429301e873b54f8bbff">camNumber_</a>;             </div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;};</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">// OpenCV includes</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;opencv2/imgproc/imgproc.hpp&gt;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;opencv2/highgui/highgui.hpp&gt;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;opencv2/features2d/features2d.hpp&quot;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
+<div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="classFeature.html">   10</a></span>&#160;<span class="keyword">class </span><a class="code" href="classFeature.html">Feature</a></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;{</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;    <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    </div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;        <a class="code" href="classFeature.html#a06d191f6daea88e0029440a2137f2e07">Feature</a>();    </div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    </div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;        <a class="code" href="classFeature.html#a06d191f6daea88e0029440a2137f2e07">Feature</a>(cv::KeyPoint keypoint, cv::Mat descriptor, <span class="keywordtype">int</span> seqNumber, <span class="keywordtype">int</span> camNumber);</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                </div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;        <a class="code" href="classFeature.html#a06d191f6daea88e0029440a2137f2e07">Feature</a>(<span class="keyword">const</span> <a class="code" href="classFeature.html">Feature</a> &amp;other); </div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                </div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;        <a class="code" href="classFeature.html">Feature</a> &amp; <a class="code" href="classFeature.html#aa65eb958cf03b7a368a0075243910d18">operator=</a>(<span class="keyword">const</span> <a class="code" href="classFeature.html">Feature</a> &amp;other); </div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;        </div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <a class="code" href="classFeature.html#ac74e4360e975b5003f6d9e1bed6cc4be">~Feature</a>();</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    </div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        cv::KeyPoint <a class="code" href="classFeature.html#a6e3cf8a317c57bf5058e2e07425ae7bb">getKeypoint</a>();</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    </div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        cv::Mat <a class="code" href="classFeature.html#a24d690361b69180242ea069106671e10">getDescriptor</a>();</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    </div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <span class="keywordtype">int</span> <a class="code" href="classFeature.html#a8ee28daca95a473a712b6e5ad3dd27b2">getSeqNumber</a>();</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    </div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <span class="keywordtype">int</span> <a class="code" href="classFeature.html#ab9c5109acf8d86e2863741c20b1fff9a">getCamNumber</a>();</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    </div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classFeature.html#abbba061ee51963d636e621868a4ba79e">setKeypoint</a>(cv::KeyPoint keypoint);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    </div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classFeature.html#ae047a1f1f32b27b741187e777d3647f1">setDescriptor</a>(cv::Mat descriptor);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    </div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classFeature.html#aaa20bce7f8f1e32cf1a59025dfe9807b">setSeqNumber</a>(<span class="keywordtype">int</span> seqNumber);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    </div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classFeature.html#a8de772d6bb49f074420f9dbd7e0152b4">setCamNumber</a>(<span class="keywordtype">int</span> camNumber);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    </div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="classFeature.html#ae5e472a6f32528d9c50ec56b89fa7f2d">   81</a></span>&#160;        cv::KeyPoint <a class="code" href="classFeature.html#ae5e472a6f32528d9c50ec56b89fa7f2d">keypoint_</a>;     </div>
+<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="classFeature.html#a8361f65a8c30832c5c60bde57e9731db">   82</a></span>&#160;        cv::Mat <a class="code" href="classFeature.html#a8361f65a8c30832c5c60bde57e9731db">descriptor_</a>;        </div>
+<div class="line"><a name="l00083"></a><span class="lineno"><a class="line" href="classFeature.html#ad966289c482f7e8036fb110744bcf2aa">   83</a></span>&#160;        <span class="keywordtype">int</span> <a class="code" href="classFeature.html#ad966289c482f7e8036fb110744bcf2aa">seqNumber_</a>;             </div>
+<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="classFeature.html#a6262d3a50af1e429301e873b54f8bbff">   84</a></span>&#160;        <span class="keywordtype">int</span> <a class="code" href="classFeature.html#a6262d3a50af1e429301e873b54f8bbff">camNumber_</a>;             </div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;};</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="preprocessor">#endif</span></div>
 <div class="ttc" id="classFeature_html_a06d191f6daea88e0029440a2137f2e07"><div class="ttname"><a href="classFeature.html#a06d191f6daea88e0029440a2137f2e07">Feature::Feature</a></div><div class="ttdeci">Feature()</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00006">Feature.cpp:6</a></div></div>
-<div class="ttc" id="classFeature_html_ae047a1f1f32b27b741187e777d3647f1"><div class="ttname"><a href="classFeature.html#ae047a1f1f32b27b741187e777d3647f1">Feature::setDescriptor</a></div><div class="ttdeci">void setDescriptor(cv::Mat descriptor)</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00077">Feature.cpp:77</a></div></div>
-<div class="ttc" id="classFeature_html_ac74e4360e975b5003f6d9e1bed6cc4be"><div class="ttname"><a href="classFeature.html#ac74e4360e975b5003f6d9e1bed6cc4be">Feature::~Feature</a></div><div class="ttdeci">~Feature()</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00029">Feature.cpp:29</a></div></div>
-<div class="ttc" id="classFeature_html_a24d690361b69180242ea069106671e10"><div class="ttname"><a href="classFeature.html#a24d690361b69180242ea069106671e10">Feature::getDescriptor</a></div><div class="ttdeci">cv::Mat getDescriptor()</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00045">Feature.cpp:45</a></div></div>
-<div class="ttc" id="classFeature_html_a6e3cf8a317c57bf5058e2e07425ae7bb"><div class="ttname"><a href="classFeature.html#a6e3cf8a317c57bf5058e2e07425ae7bb">Feature::getKeypoint</a></div><div class="ttdeci">cv::KeyPoint getKeypoint()</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00037">Feature.cpp:37</a></div></div>
-<div class="ttc" id="classFeature_html_a8361f65a8c30832c5c60bde57e9731db"><div class="ttname"><a href="classFeature.html#a8361f65a8c30832c5c60bde57e9731db">Feature::descriptor_</a></div><div class="ttdeci">cv::Mat descriptor_</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8h_source.html#l00070">Feature.h:70</a></div></div>
-<div class="ttc" id="classFeature_html"><div class="ttname"><a href="classFeature.html">Feature</a></div><div class="ttdoc">Class containing all information concerned to a feature, including keypoint, descriptor, frame number and camera index. </div><div class="ttdef"><b>Definition:</b> <a href="Feature_8h_source.html#l00009">Feature.h:9</a></div></div>
-<div class="ttc" id="classFeature_html_ab9c5109acf8d86e2863741c20b1fff9a"><div class="ttname"><a href="classFeature.html#ab9c5109acf8d86e2863741c20b1fff9a">Feature::getCamNumber</a></div><div class="ttdeci">int getCamNumber()</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00061">Feature.cpp:61</a></div></div>
-<div class="ttc" id="classFeature_html_aaa20bce7f8f1e32cf1a59025dfe9807b"><div class="ttname"><a href="classFeature.html#aaa20bce7f8f1e32cf1a59025dfe9807b">Feature::setSeqNumber</a></div><div class="ttdeci">void setSeqNumber(int seqNumber)</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00085">Feature.cpp:85</a></div></div>
-<div class="ttc" id="classFeature_html_a8de772d6bb49f074420f9dbd7e0152b4"><div class="ttname"><a href="classFeature.html#a8de772d6bb49f074420f9dbd7e0152b4">Feature::setCamNumber</a></div><div class="ttdeci">void setCamNumber(int camNumber)</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00093">Feature.cpp:93</a></div></div>
-<div class="ttc" id="classFeature_html_ad966289c482f7e8036fb110744bcf2aa"><div class="ttname"><a href="classFeature.html#ad966289c482f7e8036fb110744bcf2aa">Feature::seqNumber_</a></div><div class="ttdeci">int seqNumber_</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8h_source.html#l00071">Feature.h:71</a></div></div>
-<div class="ttc" id="classFeature_html_abbba061ee51963d636e621868a4ba79e"><div class="ttname"><a href="classFeature.html#abbba061ee51963d636e621868a4ba79e">Feature::setKeypoint</a></div><div class="ttdeci">void setKeypoint(cv::KeyPoint keypoint)</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00069">Feature.cpp:69</a></div></div>
-<div class="ttc" id="classFeature_html_a8ee28daca95a473a712b6e5ad3dd27b2"><div class="ttname"><a href="classFeature.html#a8ee28daca95a473a712b6e5ad3dd27b2">Feature::getSeqNumber</a></div><div class="ttdeci">int getSeqNumber()</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00053">Feature.cpp:53</a></div></div>
-<div class="ttc" id="classFeature_html_a6262d3a50af1e429301e873b54f8bbff"><div class="ttname"><a href="classFeature.html#a6262d3a50af1e429301e873b54f8bbff">Feature::camNumber_</a></div><div class="ttdeci">int camNumber_</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8h_source.html#l00072">Feature.h:72</a></div></div>
-<div class="ttc" id="classFeature_html_ae5e472a6f32528d9c50ec56b89fa7f2d"><div class="ttname"><a href="classFeature.html#ae5e472a6f32528d9c50ec56b89fa7f2d">Feature::keypoint_</a></div><div class="ttdeci">cv::KeyPoint keypoint_</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8h_source.html#l00069">Feature.h:69</a></div></div>
+<div class="ttc" id="classFeature_html_ae047a1f1f32b27b741187e777d3647f1"><div class="ttname"><a href="classFeature.html#ae047a1f1f32b27b741187e777d3647f1">Feature::setDescriptor</a></div><div class="ttdeci">void setDescriptor(cv::Mat descriptor)</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00100">Feature.cpp:100</a></div></div>
+<div class="ttc" id="classFeature_html_ac74e4360e975b5003f6d9e1bed6cc4be"><div class="ttname"><a href="classFeature.html#ac74e4360e975b5003f6d9e1bed6cc4be">Feature::~Feature</a></div><div class="ttdeci">~Feature()</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00052">Feature.cpp:52</a></div></div>
+<div class="ttc" id="classFeature_html_a24d690361b69180242ea069106671e10"><div class="ttname"><a href="classFeature.html#a24d690361b69180242ea069106671e10">Feature::getDescriptor</a></div><div class="ttdeci">cv::Mat getDescriptor()</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00068">Feature.cpp:68</a></div></div>
+<div class="ttc" id="classFeature_html_a6e3cf8a317c57bf5058e2e07425ae7bb"><div class="ttname"><a href="classFeature.html#a6e3cf8a317c57bf5058e2e07425ae7bb">Feature::getKeypoint</a></div><div class="ttdeci">cv::KeyPoint getKeypoint()</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00060">Feature.cpp:60</a></div></div>
+<div class="ttc" id="classFeature_html_a8361f65a8c30832c5c60bde57e9731db"><div class="ttname"><a href="classFeature.html#a8361f65a8c30832c5c60bde57e9731db">Feature::descriptor_</a></div><div class="ttdeci">cv::Mat descriptor_</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8h_source.html#l00082">Feature.h:82</a></div></div>
+<div class="ttc" id="classFeature_html"><div class="ttname"><a href="classFeature.html">Feature</a></div><div class="ttdoc">Class containing all information concerned to a feature, including keypoint, descriptor, frame number and camera index. </div><div class="ttdef"><b>Definition:</b> <a href="Feature_8h_source.html#l00010">Feature.h:10</a></div></div>
+<div class="ttc" id="classFeature_html_ab9c5109acf8d86e2863741c20b1fff9a"><div class="ttname"><a href="classFeature.html#ab9c5109acf8d86e2863741c20b1fff9a">Feature::getCamNumber</a></div><div class="ttdeci">int getCamNumber()</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00084">Feature.cpp:84</a></div></div>
+<div class="ttc" id="classFeature_html_aa65eb958cf03b7a368a0075243910d18"><div class="ttname"><a href="classFeature.html#aa65eb958cf03b7a368a0075243910d18">Feature::operator=</a></div><div class="ttdeci">Feature &amp; operator=(const Feature &amp;other)</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00043">Feature.cpp:43</a></div></div>
+<div class="ttc" id="classFeature_html_aaa20bce7f8f1e32cf1a59025dfe9807b"><div class="ttname"><a href="classFeature.html#aaa20bce7f8f1e32cf1a59025dfe9807b">Feature::setSeqNumber</a></div><div class="ttdeci">void setSeqNumber(int seqNumber)</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00108">Feature.cpp:108</a></div></div>
+<div class="ttc" id="classFeature_html_a8de772d6bb49f074420f9dbd7e0152b4"><div class="ttname"><a href="classFeature.html#a8de772d6bb49f074420f9dbd7e0152b4">Feature::setCamNumber</a></div><div class="ttdeci">void setCamNumber(int camNumber)</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00116">Feature.cpp:116</a></div></div>
+<div class="ttc" id="classFeature_html_ad966289c482f7e8036fb110744bcf2aa"><div class="ttname"><a href="classFeature.html#ad966289c482f7e8036fb110744bcf2aa">Feature::seqNumber_</a></div><div class="ttdeci">int seqNumber_</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8h_source.html#l00083">Feature.h:83</a></div></div>
+<div class="ttc" id="classFeature_html_abbba061ee51963d636e621868a4ba79e"><div class="ttname"><a href="classFeature.html#abbba061ee51963d636e621868a4ba79e">Feature::setKeypoint</a></div><div class="ttdeci">void setKeypoint(cv::KeyPoint keypoint)</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00092">Feature.cpp:92</a></div></div>
+<div class="ttc" id="classFeature_html_a8ee28daca95a473a712b6e5ad3dd27b2"><div class="ttname"><a href="classFeature.html#a8ee28daca95a473a712b6e5ad3dd27b2">Feature::getSeqNumber</a></div><div class="ttdeci">int getSeqNumber()</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8cpp_source.html#l00076">Feature.cpp:76</a></div></div>
+<div class="ttc" id="classFeature_html_a6262d3a50af1e429301e873b54f8bbff"><div class="ttname"><a href="classFeature.html#a6262d3a50af1e429301e873b54f8bbff">Feature::camNumber_</a></div><div class="ttdeci">int camNumber_</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8h_source.html#l00084">Feature.h:84</a></div></div>
+<div class="ttc" id="classFeature_html_ae5e472a6f32528d9c50ec56b89fa7f2d"><div class="ttname"><a href="classFeature.html#ae5e472a6f32528d9c50ec56b89fa7f2d">Feature::keypoint_</a></div><div class="ttdeci">cv::KeyPoint keypoint_</div><div class="ttdef"><b>Definition:</b> <a href="Feature_8h_source.html#l00081">Feature.h:81</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 
 <br clear="all" />
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/multicam_vo">multicam_vo</a><br />
 Author(s): </br />
-<small>autogenerated on Wed Jul 6 2016 14:03:30</small>
+<small>autogenerated on Tue Jul 12 2016 09:29:05</small>
 </div>
 </body>
 </html>

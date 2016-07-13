@@ -30,9 +30,9 @@ namespace odom
         public:
         
             /** Default MulticamVOPipeline constructor.
-			 * @param void
+			 * @param std::vector<std::ofstream*> vector of files to write estimated poses
 			 * @return MulticamVOPipeline object */
-            MulticamVOPipeline();
+            MulticamVOPipeline(std::vector<std::ofstream*> files);
         
             /** Default MulticamVOPipeline destructor. */
             ~MulticamVOPipeline();
@@ -75,8 +75,8 @@ namespace odom
             std::vector<std::vector<Feature>> featuresAllCamerasPrev;	/*!< Vector with each cameras' features in previous frame */
             
 			FeatureDetector featureDetector;							/*!< Feature detector */
-            FeatureMatcher featureMatcher;								/*!< Feature matcher */
-
+            FeatureMatcher featureMatcher;							    /*!< Feature matcher */	
+            MulticamOdometer odometer;						            /*!< Multi-camera odometer */
     };    
     
     

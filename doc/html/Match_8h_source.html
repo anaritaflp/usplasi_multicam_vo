@@ -32,71 +32,79 @@
 <a href="Match_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="preprocessor">#ifndef MATCH_H</span></div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MATCH_H</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="preprocessor">#include &lt;opencv2/highgui/highgui.hpp&gt;</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor">#include &lt;stdlib.h&gt;</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="Feature_8h.html">multicam_vo/Feature.h</a>&gt;</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">// std includes</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &lt;stdlib.h&gt;</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">// OpenCV includes</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;opencv2/highgui/highgui.hpp&gt;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno"><a class="line" href="classMatch.html">   11</a></span>&#160;<span class="keyword">class </span><a class="code" href="classMatch.html">Match</a></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;{</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    </div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;        <a class="code" href="classMatch.html#a990b0300aeee204fd90d6d846b9aea0e">Match</a>();</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    </div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;        <a class="code" href="classMatch.html#a990b0300aeee204fd90d6d846b9aea0e">Match</a>(<a class="code" href="classFeature.html">Feature</a> feature_1, <a class="code" href="classFeature.html">Feature</a> feature_2, <span class="keywordtype">float</span> distance);</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        </div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        <a class="code" href="classMatch.html#a4cbfcaff4f14e7411242423f19c28153">~Match</a>();</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    </div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <a class="code" href="classFeature.html">Feature</a> <a class="code" href="classMatch.html#ad10a070949675aab3769dd4314d8a6cc">getFirstFeature</a>();</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    </div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <a class="code" href="classFeature.html">Feature</a> <a class="code" href="classMatch.html#a81d338ea759199f9c454853c13180e57">getSecondFeature</a>();</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    </div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        <span class="keywordtype">float</span> <a class="code" href="classMatch.html#ac28858df583d6d8829fe33f22af64667">getDistance</a>();</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    </div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        cv::Scalar <a class="code" href="classMatch.html#a3e25cffe93388faf0f6f98e96f03e273">getColor</a>();</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;        </div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classMatch.html#a618ba511bbc95a062ebafa55a8d89d6c">setFirstFeature</a>(<a class="code" href="classFeature.html">Feature</a> feature_1);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    </div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classMatch.html#a12388f2cec600cdf46bb1784cadb0270">setSecondFeature</a>(<a class="code" href="classFeature.html">Feature</a> feature_2);</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    </div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classMatch.html#a4a24def4160277b87c05611953795265">setDistance</a>(<span class="keywordtype">float</span> distance);</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    </div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classMatch.html#af54b44a4ea427d29f139d9c96cb2ac40">setColor</a>(cv::Scalar color);</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    </div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    </div>
-<div class="line"><a name="l00072"></a><span class="lineno"><a class="line" href="classMatch.html#a6fc3abe1c06b6b20ef1b4fa0dc26e952">   72</a></span>&#160;        <a class="code" href="classFeature.html">Feature</a> <a class="code" href="classMatch.html#a6fc3abe1c06b6b20ef1b4fa0dc26e952">feature_1_</a>;     </div>
-<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="classMatch.html#ae5c2e4e3e1c53a4c0b7a1cddc1e4df86">   73</a></span>&#160;        <a class="code" href="classFeature.html">Feature</a> <a class="code" href="classMatch.html#ae5c2e4e3e1c53a4c0b7a1cddc1e4df86">feature_2_</a>;     </div>
-<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="classMatch.html#a132e1c7fc1cb6b7658f43fdb815b1f0b">   74</a></span>&#160;        <span class="keywordtype">float</span> <a class="code" href="classMatch.html#a132e1c7fc1cb6b7658f43fdb815b1f0b">distance_</a>;        </div>
-<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="classMatch.html#a643fcab249235ab9d60ad39858202c65">   75</a></span>&#160;        cv::Scalar <a class="code" href="classMatch.html#a643fcab249235ab9d60ad39858202c65">color_</a>;      </div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;};</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="classMatch_html_a3e25cffe93388faf0f6f98e96f03e273"><div class="ttname"><a href="classMatch.html#a3e25cffe93388faf0f6f98e96f03e273">Match::getColor</a></div><div class="ttdeci">cv::Scalar getColor()</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00072">Match.cpp:72</a></div></div>
-<div class="ttc" id="classMatch_html_af54b44a4ea427d29f139d9c96cb2ac40"><div class="ttname"><a href="classMatch.html#af54b44a4ea427d29f139d9c96cb2ac40">Match::setColor</a></div><div class="ttdeci">void setColor(cv::Scalar color)</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00104">Match.cpp:104</a></div></div>
-<div class="ttc" id="classMatch_html_a643fcab249235ab9d60ad39858202c65"><div class="ttname"><a href="classMatch.html#a643fcab249235ab9d60ad39858202c65">Match::color_</a></div><div class="ttdeci">cv::Scalar color_</div><div class="ttdef"><b>Definition:</b> <a href="Match_8h_source.html#l00075">Match.h:75</a></div></div>
-<div class="ttc" id="classMatch_html_ac28858df583d6d8829fe33f22af64667"><div class="ttname"><a href="classMatch.html#ac28858df583d6d8829fe33f22af64667">Match::getDistance</a></div><div class="ttdeci">float getDistance()</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00064">Match.cpp:64</a></div></div>
-<div class="ttc" id="classMatch_html_a12388f2cec600cdf46bb1784cadb0270"><div class="ttname"><a href="classMatch.html#a12388f2cec600cdf46bb1784cadb0270">Match::setSecondFeature</a></div><div class="ttdeci">void setSecondFeature(Feature feature_2)</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00088">Match.cpp:88</a></div></div>
-<div class="ttc" id="classMatch_html"><div class="ttname"><a href="classMatch.html">Match</a></div><div class="ttdoc">Class representing a feature match. It contains both matched features and the matching distance...</div><div class="ttdef"><b>Definition:</b> <a href="Match_8h_source.html#l00011">Match.h:11</a></div></div>
-<div class="ttc" id="classMatch_html_a81d338ea759199f9c454853c13180e57"><div class="ttname"><a href="classMatch.html#a81d338ea759199f9c454853c13180e57">Match::getSecondFeature</a></div><div class="ttdeci">Feature getSecondFeature()</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00056">Match.cpp:56</a></div></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">// project includes</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;<a class="code" href="Feature_8h.html">multicam_vo/Feature.h</a>&gt;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="classMatch.html">   14</a></span>&#160;<span class="keyword">class </span><a class="code" href="classMatch.html">Match</a></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;{</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    </div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;        <a class="code" href="classMatch.html#a990b0300aeee204fd90d6d846b9aea0e">Match</a>();</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    </div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;        <a class="code" href="classMatch.html#a990b0300aeee204fd90d6d846b9aea0e">Match</a>(<a class="code" href="classFeature.html">Feature</a> feature_1, <a class="code" href="classFeature.html">Feature</a> feature_2, <span class="keywordtype">float</span> distance);</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        </div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        <a class="code" href="classMatch.html#a990b0300aeee204fd90d6d846b9aea0e">Match</a>(<span class="keyword">const</span> <a class="code" href="classMatch.html">Match</a> &amp;other); </div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;                </div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;        <a class="code" href="classMatch.html">Match</a> &amp; <a class="code" href="classMatch.html#a68c52cec1dbfba59d9aed13a37b12466">operator=</a>(<span class="keyword">const</span> <a class="code" href="classMatch.html">Match</a> &amp;other); </div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                </div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;        <a class="code" href="classMatch.html#a4cbfcaff4f14e7411242423f19c28153">~Match</a>();</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    </div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;        <a class="code" href="classFeature.html">Feature</a> <a class="code" href="classMatch.html#ad10a070949675aab3769dd4314d8a6cc">getFirstFeature</a>();</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    </div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;        <a class="code" href="classFeature.html">Feature</a> <a class="code" href="classMatch.html#a81d338ea759199f9c454853c13180e57">getSecondFeature</a>();</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    </div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="keywordtype">float</span> <a class="code" href="classMatch.html#ac28858df583d6d8829fe33f22af64667">getDistance</a>();</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    </div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;        cv::Scalar <a class="code" href="classMatch.html#a3e25cffe93388faf0f6f98e96f03e273">getColor</a>();</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        </div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classMatch.html#a618ba511bbc95a062ebafa55a8d89d6c">setFirstFeature</a>(<a class="code" href="classFeature.html">Feature</a> feature_1);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    </div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classMatch.html#a12388f2cec600cdf46bb1784cadb0270">setSecondFeature</a>(<a class="code" href="classFeature.html">Feature</a> feature_2);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    </div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classMatch.html#a4a24def4160277b87c05611953795265">setDistance</a>(<span class="keywordtype">float</span> distance);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    </div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;        <span class="keywordtype">void</span> <a class="code" href="classMatch.html#af54b44a4ea427d29f139d9c96cb2ac40">setColor</a>(cv::Scalar color);</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    </div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    </div>
+<div class="line"><a name="l00085"></a><span class="lineno"><a class="line" href="classMatch.html#a6fc3abe1c06b6b20ef1b4fa0dc26e952">   85</a></span>&#160;        <a class="code" href="classFeature.html">Feature</a> <a class="code" href="classMatch.html#a6fc3abe1c06b6b20ef1b4fa0dc26e952">feature_1_</a>;     </div>
+<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="classMatch.html#ae5c2e4e3e1c53a4c0b7a1cddc1e4df86">   86</a></span>&#160;        <a class="code" href="classFeature.html">Feature</a> <a class="code" href="classMatch.html#ae5c2e4e3e1c53a4c0b7a1cddc1e4df86">feature_2_</a>;     </div>
+<div class="line"><a name="l00087"></a><span class="lineno"><a class="line" href="classMatch.html#a132e1c7fc1cb6b7658f43fdb815b1f0b">   87</a></span>&#160;        <span class="keywordtype">float</span> <a class="code" href="classMatch.html#a132e1c7fc1cb6b7658f43fdb815b1f0b">distance_</a>;        </div>
+<div class="line"><a name="l00088"></a><span class="lineno"><a class="line" href="classMatch.html#a643fcab249235ab9d60ad39858202c65">   88</a></span>&#160;        cv::Scalar <a class="code" href="classMatch.html#a643fcab249235ab9d60ad39858202c65">color_</a>;      </div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;};</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="classMatch_html_a3e25cffe93388faf0f6f98e96f03e273"><div class="ttname"><a href="classMatch.html#a3e25cffe93388faf0f6f98e96f03e273">Match::getColor</a></div><div class="ttdeci">cv::Scalar getColor()</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00093">Match.cpp:93</a></div></div>
+<div class="ttc" id="classMatch_html_af54b44a4ea427d29f139d9c96cb2ac40"><div class="ttname"><a href="classMatch.html#af54b44a4ea427d29f139d9c96cb2ac40">Match::setColor</a></div><div class="ttdeci">void setColor(cv::Scalar color)</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00125">Match.cpp:125</a></div></div>
+<div class="ttc" id="classMatch_html_a643fcab249235ab9d60ad39858202c65"><div class="ttname"><a href="classMatch.html#a643fcab249235ab9d60ad39858202c65">Match::color_</a></div><div class="ttdeci">cv::Scalar color_</div><div class="ttdef"><b>Definition:</b> <a href="Match_8h_source.html#l00088">Match.h:88</a></div></div>
+<div class="ttc" id="classMatch_html_ac28858df583d6d8829fe33f22af64667"><div class="ttname"><a href="classMatch.html#ac28858df583d6d8829fe33f22af64667">Match::getDistance</a></div><div class="ttdeci">float getDistance()</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00085">Match.cpp:85</a></div></div>
+<div class="ttc" id="classMatch_html_a12388f2cec600cdf46bb1784cadb0270"><div class="ttname"><a href="classMatch.html#a12388f2cec600cdf46bb1784cadb0270">Match::setSecondFeature</a></div><div class="ttdeci">void setSecondFeature(Feature feature_2)</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00109">Match.cpp:109</a></div></div>
+<div class="ttc" id="classMatch_html_a68c52cec1dbfba59d9aed13a37b12466"><div class="ttname"><a href="classMatch.html#a68c52cec1dbfba59d9aed13a37b12466">Match::operator=</a></div><div class="ttdeci">Match &amp; operator=(const Match &amp;other)</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00052">Match.cpp:52</a></div></div>
+<div class="ttc" id="classMatch_html"><div class="ttname"><a href="classMatch.html">Match</a></div><div class="ttdoc">Class representing a feature match. It contains both matched features and the matching distance...</div><div class="ttdef"><b>Definition:</b> <a href="Match_8h_source.html#l00014">Match.h:14</a></div></div>
+<div class="ttc" id="classMatch_html_a81d338ea759199f9c454853c13180e57"><div class="ttname"><a href="classMatch.html#a81d338ea759199f9c454853c13180e57">Match::getSecondFeature</a></div><div class="ttdeci">Feature getSecondFeature()</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00077">Match.cpp:77</a></div></div>
 <div class="ttc" id="Feature_8h_html"><div class="ttname"><a href="Feature_8h.html">Feature.h</a></div></div>
-<div class="ttc" id="classMatch_html_a4a24def4160277b87c05611953795265"><div class="ttname"><a href="classMatch.html#a4a24def4160277b87c05611953795265">Match::setDistance</a></div><div class="ttdeci">void setDistance(float distance)</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00096">Match.cpp:96</a></div></div>
-<div class="ttc" id="classFeature_html"><div class="ttname"><a href="classFeature.html">Feature</a></div><div class="ttdoc">Class containing all information concerned to a feature, including keypoint, descriptor, frame number and camera index. </div><div class="ttdef"><b>Definition:</b> <a href="Feature_8h_source.html#l00009">Feature.h:9</a></div></div>
-<div class="ttc" id="classMatch_html_ae5c2e4e3e1c53a4c0b7a1cddc1e4df86"><div class="ttname"><a href="classMatch.html#ae5c2e4e3e1c53a4c0b7a1cddc1e4df86">Match::feature_2_</a></div><div class="ttdeci">Feature feature_2_</div><div class="ttdef"><b>Definition:</b> <a href="Match_8h_source.html#l00073">Match.h:73</a></div></div>
-<div class="ttc" id="classMatch_html_a618ba511bbc95a062ebafa55a8d89d6c"><div class="ttname"><a href="classMatch.html#a618ba511bbc95a062ebafa55a8d89d6c">Match::setFirstFeature</a></div><div class="ttdeci">void setFirstFeature(Feature feature_1)</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00080">Match.cpp:80</a></div></div>
-<div class="ttc" id="classMatch_html_a6fc3abe1c06b6b20ef1b4fa0dc26e952"><div class="ttname"><a href="classMatch.html#a6fc3abe1c06b6b20ef1b4fa0dc26e952">Match::feature_1_</a></div><div class="ttdeci">Feature feature_1_</div><div class="ttdef"><b>Definition:</b> <a href="Match_8h_source.html#l00072">Match.h:72</a></div></div>
-<div class="ttc" id="classMatch_html_a990b0300aeee204fd90d6d846b9aea0e"><div class="ttname"><a href="classMatch.html#a990b0300aeee204fd90d6d846b9aea0e">Match::Match</a></div><div class="ttdeci">Match()</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00006">Match.cpp:6</a></div></div>
-<div class="ttc" id="classMatch_html_a132e1c7fc1cb6b7658f43fdb815b1f0b"><div class="ttname"><a href="classMatch.html#a132e1c7fc1cb6b7658f43fdb815b1f0b">Match::distance_</a></div><div class="ttdeci">float distance_</div><div class="ttdef"><b>Definition:</b> <a href="Match_8h_source.html#l00074">Match.h:74</a></div></div>
-<div class="ttc" id="classMatch_html_ad10a070949675aab3769dd4314d8a6cc"><div class="ttname"><a href="classMatch.html#ad10a070949675aab3769dd4314d8a6cc">Match::getFirstFeature</a></div><div class="ttdeci">Feature getFirstFeature()</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00048">Match.cpp:48</a></div></div>
-<div class="ttc" id="classMatch_html_a4cbfcaff4f14e7411242423f19c28153"><div class="ttname"><a href="classMatch.html#a4cbfcaff4f14e7411242423f19c28153">Match::~Match</a></div><div class="ttdeci">~Match()</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00040">Match.cpp:40</a></div></div>
+<div class="ttc" id="classMatch_html_a4a24def4160277b87c05611953795265"><div class="ttname"><a href="classMatch.html#a4a24def4160277b87c05611953795265">Match::setDistance</a></div><div class="ttdeci">void setDistance(float distance)</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00117">Match.cpp:117</a></div></div>
+<div class="ttc" id="classFeature_html"><div class="ttname"><a href="classFeature.html">Feature</a></div><div class="ttdoc">Class containing all information concerned to a feature, including keypoint, descriptor, frame number and camera index. </div><div class="ttdef"><b>Definition:</b> <a href="Feature_8h_source.html#l00010">Feature.h:10</a></div></div>
+<div class="ttc" id="classMatch_html_ae5c2e4e3e1c53a4c0b7a1cddc1e4df86"><div class="ttname"><a href="classMatch.html#ae5c2e4e3e1c53a4c0b7a1cddc1e4df86">Match::feature_2_</a></div><div class="ttdeci">Feature feature_2_</div><div class="ttdef"><b>Definition:</b> <a href="Match_8h_source.html#l00086">Match.h:86</a></div></div>
+<div class="ttc" id="classMatch_html_a618ba511bbc95a062ebafa55a8d89d6c"><div class="ttname"><a href="classMatch.html#a618ba511bbc95a062ebafa55a8d89d6c">Match::setFirstFeature</a></div><div class="ttdeci">void setFirstFeature(Feature feature_1)</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00101">Match.cpp:101</a></div></div>
+<div class="ttc" id="classMatch_html_a6fc3abe1c06b6b20ef1b4fa0dc26e952"><div class="ttname"><a href="classMatch.html#a6fc3abe1c06b6b20ef1b4fa0dc26e952">Match::feature_1_</a></div><div class="ttdeci">Feature feature_1_</div><div class="ttdef"><b>Definition:</b> <a href="Match_8h_source.html#l00085">Match.h:85</a></div></div>
+<div class="ttc" id="classMatch_html_a990b0300aeee204fd90d6d846b9aea0e"><div class="ttname"><a href="classMatch.html#a990b0300aeee204fd90d6d846b9aea0e">Match::Match</a></div><div class="ttdeci">Match()</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00005">Match.cpp:5</a></div></div>
+<div class="ttc" id="classMatch_html_a132e1c7fc1cb6b7658f43fdb815b1f0b"><div class="ttname"><a href="classMatch.html#a132e1c7fc1cb6b7658f43fdb815b1f0b">Match::distance_</a></div><div class="ttdeci">float distance_</div><div class="ttdef"><b>Definition:</b> <a href="Match_8h_source.html#l00087">Match.h:87</a></div></div>
+<div class="ttc" id="classMatch_html_ad10a070949675aab3769dd4314d8a6cc"><div class="ttname"><a href="classMatch.html#ad10a070949675aab3769dd4314d8a6cc">Match::getFirstFeature</a></div><div class="ttdeci">Feature getFirstFeature()</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00069">Match.cpp:69</a></div></div>
+<div class="ttc" id="classMatch_html_a4cbfcaff4f14e7411242423f19c28153"><div class="ttname"><a href="classMatch.html#a4cbfcaff4f14e7411242423f19c28153">Match::~Match</a></div><div class="ttdeci">~Match()</div><div class="ttdef"><b>Definition:</b> <a href="Match_8cpp_source.html#l00061">Match.cpp:61</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 
 <br clear="all" />
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/multicam_vo">multicam_vo</a><br />
 Author(s): </br />
-<small>autogenerated on Wed Jul 6 2016 14:03:30</small>
+<small>autogenerated on Tue Jul 12 2016 09:29:05</small>
 </div>
 </body>
 </html>

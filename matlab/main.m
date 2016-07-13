@@ -1,0 +1,50 @@
+
+load pose_0.mat
+%load pose_1.mat
+%load pose_2.mat
+load pose_3.mat
+%load pose_4.mat
+%load pose_5.mat
+load pose_6.mat
+%load pose_7.mat
+%load pose_8.mat
+load pose_9.mat
+%load pose_10.mat
+%load pose_11.mat
+load pose_12.mat
+%load pose_13.mat
+%load pose_14.mat
+
+
+x_vo_0 = pose_0(:, 4);
+y_vo_0 = pose_0(:, 8);
+z_vo_0 = pose_0(:, 12);
+
+x_vo_3 = pose_3(:, 4);
+y_vo_3 = pose_3(:, 8);
+z_vo_3 = pose_3(:, 12);
+
+x_vo_6 = pose_6(:, 4);
+y_vo_6 = pose_6(:, 8);
+z_vo_6 = pose_6(:, 12);
+
+x_vo_9 = pose_9(:, 4);
+y_vo_9 = pose_9(:, 8);
+z_vo_9 = pose_9(:, 12);
+
+x_vo_12 = pose_12(:, 4);
+y_vo_12 = pose_12(:, 8);
+z_vo_12 = pose_12(:, 12);
+
+figure(1), hold on,
+l_0 = plot3(x_vo_0, y_vo_0, z_vo_0, 'r');
+%l_3 = plot3(x_vo_3, y_vo_3, z_vo_3, 'b');
+%l_6 = plot3(x_vo_6, y_vo_6, z_vo_6, 'g');
+%l_9 = plot3(x_vo_9, y_vo_9, z_vo_9, 'k');
+%l_12 = plot3(x_vo_12, y_vo_12, z_vo_12, 'm');
+xlabel('X');
+ylabel('Y');
+zlabel('Z');
+axis equal
+legend([l_0, l_3, l_6, l_9, l_12], 'VO 0', 'VO 1', 'VO 2', 'VO 3', 'VO 4');
+xlabel('X'); ylabel('Y'); zlabel('Z');

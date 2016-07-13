@@ -1,9 +1,9 @@
 
-param_matchingDescriptorDistance: 30
+param_matchingDescriptorDistance: 50
 param_matchingFeatureDistance: 30.0
 param_trackingWindowSize: 21
 param_trackingMaxLevel: 0
 param_trackingMinEigThreshold: 0.001
 param_trackingTermcritCount: 20
 param_trackingTermcritEPS: 0.03
-param_borderPercentage: 0.25
+param_borderPercentage: 0.3

@@ -60,8 +60,6 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:a956a51739b623c27d9800e3b817deb27"><td class="memItemLeft" align="right" valign="top">std::vector<br class="typebreak"/>
 &lt; image_geometry::PinholeCameraModel &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classodom_1_1MulticamVOPipeline.html#a956a51739b623c27d9800e3b817deb27">calib</a></td></tr>
 <tr class="separator:a956a51739b623c27d9800e3b817deb27"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:affd72266ff4a5a18ca2ce686aa9588a0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classodom_1_1MulticamVOPipeline.html#affd72266ff4a5a18ca2ce686aa9588a0">counter</a> = 0</td></tr>
-<tr class="separator:affd72266ff4a5a18ca2ce686aa9588a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad22e1ceb539783d07d4be3ecda691573"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classFeatureDetector.html">FeatureDetector</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classodom_1_1MulticamVOPipeline.html#ad22e1ceb539783d07d4be3ecda691573">featureDetector</a></td></tr>
 <tr class="separator:ad22e1ceb539783d07d4be3ecda691573"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a417b1039d4bf06690802d7dfd76e7163"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classFeatureMatcher.html">FeatureMatcher</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classodom_1_1MulticamVOPipeline.html#a417b1039d4bf06690802d7dfd76e7163">featureMatcher</a></td></tr>
@@ -71,10 +69,10 @@ Private Attributes</h2></td></tr>
 <tr class="separator:ab0cc3f4ac2ed2eb87ee230c1141d9674"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af39df015e70a700f99e02dd288565b40"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classodom_1_1MulticamVOPipeline.html#af39df015e70a700f99e02dd288565b40">first_</a></td></tr>
 <tr class="separator:af39df015e70a700f99e02dd288565b40"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7bbfeceef386b85e805b70146bdc190d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classodom_1_1MulticamVOPipeline.html#a7bbfeceef386b85e805b70146bdc190d">frameCounter</a></td></tr>
-<tr class="separator:a7bbfeceef386b85e805b70146bdc190d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c949614a6e7a95b38eb7f85f80d0614"><td class="memItemLeft" align="right" valign="top">std::vector&lt; cv::Mat &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classodom_1_1MulticamVOPipeline.html#a7c949614a6e7a95b38eb7f85f80d0614">imagesRectPrev</a></td></tr>
 <tr class="separator:a7c949614a6e7a95b38eb7f85f80d0614"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3307faf171f0626eb5c4f42719052760"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classodom_1_1MulticamVOPipeline.html#a3307faf171f0626eb5c4f42719052760">lostFrameCounter</a></td></tr>
+<tr class="separator:a3307faf171f0626eb5c4f42719052760"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac38acc8b5b162b770566c86188bb63d4"><td class="memItemLeft" align="right" valign="top">ros::NodeHandle&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classodom_1_1MulticamVOPipeline.html#ac38acc8b5b162b770566c86188bb63d4">node_</a></td></tr>
 <tr class="separator:ac38acc8b5b162b770566c86188bb63d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e1d5f29420ad09d7e65cda8a14204dc"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classodom_1_1MulticamVOPipeline.html#a8e1d5f29420ad09d7e65cda8a14204dc">param_imageTopic_</a></td></tr>
@@ -88,7 +86,7 @@ Private Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00023">23</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
+<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00028">28</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="af14ec8a0f29bf87736f241b29372055b"></a>
 <div class="memitem">
@@ -102,8 +100,16 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Default <a class="el" href="classodom_1_1MulticamVOPipeline.html">MulticamVOPipeline</a> constructor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">void</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classodom_1_1MulticamVOPipeline.html">MulticamVOPipeline</a> object </dd></dl>
 
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8cpp_source.html#l00007">7</a> of file <a class="el" href="MulticamVOPipeline_8cpp_source.html">MulticamVOPipeline.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MulticamVOPipeline_8cpp_source.html#l00009">9</a> of file <a class="el" href="MulticamVOPipeline_8cpp_source.html">MulticamVOPipeline.cpp</a>.</p>
 
 </div>
 </div>
@@ -119,8 +125,9 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Default <a class="el" href="classodom_1_1MulticamVOPipeline.html">MulticamVOPipeline</a> destructor. </p>
 
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8cpp_source.html#l00034">34</a> of file <a class="el" href="MulticamVOPipeline_8cpp_source.html">MulticamVOPipeline.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MulticamVOPipeline_8cpp_source.html#l00036">36</a> of file <a class="el" href="MulticamVOPipeline_8cpp_source.html">MulticamVOPipeline.cpp</a>.</p>
 
 </div>
 </div>
@@ -145,8 +152,16 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Read all camera's calibration parameters from yaml files. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">void</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8cpp_source.html#l00116">116</a> of file <a class="el" href="MulticamVOPipeline_8cpp_source.html">MulticamVOPipeline.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MulticamVOPipeline_8cpp_source.html#l00141">141</a> of file <a class="el" href="MulticamVOPipeline_8cpp_source.html">MulticamVOPipeline.cpp</a>.</p>
 
 </div>
 </div>
@@ -171,8 +186,16 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Ladybug2 image callback. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">sensor_msgs::Image::ConstPtr&amp;</td><td>ROS image message </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8cpp_source.html#l00046">46</a> of file <a class="el" href="MulticamVOPipeline_8cpp_source.html">MulticamVOPipeline.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MulticamVOPipeline_8cpp_source.html#l00052">52</a> of file <a class="el" href="MulticamVOPipeline_8cpp_source.html">MulticamVOPipeline.cpp</a>.</p>
 
 </div>
 </div>
@@ -197,8 +220,16 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Rectify individual images. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">std::vector&lt;cv::Mat&gt;</td><td>vector with distorted images </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;cv::Mat&gt; vector with rectified images </dd></dl>
 
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8cpp_source.html#l00149">149</a> of file <a class="el" href="MulticamVOPipeline_8cpp_source.html">MulticamVOPipeline.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MulticamVOPipeline_8cpp_source.html#l00125">125</a> of file <a class="el" href="MulticamVOPipeline_8cpp_source.html">MulticamVOPipeline.cpp</a>.</p>
 
 </div>
 </div>
@@ -214,8 +245,16 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>ROS loop. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">void</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8cpp_source.html#l00040">40</a> of file <a class="el" href="MulticamVOPipeline_8cpp_source.html">MulticamVOPipeline.cpp</a>.</p>
+<p>Definition at line <a class="el" href="MulticamVOPipeline_8cpp_source.html#l00044">44</a> of file <a class="el" href="MulticamVOPipeline_8cpp_source.html">MulticamVOPipeline.cpp</a>.</p>
 
 </div>
 </div>
@@ -237,30 +276,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Vector with calibration data of each camera </p>
 
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00057">57</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="affd72266ff4a5a18ca2ce686aa9588a0"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int odom::MulticamVOPipeline::counter = 0</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00076">76</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
+<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00068">68</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
 
 </div>
 </div>
@@ -281,8 +299,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p><a class="el" href="classFeature.html" title="Class containing all information concerned to a feature, including keypoint, descriptor, frame number and camera index. ">Feature</a> detector </p>
 
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00073">73</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
+<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00077">77</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
 
 </div>
 </div>
@@ -303,8 +322,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p><a class="el" href="classFeature.html" title="Class containing all information concerned to a feature, including keypoint, descriptor, frame number and camera index. ">Feature</a> matcher </p>
 
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00074">74</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
+<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00078">78</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
 
 </div>
 </div>
@@ -325,8 +345,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Vector with each cameras' features in previous frame </p>
 
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00070">70</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
+<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00075">75</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
 
 </div>
 </div>
@@ -347,30 +368,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Flag for indicating the first frame </p>
 
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00060">60</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a7bbfeceef386b85e805b70146bdc190d"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">int odom::MulticamVOPipeline::frameCounter</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00063">63</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
+<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00070">70</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
 
 </div>
 </div>
@@ -391,8 +391,32 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Vector with previous rectified images </p>
 
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00069">69</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
+<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00074">74</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a3307faf171f0626eb5c4f42719052760"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int odom::MulticamVOPipeline::lostFrameCounter</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Lost frame counter </p>
+
+<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00071">71</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
 
 </div>
 </div>
@@ -413,8 +437,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>ROS node for reading parameters </p>
 
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00049">49</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
+<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00063">63</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
 
 </div>
 </div>
@@ -435,8 +460,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Parameter: image topic </p>
 
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00054">54</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
+<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00066">66</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
 
 </div>
 </div>
@@ -457,8 +483,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>ROS odometry publisher </p>
 
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00051">51</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
+<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00065">65</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
 
 </div>
 </div>
@@ -479,8 +506,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Number of the previously processed frame </p>
 
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00066">66</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
+<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00073">73</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
 
 </div>
 </div>
@@ -501,8 +529,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>ROS subscriber to image messages </p>
 
-<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00050">50</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
+<p>Definition at line <a class="el" href="MulticamVOPipeline_8h_source.html#l00064">64</a> of file <a class="el" href="MulticamVOPipeline_8h_source.html">MulticamVOPipeline.h</a>.</p>
 
 </div>
 </div>
@@ -516,7 +545,7 @@ Private Attributes</h2></td></tr>
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/multicam_vo">multicam_vo</a><br />
 Author(s): </br />
-<small>autogenerated on Wed Jul 6 2016 14:03:30</small>
+<small>autogenerated on Tue Jul 12 2016 09:29:05</small>
 </div>
 </body>
 </html>

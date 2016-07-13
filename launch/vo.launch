@@ -5,25 +5,25 @@
     
     <node pkg="multicam_vo" type="multicam_vo_node" name="vo" output="screen">
         <param name="image_topic" value="/camera/image_raw" />
-        <param name="calib_file_cam_0" value="$(find ladybug2)/calib_files/cam0.yaml" />
-        <param name="calib_file_cam_1" value="$(find ladybug2)/calib_files/cam1.yaml" />
-        <param name="calib_file_cam_2" value="$(find ladybug2)/calib_files/cam2.yaml" />
-        <param name="calib_file_cam_3" value="$(find ladybug2)/calib_files/cam3.yaml" />
-        <param name="calib_file_cam_4" value="$(find ladybug2)/calib_files/cam4.yaml" />
-        <param name="calib_file_cam_5" value="$(find ladybug2)/calib_files/cam5.yaml" />
+        <param name="calib_file_cam_0" value="$(find ladybug2)/param/cam0.yaml" />
+        <param name="calib_file_cam_1" value="$(find ladybug2)/param/cam1.yaml" />
+        <param name="calib_file_cam_2" value="$(find ladybug2)/param/cam2.yaml" />
+        <param name="calib_file_cam_3" value="$(find ladybug2)/param/cam3.yaml" />
+        <param name="calib_file_cam_4" value="$(find ladybug2)/param/cam4.yaml" />
+        <param name="calib_file_cam_5" value="$(find ladybug2)/param/cam5.yaml" />
+        <rosparam file="$(find ladybug2)/param/ladybugExtrinsics.yaml" />
         <rosparam file="$(find multicam_vo)/param/fastParams.yaml" />
         <rosparam file="$(find multicam_vo)/param/briskParams.yaml" />
         <rosparam file="$(find multicam_vo)/param/orbParams.yaml" />
         <rosparam file="$(find multicam_vo)/param/bucketingParams.yaml" />
         <rosparam file="$(find multicam_vo)/param/trackingMatchingParams.yaml" />
-        <rosparam file="$(find multicam_vo)/param/odometerParams.yaml" />
-        <rosparam file="$(find multicam_vo)/param/ladybugExtrinsics.yaml" />
+        <rosparam file="$(find multicam_vo)/param/odometerParams.yaml" />        
     </node>
     
     
     <!-- ############################################################################### -->
     <!-- ###### Bagfile -->
     
-    <node pkg="rosbag" type="play" name="bag" args="-r 0.05 $(find ladybug2)/bagfiles/2016-06-23-10-51-38.bag" />
+    <node pkg="rosbag" type="play" name="bag" args="-r 0.05 $(find ladybug2)/bagfiles/test.bag" />
 
 </launch>

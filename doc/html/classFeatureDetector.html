@@ -31,6 +31,9 @@
 </div><!--header-->
 <div class="contents">
 
+<p>Class containing feature detection and descriptor extraction methods.  
+ <a href="classFeatureDetector.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -50,14 +53,14 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
+<tr class="memitem:a7416e862ea4d011e836ea2355b4aa04d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classFeature.html">Feature</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeatureDetector.html#a7416e862ea4d011e836ea2355b4aa04d">buildFeatures</a> (std::vector&lt; cv::KeyPoint &gt; keypoints, cv::Mat descriptors, int seqNo, int camNo)</td></tr>
+<tr class="separator:a7416e862ea4d011e836ea2355b4aa04d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86c2e2de987adfd90e083ef336468433"><td class="memItemLeft" align="right" valign="top">cv::Mat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeatureDetector.html#a86c2e2de987adfd90e083ef336468433">computeDescriptor_BRIEF</a> (cv::Mat image, std::vector&lt; cv::KeyPoint &gt; &amp;keypoints)</td></tr>
 <tr class="separator:a86c2e2de987adfd90e083ef336468433"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3602bbd0297f796e7f1d5fb71fc43943"><td class="memItemLeft" align="right" valign="top">cv::Mat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeatureDetector.html#a3602bbd0297f796e7f1d5fb71fc43943">computeDescriptor_BRISK</a> (cv::Mat image, std::vector&lt; cv::KeyPoint &gt; &amp;keypoints)</td></tr>
 <tr class="separator:a3602bbd0297f796e7f1d5fb71fc43943"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a621bc26fbf5895e54604343bb217635a"><td class="memItemLeft" align="right" valign="top">cv::Mat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeatureDetector.html#a621bc26fbf5895e54604343bb217635a">computeDescriptor_ORB</a> (cv::Mat image, std::vector&lt; cv::KeyPoint &gt; &amp;keypoints)</td></tr>
 <tr class="separator:a621bc26fbf5895e54604343bb217635a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4ddf7911a7365da30a11ee56235cd56d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classFeature.html">Feature</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeatureDetector.html#a4ddf7911a7365da30a11ee56235cd56d">descriptors2Features</a> (std::vector&lt; cv::KeyPoint &gt; keypoints, cv::Mat descriptors, int seqNo, int camNo)</td></tr>
-<tr class="separator:a4ddf7911a7365da30a11ee56235cd56d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac57a6130e86a086391feb2a3692ba0d7"><td class="memItemLeft" align="right" valign="top">std::vector&lt; cv::KeyPoint &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeatureDetector.html#ac57a6130e86a086391feb2a3692ba0d7">detectFeatures_BRISK</a> (cv::Mat image)</td></tr>
 <tr class="separator:ac57a6130e86a086391feb2a3692ba0d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7084b8817bf0892569d0b414920be28a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; cv::KeyPoint &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeatureDetector.html#a7084b8817bf0892569d0b414920be28a">detectFeatures_FAST</a> (cv::Mat image)</td></tr>
@@ -92,8 +95,6 @@ Private Attributes</h2></td></tr>
 <tr class="memitem:adcf58c009ae547630cd07cc4a30004c5"><td class="memItemLeft" align="right" valign="top">std::vector&lt; cv::KeyPoint &gt;<br class="typebreak"/>
 (FeatureDetector::*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeatureDetector.html#adcf58c009ae547630cd07cc4a30004c5">detectPtr_</a> )(cv::Mat image)</td></tr>
 <tr class="separator:adcf58c009ae547630cd07cc4a30004c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1fd6693cc8dcc3d8d0558dfc1f967a1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeatureDetector.html#ac1fd6693cc8dcc3d8d0558dfc1f967a1">doOnce</a> = true</td></tr>
-<tr class="separator:ac1fd6693cc8dcc3d8d0558dfc1f967a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d80c718ee97b5f10f5e8cd83b2dffd9"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeatureDetector.html#a8d80c718ee97b5f10f5e8cd83b2dffd9">FAST_nonMaxSup_</a></td></tr>
 <tr class="separator:a8d80c718ee97b5f10f5e8cd83b2dffd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a414f33d7dd9fd8647db24e9eb32f64be"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeatureDetector.html#a414f33d7dd9fd8647db24e9eb32f64be">FAST_threshold_</a></td></tr>
@@ -126,8 +127,9 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a5d518c092f2d934130843ffc7b677767"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00023">23</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<div class="textblock"><p>Class containing feature detection and descriptor extraction methods. </p>
+
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00027">27</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a689e1c3cf0e783d34492a9f7b218b355"></a>
 <div class="memitem">
@@ -141,8 +143,16 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Default <a class="el" href="classFeatureDetector.html" title="Class containing feature detection and descriptor extraction methods. ">FeatureDetector</a> constructor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">void</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classFeatureDetector.html" title="Class containing feature detection and descriptor extraction methods. ">FeatureDetector</a> object </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00004">4</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00006">6</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
 
 </div>
 </div>
@@ -159,8 +169,16 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Default <a class="el" href="classFeatureDetector.html" title="Class containing feature detection and descriptor extraction methods. ">FeatureDetector</a> constructor. By default, Shi-Tomasi corners are detected and an ORB descriptor is extracted. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ros::NodeHandle</td><td>ROS node </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classFeatureDetector.html" title="Class containing feature detection and descriptor extraction methods. ">FeatureDetector</a> object </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00010">10</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00014">14</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
 
 </div>
 </div>
@@ -193,8 +211,18 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p><a class="el" href="classFeatureDetector.html" title="Class containing feature detection and descriptor extraction methods. ">FeatureDetector</a> constructor with arguments. User may choose detection and descriptor extraction methods. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ros::NodeHandle</td><td>ROS node </td></tr>
+    <tr><td class="paramname">std::string</td><td>detection method </td></tr>
+    <tr><td class="paramname">std::string</td><td>descriptor type </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classFeatureDetector.html" title="Class containing feature detection and descriptor extraction methods. ">FeatureDetector</a> object </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00024">24</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00032">32</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
 
 </div>
 </div>
@@ -210,13 +238,14 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p><a class="el" href="classFeatureDetector.html" title="Class containing feature detection and descriptor extraction methods. ">FeatureDetector</a> destructor. </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00061">61</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00071">71</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a86c2e2de987adfd90e083ef336468433"></a>
+<a class="anchor" id="a7416e862ea4d011e836ea2355b4aa04d"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -224,115 +253,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">cv::Mat FeatureDetector::computeDescriptor_BRIEF </td>
-          <td>(</td>
-          <td class="paramtype">cv::Mat&#160;</td>
-          <td class="paramname"><em>image</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; cv::KeyPoint &gt; &amp;&#160;</td>
-          <td class="paramname"><em>keypoints</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00248">248</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a3602bbd0297f796e7f1d5fb71fc43943"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">cv::Mat FeatureDetector::computeDescriptor_BRISK </td>
-          <td>(</td>
-          <td class="paramtype">cv::Mat&#160;</td>
-          <td class="paramname"><em>image</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; cv::KeyPoint &gt; &amp;&#160;</td>
-          <td class="paramname"><em>keypoints</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00239">239</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a621bc26fbf5895e54604343bb217635a"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">cv::Mat FeatureDetector::computeDescriptor_ORB </td>
-          <td>(</td>
-          <td class="paramtype">cv::Mat&#160;</td>
-          <td class="paramname"><em>image</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; cv::KeyPoint &gt; &amp;&#160;</td>
-          <td class="paramname"><em>keypoints</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00257">257</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a4ddf7911a7365da30a11ee56235cd56d"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; <a class="el" href="classFeature.html">Feature</a> &gt; FeatureDetector::descriptors2Features </td>
+          <td class="memname">std::vector&lt; <a class="el" href="classFeature.html">Feature</a> &gt; FeatureDetector::buildFeatures </td>
           <td>(</td>
           <td class="paramtype">std::vector&lt; cv::KeyPoint &gt;&#160;</td>
           <td class="paramname"><em>keypoints</em>, </td>
@@ -367,8 +288,154 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Build set of features out of keypoint, descriptor, frame number and camera index. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">std::vector&lt;cv::KeyPoint&gt;</td><td>vector of keypoints </td></tr>
+    <tr><td class="paramname">cv::Mat</td><td>matrix with descriptors </td></tr>
+    <tr><td class="paramname">int</td><td>frame number </td></tr>
+    <tr><td class="paramname">int</td><td>camera index </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;Feature&gt; </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00154">154</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00235">235</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a86c2e2de987adfd90e083ef336468433"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">cv::Mat FeatureDetector::computeDescriptor_BRIEF </td>
+          <td>(</td>
+          <td class="paramtype">cv::Mat&#160;</td>
+          <td class="paramname"><em>image</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; cv::KeyPoint &gt; &amp;&#160;</td>
+          <td class="paramname"><em>keypoints</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Compute BRIEF descriptors for a set of keypoints. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cv::Mat</td><td>image </td></tr>
+    <tr><td class="paramname">std::vector&lt;cv::KeyPoint&gt;</td><td>vector of keypoints </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>cv::Mat matrix with all fetaures' descriptors </dd></dl>
+
+<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00307">307</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a3602bbd0297f796e7f1d5fb71fc43943"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">cv::Mat FeatureDetector::computeDescriptor_BRISK </td>
+          <td>(</td>
+          <td class="paramtype">cv::Mat&#160;</td>
+          <td class="paramname"><em>image</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; cv::KeyPoint &gt; &amp;&#160;</td>
+          <td class="paramname"><em>keypoints</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Compute BRISK descriptors for a set of keypoints. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cv::Mat</td><td>image </td></tr>
+    <tr><td class="paramname">std::vector&lt;cv::KeyPoint&gt;</td><td>vector of keypoints </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>cv::Mat matrix with all fetaures' descriptors </dd></dl>
+
+<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00295">295</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a621bc26fbf5895e54604343bb217635a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">cv::Mat FeatureDetector::computeDescriptor_ORB </td>
+          <td>(</td>
+          <td class="paramtype">cv::Mat&#160;</td>
+          <td class="paramname"><em>image</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; cv::KeyPoint &gt; &amp;&#160;</td>
+          <td class="paramname"><em>keypoints</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Compute ORB descriptors for a set of keypoints. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cv::Mat</td><td>image </td></tr>
+    <tr><td class="paramname">std::vector&lt;cv::KeyPoint&gt;</td><td>vector of keypoints </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>cv::Mat matrix with all fetaures' descriptors </dd></dl>
+
+<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00319">319</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
 
 </div>
 </div>
@@ -401,8 +468,18 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Detect features. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cv::Mat</td><td>image </td></tr>
+    <tr><td class="paramname">int</td><td>frame number </td></tr>
+    <tr><td class="paramname">int</td><td>camera index </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;Feature&gt; vector of features </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00067">67</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00081">81</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
 
 </div>
 </div>
@@ -427,8 +504,16 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Detect BRISK features in an image. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cv::Mat</td><td>image </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;Feature&gt; vector with detected features </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00213">213</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00261">261</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
 
 </div>
 </div>
@@ -453,8 +538,16 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Detect FAST corners in an image. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cv::Mat</td><td>image </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;Feature&gt; vector with detected features </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00204">204</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00250">250</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
 
 </div>
 </div>
@@ -479,8 +572,16 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Detect ORB features in an image. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cv::Mat</td><td>image </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;Feature&gt; vector with detected features </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00222">222</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00272">272</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
 
 </div>
 </div>
@@ -505,8 +606,16 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Detect Shi-Tomasi corners in an image. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cv::Mat</td><td>image </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;Feature&gt; vector with detected features </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00230">230</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00283">283</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
 
 </div>
 </div>
@@ -547,8 +656,18 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Divide image into sections (buckets). </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cv::Mat</td><td>image </td></tr>
+    <tr><td class="paramname">std::vector&lt;cv::Mat&gt;</td><td>output vector with buckets </td></tr>
+    <tr><td class="paramname">std::vector&lt;cv::Point2f&gt;</td><td>output vector with the pixel coordinates of the upper left corner of each bucket </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00113">113</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00182">182</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
 
 </div>
 </div>
@@ -573,8 +692,16 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Get feature detection parameters required for a specified detection method. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">std::string</td><td>feature detection method </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00167">167</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00139">139</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
 
 </div>
 </div>
@@ -601,8 +728,17 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Highlight features in an image. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cv::Mat</td><td>original image </td></tr>
+    <tr><td class="paramname">std::vector&lt;Feature&gt;</td><td>vector of features </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>cv::Mat image with highlighted features </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00101">101</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8cpp_source.html#l00121">121</a> of file <a class="el" href="FeatureDetector_8cpp_source.html">FeatureDetector.cpp</a>.</p>
 
 </div>
 </div>
@@ -624,8 +760,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>BRISK detection parameter: number of octaves </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00090">90</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00133">133</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -646,8 +783,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>BRISK detection parameter: patrern scale </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00091">91</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00134">134</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -668,8 +806,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>BRISK detection parameter: threshold </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00089">89</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00132">132</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -690,8 +829,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Bucketing parameter: number of horizontal sections </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00110">110</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00147">147</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -712,8 +852,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Bucketing parameter: number of vertical sections </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00111">111</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00148">148</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -734,8 +875,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Function pointer to the specified descriptor extraction method </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00079">79</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00128">128</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -756,8 +898,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>String with the descriptor extraction method </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00075">75</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00126">126</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -778,8 +921,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>String with the feature detection method </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00074">74</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00125">125</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -800,30 +944,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Function pointer to the specified feature detection method </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00078">78</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ac1fd6693cc8dcc3d8d0558dfc1f967a1"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool FeatureDetector::doOnce = true</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00114">114</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00127">127</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -844,8 +967,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>FAST detection parameter: use non-maximum supression (true) or not (false) </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00086">86</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00131">131</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -866,8 +990,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>FAST detection parameter: threshold </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00085">85</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00130">130</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -888,8 +1013,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>ROS node for retrieving feature detection parameters </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00044">44</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00124">124</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -910,8 +1036,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>ORB detection parameter: edge threshold </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00097">97</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00138">138</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -932,8 +1059,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>ORB detection parameter: first level </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00098">98</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00139">139</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -954,8 +1082,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>ORB detection parameter: maximum number of features </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00094">94</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00135">135</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -976,8 +1105,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>ORB detection parameter: number of levels </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00096">96</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00137">137</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -998,8 +1128,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>ORB detection parameter: patch size </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00101">101</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00142">142</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -1020,8 +1151,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>ORB detection parameter: scale </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00095">95</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00136">136</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -1042,8 +1174,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>ORB detection parameter: score type </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00100">100</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00141">141</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -1064,8 +1197,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>ORB detection parameter: WTA-K </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00099">99</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00140">140</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -1086,8 +1220,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Shi-Tomasi detection parameter: block size </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00107">107</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00146">146</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -1108,8 +1243,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Shi-Tomasi detection parameter: maximum number of features </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00104">104</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00143">143</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -1130,8 +1266,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Shi-Tomasi detection parameter: minimum distance between features </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00106">106</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00145">145</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -1152,8 +1289,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Shi-Tomasi detection parameter: quality level </p>
 
-<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00105">105</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureDetector_8h_source.html#l00144">144</a> of file <a class="el" href="FeatureDetector_8h_source.html">FeatureDetector.h</a>.</p>
 
 </div>
 </div>
@@ -1167,7 +1305,7 @@ Private Attributes</h2></td></tr>
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/multicam_vo">multicam_vo</a><br />
 Author(s): </br />
-<small>autogenerated on Wed Jul 6 2016 14:03:30</small>
+<small>autogenerated on Tue Jul 12 2016 09:29:05</small>
 </div>
 </body>
 </html>

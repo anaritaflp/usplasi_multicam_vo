@@ -31,6 +31,9 @@
 </div><!--header-->
 <div class="contents">
 
+<p>Class with methods that allow finding matches in an omnidirectional multi-camera system.  
+ <a href="classFeatureMatcher.html#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
@@ -56,8 +59,6 @@ Private Member Functions</h2></td></tr>
 <tr class="separator:a8556a621c10649647fc8a17a8c69a777"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e2995b359e8521a9b97242dc07ee982"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeatureMatcher.html#a4e2995b359e8521a9b97242dc07ee982">trackIntraCamera</a> (cv::Mat imagePrev, cv::Mat imageCurr, std::vector&lt; <a class="el" href="classFeature.html">Feature</a> &gt; featuresPrev, std::vector&lt; <a class="el" href="classFeature.html">Feature</a> &gt; &amp;featuresCurr, std::vector&lt; <a class="el" href="classFeature.html">Feature</a> &gt; &amp;featuresLeft, std::vector&lt; <a class="el" href="classFeature.html">Feature</a> &gt; &amp;featuresRight)</td></tr>
 <tr class="separator:a4e2995b359e8521a9b97242dc07ee982"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a90797c3e29d333f4c0883d9134e8042d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeatureMatcher.html#a90797c3e29d333f4c0883d9134e8042d">trackIntraCamera</a> ()</td></tr>
-<tr class="separator:a90797c3e29d333f4c0883d9134e8042d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
@@ -69,8 +70,6 @@ Private Attributes</h2></td></tr>
 <tr class="separator:a46f756a7930a1cda92db6a9919b35fd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5bf3341b1ce30cb734bb9e1743d9bbae"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeatureMatcher.html#a5bf3341b1ce30cb734bb9e1743d9bbae">param_matchingDescriptorDistance_</a></td></tr>
 <tr class="separator:a5bf3341b1ce30cb734bb9e1743d9bbae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2539cf5d3770b3b97bd579954b490e0"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeatureMatcher.html#ad2539cf5d3770b3b97bd579954b490e0">param_matchingFeatureDistance_</a></td></tr>
-<tr class="separator:ad2539cf5d3770b3b97bd579954b490e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aad7f35ea3c2cf239b7430ea4e51923b1"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeatureMatcher.html#aad7f35ea3c2cf239b7430ea4e51923b1">param_trackingMaxLevel_</a></td></tr>
 <tr class="separator:aad7f35ea3c2cf239b7430ea4e51923b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab4018fe780478cf368847486e90a19a6"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeatureMatcher.html#ab4018fe780478cf368847486e90a19a6">param_trackingMinEigThreshold_</a></td></tr>
@@ -83,8 +82,9 @@ Private Attributes</h2></td></tr>
 <tr class="separator:ab5ddf690304a4a7940bdfb5965bff3bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
-<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00018">18</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
+<div class="textblock"><p>Class with methods that allow finding matches in an omnidirectional multi-camera system. </p>
+
+<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00025">25</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a968ced4d117630e9e187f4391ac5da50"></a>
 <div class="memitem">
@@ -98,8 +98,16 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Default <a class="el" href="classFeatureMatcher.html" title="Class with methods that allow finding matches in an omnidirectional multi-camera system. ">FeatureMatcher</a> constructor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">void</td><td></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>a <a class="el" href="classFeatureMatcher.html" title="Class with methods that allow finding matches in an omnidirectional multi-camera system. ">FeatureMatcher</a> object </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureMatcher_8cpp_source.html#l00004">4</a> of file <a class="el" href="FeatureMatcher_8cpp_source.html">FeatureMatcher.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureMatcher_8cpp_source.html#l00006">6</a> of file <a class="el" href="FeatureMatcher_8cpp_source.html">FeatureMatcher.cpp</a>.</p>
 
 </div>
 </div>
@@ -116,8 +124,16 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Default <a class="el" href="classFeatureMatcher.html" title="Class with methods that allow finding matches in an omnidirectional multi-camera system. ">FeatureMatcher</a> constructor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ros::NodeHandle</td><td>ROS node </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>a <a class="el" href="classFeatureMatcher.html" title="Class with methods that allow finding matches in an omnidirectional multi-camera system. ">FeatureMatcher</a> object </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureMatcher_8cpp_source.html#l00010">10</a> of file <a class="el" href="FeatureMatcher_8cpp_source.html">FeatureMatcher.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureMatcher_8cpp_source.html#l00014">14</a> of file <a class="el" href="FeatureMatcher_8cpp_source.html">FeatureMatcher.cpp</a>.</p>
 
 </div>
 </div>
@@ -133,8 +149,9 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p><a class="el" href="classFeatureMatcher.html" title="Class with methods that allow finding matches in an omnidirectional multi-camera system. ">FeatureMatcher</a> destructor. </p>
 
-<p>Definition at line <a class="el" href="FeatureMatcher_8cpp_source.html#l00016">16</a> of file <a class="el" href="FeatureMatcher_8cpp_source.html">FeatureMatcher.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureMatcher_8cpp_source.html#l00029">29</a> of file <a class="el" href="FeatureMatcher_8cpp_source.html">FeatureMatcher.cpp</a>.</p>
 
 </div>
 </div>
@@ -176,8 +193,18 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Convert set of OpenCV Matches to Matches. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">std::vector&lt;Feature&gt;</td><td>features in the previous frame </td></tr>
+    <tr><td class="paramname">std::vector&lt;Feature&gt;</td><td>features in the current frame </td></tr>
+    <tr><td class="paramname">std::vector&lt;cv::DMatch&gt;</td><td>vector of DMatches </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;Match&gt; vector of matches </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureMatcher_8cpp_source.html#l00137">137</a> of file <a class="el" href="FeatureMatcher_8cpp_source.html">FeatureMatcher.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureMatcher_8cpp_source.html#l00240">240</a> of file <a class="el" href="FeatureMatcher_8cpp_source.html">FeatureMatcher.cpp</a>.</p>
 
 </div>
 </div>
@@ -202,8 +229,16 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Convert set of features to cv::Point2f. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">std::vector&lt;Feature&gt;</td><td>features </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;cv::Point2f&gt; vector of cv::Point2f </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureMatcher_8cpp_source.html#l00211">211</a> of file <a class="el" href="FeatureMatcher_8cpp_source.html">FeatureMatcher.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureMatcher_8cpp_source.html#l00258">258</a> of file <a class="el" href="FeatureMatcher_8cpp_source.html">FeatureMatcher.cpp</a>.</p>
 
 </div>
 </div>
@@ -248,8 +283,20 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Find matches in an omnidirectional multi-camera system. Matches are search in each camera and between onsecutive cameras. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">std::vector&lt;cv::Mat&gt;</td><td>vector with all cameras' images in the previous frame </td></tr>
+    <tr><td class="paramname">std::vector&lt;cv::Mat&gt;</td><td>vector with all cameras' images in the current frame </td></tr>
+    <tr><td class="paramname">std::vector&lt;std::vector&lt;Feature&gt;&gt;</td><td>vector with all cameras' features found in the previous frame </td></tr>
+    <tr><td class="paramname">std::vector&lt;std::vector&lt;Feature&gt;&gt;</td><td>vector with all cameras' features found in the current frame </td></tr>
+    <tr><td class="paramname">int</td><td>number of images </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>std::vector&lt;std::vector&lt;Match&gt;&gt; vector with each camera's matches </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureMatcher_8cpp_source.html#l00022">22</a> of file <a class="el" href="FeatureMatcher_8cpp_source.html">FeatureMatcher.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureMatcher_8cpp_source.html#l00041">41</a> of file <a class="el" href="FeatureMatcher_8cpp_source.html">FeatureMatcher.cpp</a>.</p>
 
 </div>
 </div>
@@ -274,8 +321,16 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Convert a set of features to a cv::Mat of descriptors. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">std::vector&lt;Feature&gt;</td><td>vector of features </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>cv::Mat matrix with descriptors </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureMatcher_8cpp_source.html#l00124">124</a> of file <a class="el" href="FeatureMatcher_8cpp_source.html">FeatureMatcher.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureMatcher_8cpp_source.html#l00223">223</a> of file <a class="el" href="FeatureMatcher_8cpp_source.html">FeatureMatcher.cpp</a>.</p>
 
 </div>
 </div>
@@ -302,8 +357,17 @@ Private Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>Highlight optical flow in an image. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cv::Mat</td><td>original image </td></tr>
+    <tr><td class="paramname">std::vector&lt;Match&gt;</td><td>intra-camera matches </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>cv::Mat image with highlighted optical flow </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureMatcher_8cpp_source.html#l00153">153</a> of file <a class="el" href="FeatureMatcher_8cpp_source.html">FeatureMatcher.cpp</a>.</p>
+<p>Definition at line <a class="el" href="FeatureMatcher_8cpp_source.html#l00157">157</a> of file <a class="el" href="FeatureMatcher_8cpp_source.html">FeatureMatcher.cpp</a>.</p>
 
 </div>
 </div>
@@ -362,31 +426,21 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Track features in a camera. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cv::Mat</td><td>image in the previous frame </td></tr>
+    <tr><td class="paramname">cv::Mat</td><td>image in the current frame </td></tr>
+    <tr><td class="paramname">&lt;std::vector&lt;Feature&gt;</td><td>vector of features found in the previous frame </td></tr>
+    <tr><td class="paramname">&lt;std::vector&lt;Feature&gt;</td><td>vector of features found in the current frame </td></tr>
+    <tr><td class="paramname">std::vector&lt;Feature&gt;</td><td>output vector of features in the left camera </td></tr>
+    <tr><td class="paramname">std::vector&lt;Feature&gt;</td><td>output vector of features in the right camera </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
-<p>Definition at line <a class="el" href="FeatureMatcher_8cpp_source.html#l00169">169</a> of file <a class="el" href="FeatureMatcher_8cpp_source.html">FeatureMatcher.cpp</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a90797c3e29d333f4c0883d9134e8042d"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void FeatureMatcher::trackIntraCamera </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
+<p>Definition at line <a class="el" href="FeatureMatcher_8cpp_source.html#l00182">182</a> of file <a class="el" href="FeatureMatcher_8cpp_source.html">FeatureMatcher.cpp</a>.</p>
 
 </div>
 </div>
@@ -408,8 +462,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p><a class="el" href="classMatch.html" title="Class representing a feature match. It contains both matched features and the matching distance...">Match</a> counter for saving match images in a folder (for debug) </p>
 
-<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00070">70</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00095">95</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
 
 </div>
 </div>
@@ -430,8 +485,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>ROS node for retrieving matching parameters </p>
 
-<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00041">41</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00087">87</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
 
 </div>
 </div>
@@ -452,8 +508,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Tracking parameter: maximum width percentage that a feature can move </p>
 
-<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00065">65</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00094">94</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
 
 </div>
 </div>
@@ -474,30 +531,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Matching parameter: maximum descriptor distance </p>
 
-<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00056">56</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="ad2539cf5d3770b3b97bd579954b490e0"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">double FeatureMatcher::param_matchingFeatureDistance_</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">private</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00057">57</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00088">88</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
 
 </div>
 </div>
@@ -518,8 +554,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Tracking parameter: maximum level </p>
 
-<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00061">61</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00090">90</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
 
 </div>
 </div>
@@ -540,8 +577,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Tracking parameter: smallest eigenvalue threshold </p>
 
-<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00062">62</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00091">91</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
 
 </div>
 </div>
@@ -562,8 +600,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Tracking parameter: maximum number of iterations </p>
 
-<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00063">63</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00092">92</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
 
 </div>
 </div>
@@ -584,8 +623,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Tracking parameter: maximum window motion </p>
 
-<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00064">64</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00093">93</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
 
 </div>
 </div>
@@ -606,8 +646,9 @@ Private Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+<p>Tracking parameter: tracking window size </p>
 
-<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00060">60</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
+<p>Definition at line <a class="el" href="FeatureMatcher_8h_source.html#l00089">89</a> of file <a class="el" href="FeatureMatcher_8h_source.html">FeatureMatcher.h</a>.</p>
 
 </div>
 </div>
@@ -621,7 +662,7 @@ Private Attributes</h2></td></tr>
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/multicam_vo">multicam_vo</a><br />
 Author(s): </br />
-<small>autogenerated on Wed Jul 6 2016 14:03:30</small>
+<small>autogenerated on Tue Jul 12 2016 09:29:05</small>
 </div>
 </body>
 </html>

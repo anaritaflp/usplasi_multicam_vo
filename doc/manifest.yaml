@@ -19,7 +19,7 @@ depends:
 - eigen
 description: The multicam_vo package
 license: TODO
-maintainers: anaritapereira <anaritap44@gmail.com>
+maintainers: anaritaflp <anaritap44@gmail.com>
 msgs: []
 package_type: package
 repo_url: ''

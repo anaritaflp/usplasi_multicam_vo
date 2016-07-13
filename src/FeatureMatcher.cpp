@@ -3,15 +3,7 @@
 /** Default FeatureMatcher constructor.
  * @param void
  * @return a FeatureMatcher object */
-FeatureMatcher::FeatureMatcher()
-{
-    
-}
-
-/** Default FeatureMatcher constructor.
- * @param ros::NodeHandle ROS node
- * @return a FeatureMatcher object */
-FeatureMatcher::FeatureMatcher(ros::NodeHandle node): node_(node)
+FeatureMatcher::FeatureMatcher(): node_("~")
 {
     matchCounter = 0;
     

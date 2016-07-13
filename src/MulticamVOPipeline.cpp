@@ -4,9 +4,9 @@ namespace odom
 {
     
 /** Default MulticamVOPipeline constructor.
- * @param void
+ * @param std::vector<std::ofstream*> vector of files to write estimated poses
  * @return MulticamVOPipeline object */
-MulticamVOPipeline::MulticamVOPipeline(): node_("~")
+MulticamVOPipeline::MulticamVOPipeline(std::vector<std::ofstream*> files): node_("~")
 {
     // get image topic
     node_.param<std::string>("image_topic", param_imageTopic_, "/camera/image_raw");
@@ -21,11 +21,12 @@ MulticamVOPipeline::MulticamVOPipeline(): node_("~")
     lostFrameCounter = 0;
     seqNumberPrev = 0;
         
-    featureDetector = FeatureDetector(node_, SHI_TOMASI, ORB);
-    featureMatcher = FeatureMatcher(node_);
+    featureDetector = FeatureDetector(SHI_TOMASI, ORB);
+    featureMatcher = FeatureMatcher();
+    odometer = MulticamOdometer(calib, NUM_CAMERAS-1, files);
 
     // advertise odometry topic
-    pubOdom_ = node_.advertise<nav_msgs::Odometry>("multicamOdometer/odometry", 1);
+    pubOdom_ = node_.advertise<nav_msgs::Odometry>("multicam_vo/odometry", 1);
     
     // subscribe to image topic
     image_transport::ImageTransport it(node_);    
@@ -52,11 +53,11 @@ void MulticamVOPipeline::spin()
 void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
 {
     // convert msg to cv::Mat and split
-    cv::Mat_<uint8_t> fullImage = cv::Mat_<uint8_t>(NUM_CAMERAS*LB_HEIGHT, LB_WIDTH, const_cast<uint8_t*>(&msg->data[0]), msg->step);
+    cv::Mat_<uint8_t> fullImage = cv::Mat_<uint8_t>(NUM_CAMERAS*IMAGE_WIDTH, IMAGE_HEIGHT, const_cast<uint8_t*>(&msg->data[0]), msg->step);
     std::vector<cv::Mat> splitImages = splitLadybug(fullImage, MONO);
         
     int seqNumber = msg->header.seq;
-    //std::cout << "FRAME " << seqNumber << std::endl;
+    std::cout << "FRAME " << seqNumber << std::endl;
     if(seqNumber - seqNumberPrev > 1)
     {
         ROS_WARN("Lost %d frames!", seqNumber - seqNumberPrev - 1);
@@ -99,8 +100,7 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
             
             
         // estimate motion    
-        MulticamOdometer odometer(node_);
-        odometer.estimateMotion(matches, NUM_CAMERAS-1, calib);
+        odometer.estimateMotion(matches);
             
         // publish odometry
         nav_msgs::Odometry msgOdom;

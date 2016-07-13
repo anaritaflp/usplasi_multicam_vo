@@ -41,6 +41,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a06d191f6daea88e0029440a2137f2e07"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf81cfaeabbf8b2e4367148625793c5e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeature.html#aaf81cfaeabbf8b2e4367148625793c5e">Feature</a> (cv::KeyPoint keypoint, cv::Mat descriptor, int seqNumber, int camNumber)</td></tr>
 <tr class="separator:aaf81cfaeabbf8b2e4367148625793c5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93f53dcb5b03697f9a57766daeaf6c02"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeature.html#a93f53dcb5b03697f9a57766daeaf6c02">Feature</a> (const <a class="el" href="classFeature.html">Feature</a> &amp;other)</td></tr>
+<tr class="separator:a93f53dcb5b03697f9a57766daeaf6c02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab9c5109acf8d86e2863741c20b1fff9a"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeature.html#ab9c5109acf8d86e2863741c20b1fff9a">getCamNumber</a> ()</td></tr>
 <tr class="separator:ab9c5109acf8d86e2863741c20b1fff9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a24d690361b69180242ea069106671e10"><td class="memItemLeft" align="right" valign="top">cv::Mat&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeature.html#a24d690361b69180242ea069106671e10">getDescriptor</a> ()</td></tr>
@@ -49,6 +51,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a6e3cf8a317c57bf5058e2e07425ae7bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8ee28daca95a473a712b6e5ad3dd27b2"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeature.html#a8ee28daca95a473a712b6e5ad3dd27b2">getSeqNumber</a> ()</td></tr>
 <tr class="separator:a8ee28daca95a473a712b6e5ad3dd27b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa65eb958cf03b7a368a0075243910d18"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classFeature.html">Feature</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeature.html#aa65eb958cf03b7a368a0075243910d18">operator=</a> (const <a class="el" href="classFeature.html">Feature</a> &amp;other)</td></tr>
+<tr class="separator:aa65eb958cf03b7a368a0075243910d18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8de772d6bb49f074420f9dbd7e0152b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeature.html#a8de772d6bb49f074420f9dbd7e0152b4">setCamNumber</a> (int camNumber)</td></tr>
 <tr class="separator:a8de772d6bb49f074420f9dbd7e0152b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae047a1f1f32b27b741187e777d3647f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classFeature.html#ae047a1f1f32b27b741187e777d3647f1">setDescriptor</a> (cv::Mat descriptor)</td></tr>
@@ -74,7 +78,7 @@ Private Attributes</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class containing all information concerned to a feature, including keypoint, descriptor, frame number and camera index. </p>
 
-<p>Definition at line <a class="el" href="Feature_8h_source.html#l00009">9</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
+<p>Definition at line <a class="el" href="Feature_8h_source.html#l00010">10</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a06d191f6daea88e0029440a2137f2e07"></a>
 <div class="memitem">
@@ -139,13 +143,42 @@ Private Attributes</h2></td></tr>
 <p><a class="el" href="classFeature.html" title="Class containing all information concerned to a feature, including keypoint, descriptor, frame number and camera index. ">Feature</a> constructor with arguments. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">cv::KeyPoint</td><td>keypoint, cv::Mat descriptor, int frame number, int camera number </td></tr>
+    <tr><td class="paramname">cv::KeyPoint</td><td>keypoint </td></tr>
+    <tr><td class="paramname">cv::Mat</td><td>descriptor </td></tr>
+    <tr><td class="paramname">int</td><td>frame number </td></tr>
+    <tr><td class="paramname">int</td><td>camera number </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="classFeature.html" title="Class containing all information concerned to a feature, including keypoint, descriptor, frame number and camera index. ">Feature</a> object </dd></dl>
 
-<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00018">18</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00021">21</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a93f53dcb5b03697f9a57766daeaf6c02"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Feature::Feature </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classFeature.html">Feature</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p><a class="el" href="classFeature.html" title="Class containing all information concerned to a feature, including keypoint, descriptor, frame number and camera index. ">Feature</a> copy constructor. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname"><a class="el" href="classFeature.html" title="Class containing all information concerned to a feature, including keypoint, descriptor, frame number and camera index. ">Feature</a></td><td>object </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classFeature.html" title="Class containing all information concerned to a feature, including keypoint, descriptor, frame number and camera index. ">Feature</a> object </dd></dl>
+
+<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00032">32</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
 
 </div>
 </div>
@@ -162,15 +195,8 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p><a class="el" href="classFeature.html" title="Class containing all information concerned to a feature, including keypoint, descriptor, frame number and camera index. ">Feature</a> destructor. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">void</td><td></td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
-<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00029">29</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00052">52</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
 
 </div>
 </div>
@@ -196,7 +222,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>int camera number </dd></dl>
 
-<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00061">61</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00084">84</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
 
 </div>
 </div>
@@ -221,7 +247,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>cv::Mat descriptor </dd></dl>
 
-<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00045">45</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00068">68</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
 
 </div>
 </div>
@@ -246,7 +272,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>cv::KeyPoint keypoint </dd></dl>
 
-<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00037">37</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00060">60</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
 
 </div>
 </div>
@@ -271,7 +297,33 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>int frame number </dd></dl>
 
-<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00053">53</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00076">76</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa65eb958cf03b7a368a0075243910d18"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classFeature.html">Feature</a> &amp; Feature::operator= </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="classFeature.html">Feature</a> &amp;&#160;</td>
+          <td class="paramname"><em>other</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Equal operator. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname"><a class="el" href="classFeature.html" title="Class containing all information concerned to a feature, including keypoint, descriptor, frame number and camera index. ">Feature</a></td><td>object </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="classFeature.html" title="Class containing all information concerned to a feature, including keypoint, descriptor, frame number and camera index. ">Feature</a> object </dd></dl>
+
+<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00043">43</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
 
 </div>
 </div>
@@ -297,7 +349,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
-<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00093">93</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00116">116</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
 
 </div>
 </div>
@@ -323,7 +375,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
-<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00077">77</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00100">100</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
 
 </div>
 </div>
@@ -349,7 +401,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
-<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00069">69</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00092">92</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
 
 </div>
 </div>
@@ -375,7 +427,7 @@ Private Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>void </dd></dl>
 
-<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00085">85</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
+<p>Definition at line <a class="el" href="Feature_8cpp_source.html#l00108">108</a> of file <a class="el" href="Feature_8cpp_source.html">Feature.cpp</a>.</p>
 
 </div>
 </div>
@@ -399,7 +451,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Camera index in the multi-camera system </p>
 
-<p>Definition at line <a class="el" href="Feature_8h_source.html#l00072">72</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
+<p>Definition at line <a class="el" href="Feature_8h_source.html#l00084">84</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 
 </div>
 </div>
@@ -422,7 +474,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Descriptor computer by a descriptor extraction method </p>
 
-<p>Definition at line <a class="el" href="Feature_8h_source.html#l00070">70</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
+<p>Definition at line <a class="el" href="Feature_8h_source.html#l00082">82</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 
 </div>
 </div>
@@ -445,7 +497,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>cv::Keypoint of the feature, which includes the pixel location </p>
 
-<p>Definition at line <a class="el" href="Feature_8h_source.html#l00069">69</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
+<p>Definition at line <a class="el" href="Feature_8h_source.html#l00081">81</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 
 </div>
 </div>
@@ -468,7 +520,7 @@ Private Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Frame number </p>
 
-<p>Definition at line <a class="el" href="Feature_8h_source.html#l00071">71</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
+<p>Definition at line <a class="el" href="Feature_8h_source.html#l00083">83</a> of file <a class="el" href="Feature_8h_source.html">Feature.h</a>.</p>
 
 </div>
 </div>
@@ -482,7 +534,7 @@ Private Attributes</h2></td></tr>
 <hr size="1"><div style="align: right;">
 <a href="http://wiki.ros.org/multicam_vo">multicam_vo</a><br />
 Author(s): </br />
-<small>autogenerated on Wed Jul 6 2016 14:03:30</small>
+<small>autogenerated on Tue Jul 12 2016 09:29:05</small>
 </div>
 </body>
 </html>

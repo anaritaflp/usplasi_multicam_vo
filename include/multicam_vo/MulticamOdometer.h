@@ -3,6 +3,7 @@
 
 // std includes
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <stdlib.h>
 
@@ -26,20 +27,23 @@ class MulticamOdometer
 {
     public:
         
+		/** MulticamOdometer default constructor. */
+		MulticamOdometer();
+
 		/** MulticamOdometer constructor.
-         * @param ros::NodeHandle ROS node
+		 * @param std::vector<image_geometry::PinholeCameraModel> vector with each camera's calibration data
+		 * @param int number of cameras in the sensor (only leveled cameras, i.e., excluding the camera facing upwards)
+		 * @param std::vector<std::ofstream*> vector with files to write estimated poses
          * @return MulticamOdometer object */
-        MulticamOdometer(ros::NodeHandle node);
+        MulticamOdometer(std::vector<image_geometry::PinholeCameraModel> calibData, int numCameras, std::vector<std::ofstream*> files);
     
         /** MulticamOdometer destructor. */
         ~MulticamOdometer();
     
         /** Estimate the motion of the multi-camera system.
          * @param std::vector<std::vector<Match>> a vector with each camera's matches
-		 * @param int number of cameras that form the omnidirectional system
-		 * @param std::vector<image_geometry::PinholeCameraModel> vector with each camera's intrinsic parameters
          * @return Eigen::Matrix4f transformation with the relative motion of the multi-camera system */
-        Eigen::Matrix4f estimateMotion(std::vector<std::vector<Match>> matches, int numCameras, std::vector<image_geometry::PinholeCameraModel> intrinsics);
+        Eigen::Matrix4f estimateMotion(std::vector<std::vector<Match>> matches);
     
     private:
 
@@ -111,13 +115,13 @@ class MulticamOdometer
     
         /** Get points that are closer to the camera than the median distanced point.
 		 * @param std::vector<Eigen::Vector4f> vector with all 3D points 
-		 * @param double output median depth of all points
+		 * @param double output median distance of all points
 		 * @return std::vector<Eigen::Vector4f> vector with close points only */
         std::vector<Eigen::Vector4f> getClosePoints(std::vector<Eigen::Vector4f> points, double &median);
     
 		/** Compute optimal translation scale.
 		 * @param std::vector<Eigen::Vector4f> vector with 3D points 
-		 * @param double median depth of all points
+		 * @param double median distance of all points
 		 * @param camera pitch angle
 		 * @param camera height
 		 * @return double optimal scale */
@@ -126,7 +130,7 @@ class MulticamOdometer
 		/** Compute transform out of vector with extrinsic parameters, i.e., Euler angles and translation components.
 		 * @param std::vector<double> vector with extrinsic parameters
 		 * @return Eigen::Matrix4f transform */
-        Eigen::Matrix4f transform2ExtrinsicsVector(std::vector<double> extrinsics);
+        Eigen::Matrix4f extrinsicData2Transform(std::vector<double> extrinsicData);
 		
 		ros::NodeHandle node_; 						/*!< ROS node for reading odometer parameters */
         
@@ -144,6 +148,16 @@ class MulticamOdometer
 		std::vector<double> param_extrinsicsCam3_;	/*!< Camera parameter: Camera 3's extrinsic parameters */
 		std::vector<double> param_extrinsicsCam4_;	/*!< Camera parameter: Camera 4's extrinsic parameters */
 		std::vector<double> param_extrinsicsCam5_;	/*!< Camera parameter: Camera 5's extrinsic parameters */
+
+		std::vector<Eigen::Matrix3f> intrinsics;	/*!< Vector with camera matrices (i.e., matrix with intrinsic parameters) */
+		std::vector<Eigen::Matrix4f> extrinsics;	/*!< Vector with transformations of camera i described in global coordinates */
+
+		std::vector<Eigen::Matrix4f> absolutePoses;	/*!< Vector of absolute poses estimated by intra- and consecutive inter-camera matches */
+
+		int numCameras_;							/*!< Number of cameras that form the omnidirectional system (excluding the camera looking upwards) */
+
+		std::vector<std::ofstream*> files_;			/*!< For debugging: for writing estimated poses in matlab files */
+		std::vector<bool> firstRow_;				/*!< For debugging: auxiliary flag for writing MatLab files */
 };
 
 #endif

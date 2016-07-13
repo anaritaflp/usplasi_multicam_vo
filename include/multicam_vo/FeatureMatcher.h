@@ -31,11 +31,6 @@ class FeatureMatcher
          * @param void
          * @return a FeatureMatcher object */
         FeatureMatcher();
-
-        /** Default FeatureMatcher constructor.
-         * @param ros::NodeHandle ROS node
-         * @return a FeatureMatcher object */
-        FeatureMatcher(ros::NodeHandle node);
     
         /** FeatureMatcher destructor. */
         ~FeatureMatcher(); 

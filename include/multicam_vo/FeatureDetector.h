@@ -28,22 +28,16 @@ class FeatureDetector
 {
     public:
     
-        /** Default FeatureDetector constructor. 
+        /** Default FeatureDetector constructor. By default, Shi-Tomasi corners are detected and an ORB descriptor is extracted.
          * @param void
          * @return FeatureDetector object */
         FeatureDetector();
     
-        /** Default FeatureDetector constructor. By default, Shi-Tomasi corners are detected and an ORB descriptor is extracted.
-         * @param ros::NodeHandle ROS node
-         * @return FeatureDetector object */
-        FeatureDetector(ros::NodeHandle node);
-    
         /** FeatureDetector constructor with arguments. User may choose detection and descriptor extraction methods.
-         * @param ros::NodeHandle ROS node
 		 * @param std::string detection method
 		 * @param std::string descriptor type
          * @return FeatureDetector object */
-        FeatureDetector(ros::NodeHandle node, std::string detectionMethod, std::string descriptorType);
+        FeatureDetector(std::string detectionMethod, std::string descriptorType);
         
         /** FeatureDetector destructor. */
         ~FeatureDetector();
