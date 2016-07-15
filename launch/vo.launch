@@ -15,6 +15,7 @@
         <rosparam file="$(find multicam_vo)/param/fastParams.yaml" />
         <rosparam file="$(find multicam_vo)/param/briskParams.yaml" />
         <rosparam file="$(find multicam_vo)/param/orbParams.yaml" />
+        <rosparam file="$(find multicam_vo)/param/shiTomasiParams.yaml" />
         <rosparam file="$(find multicam_vo)/param/bucketingParams.yaml" />
         <rosparam file="$(find multicam_vo)/param/trackingMatchingParams.yaml" />
         <rosparam file="$(find multicam_vo)/param/odometerParams.yaml" />        

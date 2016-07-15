@@ -40,6 +40,14 @@ MulticamOdometer::MulticamOdometer(std::vector<image_geometry::PinholeCameraMode
     extrinsics.push_back(extrinsicData2Transform(param_extrinsicsCam3_));
     extrinsics.push_back(extrinsicData2Transform(param_extrinsicsCam4_));
     extrinsics.push_back(extrinsicData2Transform(param_extrinsicsCam5_));
+
+    Eigen::Matrix4f rotMat;
+    rotMat << 0.0, 1.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0;
+    for(int i=0; i<6; i++)
+    {
+        extrinsics[i] = extrinsics[i] * rotMat;
+        std::cout << "camera " << i << std::endl << extrinsics[i] << std::endl << std::endl;
+    }
     
     // build vector with camera matrices (i.e., intrinsic parameters)
     for(int i=0; i<calibData.size(); i++)
@@ -69,8 +77,7 @@ MulticamOdometer::~MulticamOdometer()
  * @return Eigen::Matrix4f transformation with the relative motion of the multi-camera system */
 Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>> matches)
 {
-    // fundamental matrix, rotation and translation obtained with the correspondences between each combination of cameras
-    std::vector<Eigen::Matrix3f> testFs(3*numCameras_, Eigen::Matrix3f::Zero());
+    // rotation and translation estimates obtained with the correspondences between each combination of cameras
     std::vector<Eigen::Matrix3f> R;
     std::vector<Eigen::Vector3f> t;
 	
@@ -153,21 +160,28 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
         if(i == 0)
         {
             std::vector<Match> inlierMatches;
-            for(int j=0; j<inlierIndices.size(); j++)
+            std::vector<Match> outlierMatches;
+            for(int j=0; j<matches[i].size(); j++)
             {
-                inlierMatches.push_back(matches[i][inlierIndices[j]]);
+                if(elemInVec(inlierIndices, j))
+                {
+                    inlierMatches.push_back(matches[i][j]);
+                }
+                else
+                {
+                    outlierMatches.push_back(matches[i][j]);
+                }
             }
+
+            /*std::cout << "\t#INLIERS: " << inlierIndices.size() << " / " << matches[i].size() << std::endl;
             cv::Mat image(1024, 768, CV_8UC1, cv::Scalar(0));
             FeatureMatcher fm;
-            cv::Mat of = fm.highlightOpticalFlow(image, inlierMatches);
+            cv::Mat of1 = fm.highlightOpticalFlow(image, inlierMatches, cv::Scalar(0, 255, 0));
+            cv::Mat of2 = fm.highlightOpticalFlow(of1, outlierMatches, cv::Scalar(0, 0, 255));
             cv::namedWindow("optical flow", CV_WINDOW_AUTOSIZE);
-            cv::imshow("optical flow", of);
-            cv::waitKey(10);
+            cv::imshow("optical flow", of2);
+            cv::waitKey(10);*/
         }
-
-
-        // store fundamental matrix F
-        testFs[i] = F;
        
 		// denormalize F
         F = NormTCurr.transpose() * F * NormTPrev;
@@ -212,9 +226,7 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
 		// adjust translation scale
         //double scale = getTranslationScale(close3DPoints, median, param_cameraPitch_[i/3], param_cameraHeight_);
         //t[i] = t[i] * scale;
-
     }
-    
 
 	// find out which R,t gets the most inliers from ALL matches
     int maxInliers = 0;
@@ -225,86 +237,75 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
 		// if R,t were successfully obtained...
         if(success[i])
         {
-            std::cout << "K"; std::cout.flush();
-			
+            // get camNoPrev and camNoCurr for that i            
+            int camNoPrev_i, camNoCurr_i;
+            getPrevAndCurrCamIndex(i, camNoPrev_i, camNoCurr_i);  
+            
+            // transform to global (ladybug) coordinates
+            Eigen::Matrix4f T;
+            T << R[i](0, 0), R[i](0, 1), R[i](0, 2), t[i](0), R[i](1, 0), R[i](1, 1), R[i](1, 2), t[i](1), R[i](2, 0), R[i](2, 1), R[i](2, 2), t[i](2), 0.0, 0.0, 0.0, 1.0;
+            Eigen::Matrix4f TGlobal = extrinsics[camNoPrev_i] * T.inverse() * extrinsics[camNoCurr_i].inverse();
+            Eigen::Matrix3f RGlobal;
+            Eigen::Vector3f tGlobal;
+            RGlobal << TGlobal(0, 0), TGlobal(0, 1), TGlobal(0, 2), TGlobal(1, 0), TGlobal(1, 1), TGlobal(1, 2), TGlobal(2, 0), TGlobal(2, 1), TGlobal(2, 2);
+            tGlobal << TGlobal(0, 3), TGlobal(1, 3), TGlobal(2, 3);
+
+            // integrate to absolute pose
+            absolutePoses[i] = absolutePoses[i] * TGlobal;
+
+            // plot inidvidual camera estimates (for debugging)
+            for(int i=0; i<3*numCameras_; i++)
+            {
+                if(firstRow_[i])
+                {
+                    firstRow_[i] = false;
+                }
+                else
+                {
+                    (*files_[i]) << ";" << std::endl;
+                }
+
+                Eigen::Matrix4f p(absolutePoses[i]);
+                
+                (*files_[i]) << "\t" << p(0, 0) << ", " << p(0, 1) << ", " << p(0, 2) << ", " << p(0, 3) << ", "
+                                    << p(1, 0) << ", " << p(1, 1) << ", " << p(1, 2) << ", " << p(1, 3) << ", "
+                                    << p(2, 0) << ", " << p(2, 1) << ", " << p(2, 2) << ", " << p(2, 3) << ", "
+                                    << p(3, 0) << ", " << p(3, 1) << ", " << p(3, 2) << ", " << p(3, 3);
+                (*files_[i]).flush();
+            }
+
             // count number of inliers from all sets of matches (i.e., all intra- and consecutive inter-camera matches)
 			for(int j=0; j<matches.size(); j++)
             {
-                if(success[j])
-                {
-                    std::vector<int> inlIdxs = getInliers(matches[j], testFs[i]);
-                    sumInliers += inlIdxs.size();                
-                    //std::cout << "F(" << i << ") -> inliers in cam. " << j << ": " << inlIdxs.size() << std::endl;
-                }                
+                // get camNoPrev and camNoCurr for that j
+                int camNoPrev_j, camNoCurr_j;
+                getPrevAndCurrCamIndex(j, camNoPrev_j, camNoCurr_j); 
+
+                // transform to camera j coordinates
+                Eigen::Matrix4f TLocalInv = extrinsics[camNoPrev_j].inverse() * TGlobal * extrinsics[camNoCurr_j];
+
+                Eigen::Matrix4f TLocal = TLocalInv.inverse();
+                Eigen::Matrix3f RLocal;
+                Eigen::Vector3f tLocal;
+                RLocal << TLocal(0, 0), TLocal(0, 1), TLocal(0, 2), TLocal(1, 0), TLocal(1, 1), TLocal(1, 2), TLocal(2, 0), TLocal(2, 1), TLocal(2, 2);
+                tLocal << TLocal(0, 3), TLocal(1, 3), TLocal(2, 3);
+
+                // compute F for the camera combination j with the (R,t) obtained with the camera combination i
+                Eigen::Matrix3f Fj = Rt2F(RLocal, tLocal, intrinsics[camNoPrev_j], intrinsics[camNoCurr_j]);
+                
+                // count inliers
+                std::vector<int> inlierIndices = getInliers(matches[j], Fj);
+                sumInliers += inlierIndices.size();                
             }
             if(sumInliers > maxInliers)
             {
                 maxInliers = sumInliers;
                 bestCamera = i;
             }
-        
-            // transform each R,t to global coordinates
-            Eigen::Matrix4f T;
-            T << R[i](0, 0), R[i](0, 1), R[i](0, 2), t[i](0), R[i](1, 0), R[i](1, 1), R[i](1, 2), t[i](1), R[i](2, 0), R[i](2, 1), R[i](2, 2), t[i](2), 0.0, 0.0, 0.0, 1.0;
-            
-            int camPrev, camCurr;
-            camPrev = i/3;
-            if(i%3 == 0)
-            {
-                camCurr = i/3;
-            }
-            else
-            {
-                int camLeft, camRight;
-                getLeftRightCameras(camPrev, camLeft, camRight);
-                if(i%3 == 1)
-                {
-                    camCurr = camRight;
-                }
-                else if(i%3 == 2)
-                {
-                    camCurr = camLeft;
-                }
-            }
-
-            // convert relative pose transform to global (ladybug) coordinates
-            Eigen::Matrix4f TGlobal = extrinsics[camPrev] * T.inverse() * extrinsics[camCurr].inverse();
-
-            // integrate to absolute pose
-            absolutePoses[i] = absolutePoses[i] * TGlobal;
-        }
-        else
-        {
-            std::cout << "."; std::cout.flush();
         }
     }
-    std::cout << std::endl;
-
-    for(int i=0; i<3*numCameras_; i++)
-    {
-        if(firstRow_[i])
-        {
-            firstRow_[i] = false;
-        }
-        else
-        {
-            (*files_[i]) << ";" << std::endl;
-        }
-
-        Eigen::Matrix4f p(absolutePoses[i]);
-        
-        (*files_[i]) << "\t" << p(0, 0) << ", " << p(0, 1) << ", " << p(0, 2) << ", " << p(0, 3) << ", "
-                             << p(1, 0) << ", " << p(1, 1) << ", " << p(1, 2) << ", " << p(1, 3) << ", "
-                             << p(2, 0) << ", " << p(2, 1) << ", " << p(2, 2) << ", " << p(2, 3) << ", "
-                             << p(3, 0) << ", " << p(3, 1) << ", " << p(3, 2) << ", " << p(3, 3);
-        (*files_[i]).flush();
-    }
-
-    // build tranformation matrix with the winner R,t and return
-    Eigen::Matrix4f T;
-    //T << R[bestCamera](0, 0), R[bestCamera](0, 1), R[bestCamera](0, 2), t[bestCamera](0), R[bestCamera](1, 0), R[bestCamera](1, 1), R[bestCamera](1, 2), t[bestCamera](1), R[bestCamera](2, 0), R[bestCamera](2, 1), R[bestCamera](2, 2), t[bestCamera](2), 0.0, 0.0, 0.0, 1.0;
     
-    return T;
+    return absolutePoses[bestCamera];
 }
 
 /** Normalize 2D feature points
@@ -388,15 +389,18 @@ std::vector<Match> MulticamOdometer::normalize2DPoints(std::vector<Match> matche
  * @return std::vector<int> vector with the random integers */
 std::vector<int> MulticamOdometer::getRandomSample(int totalNumber, int sampleSize)
 {
+    
     std::vector<int> randomSample;
     for(int i=0; i<sampleSize; i++)
     {
 		// if the randomly selected number is in the vector, select another one
         int x = rand()%totalNumber;		
+        
         while(elemInVec(randomSample, x))
         {
+            
             x = rand()%totalNumber;
-        }
+        }        
         randomSample.push_back(x);
     }
     return randomSample;
@@ -424,9 +428,13 @@ bool MulticamOdometer::elemInVec(std::vector<int> vec, int x)
  * @return Eigen::Matrix3f fundamental matrix */
 Eigen::Matrix3f MulticamOdometer::getFundamentalMatrix(std::vector<Match> matches, std::vector<int> indices)
 {
+    int N = indices.size();
+
 	// see Trucco & Verri, Introductory Techniques for 3D Computer Vision, chapter 6
-    Eigen::Matrix<float, 8, 9> A;
-    for(int i=0; i<8; i++)
+    Eigen::Matrix<float, Eigen::Dynamic, 9> A;
+    A.resize(N, 9);
+
+    for(int i=0; i<N; i++)
     {
         cv::Point2f pPrev = matches[indices[i]].getFirstFeature().getKeypoint().pt;
         cv::Point2f pCurr = matches[indices[i]].getSecondFeature().getKeypoint().pt;
@@ -441,12 +449,8 @@ Eigen::Matrix3f MulticamOdometer::getFundamentalMatrix(std::vector<Match> matche
         A(i, 7) = pPrev.y;
         A(i, 8) = 1;
     }
-
-    Eigen::Matrix<float, 8, 8> U;
-    Eigen::Matrix<float, 8, 9> W;
-    Eigen::Matrix<float, 9, 9> V;
     
-    Eigen::JacobiSVD<Eigen::Matrix<float, 8, 9>> svdA(A, Eigen::ComputeFullU | Eigen::ComputeFullV);
+    Eigen::JacobiSVD<Eigen::Matrix<float, Eigen::Dynamic, 9>> svdA(A, Eigen::ComputeFullU | Eigen::ComputeFullV);
 
     Eigen::Matrix3f F;
     F << svdA.matrixV()(0, 8), svdA.matrixV()(1, 8), svdA.matrixV()(2, 8), svdA.matrixV()(3, 8), svdA.matrixV()(4, 8), svdA.matrixV()(5, 8), svdA.matrixV()(6, 8), svdA.matrixV()(7, 8), svdA.matrixV()(8, 8);
@@ -493,7 +497,7 @@ std::vector<int> MulticamOdometer::getInliers(std::vector<Match> matches, Eigen:
         if(dSampson < param_odometerInlierThreshold_)
         {
             inlierIndices.push_back(i);
-        }   
+        }
     }
     return inlierIndices;
 }
@@ -786,4 +790,185 @@ Eigen::Matrix4f MulticamOdometer::extrinsicData2Transform(std::vector<double> ex
         return Eigen::Matrix4f::Identity();
     }
     
+}
+
+/** Compute yaw angle using matches of the top camera.
+ * @param std::vector<Match> vector with matches of the top camera
+ * @param double& output yaw angle
+ * @return bool true is success, false otherwise */
+/*bool MulticamOdometer::computeYaw(std::vector<Match> matchesTop, double &angle)
+{
+    if(matchesTop.size() < 2)
+    {
+        return false;
+    }
+
+    // save distances
+    std::vector<float> distances;
+    for(int i=0; i<matchesTop.size(); i++)
+    {
+        distances.push_back(matchesTop[i].getDistance());
+    }
+
+    cv::Point2f pt1Prev, pt2Prev, pt1Curr, pt2Curr;
+
+    int bestIndex = 0;
+    float minDistance = distances[0];
+
+    // get best match
+    for(int i=1; i<distances.size(); i++)
+    {
+        if(distances[i] < minDistance)
+        {
+            minDistance = distances[i];
+            bestIndex = i;
+        }
+    }
+    pt1Prev = matchesTop[bestIndex].getFirstFeature().getKeypoint().pt;
+    pt1Curr = matchesTop[bestIndex].getSecondFeature().getKeypoint().pt;
+
+    // get second best match
+    distances[bestIndex] = 100000.0;
+    bestIndex = 0;
+    minDistance = distances[0];
+    for(int i=1; i<distances.size(); i++)
+    {
+        if(distances[i] < minDistance)
+        {
+            minDistance = distances[i];
+            bestIndex = i;
+        }
+    }
+    pt2Prev = matchesTop[bestIndex].getFirstFeature().getKeypoint().pt;
+    pt2Curr = matchesTop[bestIndex].getSecondFeature().getKeypoint().pt;
+
+    // build lines from matches
+    cv::Point2f linePrev = computeLine(pt1Prev, pt2Prev);
+    cv::Point2f lineCurr = computeLine(pt1Curr, pt2Curr);
+
+    // compute angle between lines
+    angle = computeAngle(linePrev, lineCurr);
+   
+    return true;
+}*/
+
+/** Compute line that joins two points, in homogeneous coordinates.
+ * @param cv::Point2f first point
+ * @param cv::Point2f second point
+ * @return cv::Point2f line */
+cv::Point2f MulticamOdometer::computeLine(cv::Point2f point1, cv::Point2f point2)
+{
+    cv::Point2f line;
+    line.x = point2.x - point1.x;
+    line.y = point2.y - point1.y; 
+    return line;
+}
+
+/** Compute angle between 2 lines.
+ * @param cv::Point2f first line
+ * @param cv::Point2f second line
+ * @return double angle */
+double MulticamOdometer::computeAngle(cv::Point2f line1, cv::Point2f line2)
+{
+    double angle;
+    if(line1.x == 0 && line2.x != 0) 
+    {
+        angle = PI/2 - atan(line2.y/line2.x);
+    }
+    else if(line2.x == 0 && line1.x != 0) 
+    {
+        angle = PI/2 - atan(line1.y/line1.x);
+    }
+    else
+    {
+        angle = fabs(atan(line1.y/line1.x) - atan(line2.y/line2.x));
+    }
+    
+    if(angle > PI/2)
+    {
+        angle = PI - angle;
+    }
+    return (angle * 180 / PI);
+}
+
+/** Search most frequent element in a vector.
+ * @param std::vector<int> vector
+ * @return int most frequent element */
+int MulticamOdometer::mostFrequentElem(std::vector<int> vec)
+{
+    int minElem = minElement(vec);
+    int maxElem = maxElement(vec);
+
+    int maxN = 0;
+    int mostFrequent = vec[0]; 
+    for(int i=minElem; i<=maxElem; i++)
+    {
+        int n = std::count(vec.begin(), vec.begin()+vec.size(), i);
+        if(n > maxN)
+        {
+            maxN = n;
+            mostFrequent = i;
+        }
+    }
+    return mostFrequent;
+}
+
+/** Search maximum integer in a vector.
+ * @param std::vector<int> vector
+ * @return int maximum integer */
+int MulticamOdometer::maxElement(std::vector<int> vec)
+{
+    int max = vec[0];
+    for(int i=1; i<vec.size(); i++)
+    {
+        if(vec[i] > max);
+        {
+            max = vec[i];
+        }
+    }
+    return max;
+}
+
+/** Search minimum integer in a vector.
+ * @param std::vector<int> vector
+ * @return int minimum integer */
+int MulticamOdometer::minElement(std::vector<int> vec)
+{
+    int min = vec[0];
+    for(int i=1; i<vec.size(); i++)
+    {
+        if(vec[i] < min);
+        {
+            min = vec[i];
+        }
+    }
+    return min;
+}
+
+/** Compute fundamental martix out of rotation and translation.
+ * @param Eigen::Matrix3f rotation matrix
+ * @param Eigen::Vector3f translation vector
+ * @param Eigen::Matrix3f intrinsics matrix of the previous camera
+ * @param Eigen::Matrix3f intrinsics matrix of the current camera
+ * @return Eigen::Matrix3f fundamental matrix */
+Eigen::Matrix3f MulticamOdometer::Rt2F(Eigen::Matrix3f R, Eigen::Vector3f t, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr)
+{
+    // get skew symmetric matrix of translation vector
+    Eigen::Matrix3f S;
+    S << 0.0, -t(2), t(1), t(2), 0.0, -t(0), -t(1), t(0), 0.0;
+
+    // testar R*S
+    Eigen::Matrix3f E = S * R;
+
+    Eigen::Matrix3f F = (KCurr.transpose()).inverse() * E * KPrev.inverse();
+
+    // re-enforce rank 2 constraint on fundamental matrix
+    Eigen::JacobiSVD<Eigen::Matrix3f> svdF(F, Eigen::ComputeFullU | Eigen::ComputeFullV);
+    Eigen::Matrix3f D(Eigen::Matrix3f::Zero());
+    D(0, 0) = svdF.singularValues()(0);
+    D(1, 1) = svdF.singularValues()(1);
+    
+    F = (svdF.matrixU()) * D * (svdF.matrixV()).transpose();
+    
+    return F;
 }

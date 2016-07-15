@@ -45,10 +45,11 @@ class FeatureMatcher
         std::vector<std::vector<Match>> findOmniMatches(std::vector<cv::Mat> imagesPrev, std::vector<cv::Mat> imagesCurr, std::vector<std::vector<Feature>> featuresPrev, std::vector<std::vector<Feature>> featuresCurr, int numCameras);
     
         /** Highlight optical flow in an image.
-         * @param cv::Mat original image
-		 * @param std::vector<Match> intra-camera matches
-         * @return cv::Mat image with highlighted optical flow */
-        cv::Mat highlightOpticalFlow(cv::Mat image, std::vector<Match> matches);
+        * @param cv::Mat original image
+        * @param std::vector<Match> intra-camera matches
+        * @param cv::Scalar BGR color
+        * @return cv::Mat image with highlighted optical flow */
+        cv::Mat highlightOpticalFlow(cv::Mat image, std::vector<Match> matches, cv::Scalar color);
     
     private:
 
@@ -57,10 +58,10 @@ class FeatureMatcher
 		 * @param cv::Mat image in the current frame
 		 * @param <std::vector<Feature> vector of features found in the previous frame
 		 * @param <std::vector<Feature> vector of features found in the current frame
-		 * @param std::vector<Feature> output vector of features in the left camera
-		 * @param std::vector<Feature> output vector of features in the right camera
+		 * @param std::vector<Feature>& modifiable vector of features in the left camera
+		 * @param std::vector<Feature>& modifiable vector of features in the right camera
          * @return void */
-        void trackIntraCamera(cv::Mat imagePrev, cv::Mat imageCurr, std::vector<Feature> featuresPrev, std::vector<Feature> &featuresCurr, std::vector<Feature> &featuresLeft, std::vector<Feature> &featuresRight);
+        void trackIntraCamera(cv::Mat imagePrev, cv::Mat imageCurr, std::vector<Feature> featuresPrev, std::vector<Feature> featuresCurr, std::vector<Feature> &featuresLeft, std::vector<Feature> &featuresRight);
         
         /** Convert a set of features to a cv::Mat of descriptors.
          * @param std::vector<Feature> vector of features
@@ -81,6 +82,7 @@ class FeatureMatcher
     
         ros::NodeHandle node_;                  /*!< ROS node for retrieving matching parameters */ 
         int param_matchingDescriptorDistance_;  /*!< Matching parameter: maximum descriptor distance */ 
+        double param_matchingFeatureDistance_;  /*!< Matching parameter: maximum feature distance */
         int param_trackingWindowSize_;          /*!< Tracking parameter: tracking window size */
         int param_trackingMaxLevel_;            /*!< Tracking parameter: maximum level */
         double param_trackingMinEigThreshold_;  /*!< Tracking parameter: smallest eigenvalue threshold */

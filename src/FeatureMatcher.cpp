@@ -9,6 +9,7 @@ FeatureMatcher::FeatureMatcher(): node_("~")
     
     // read parameters
     node_.param<int>("param_matchingDescriptorDistance", param_matchingDescriptorDistance_, 50);
+    node_.param<double>("param_matchingFeatureDistance", param_matchingFeatureDistance_, 100.0);
     node_.param<int>("param_trackingWindowSize", param_trackingWindowSize_, 21);
     node_.param<int>("param_trackingMaxLevel", param_trackingMaxLevel_, 0);
     node_.param<double>("param_trackingMinEigThreshold", param_trackingMinEigThreshold_, 0.001);
@@ -84,7 +85,13 @@ std::vector<std::vector<Match>> FeatureMatcher::findOmniMatches(std::vector<cv::
             
             if(camFirst == camSecond)
             {
-                matches[3*camFirst].push_back(ms[j]);
+                cv::Point2f ptPrev = ms[j].getFirstFeature().getKeypoint().pt;
+                cv::Point2f ptCurr = ms[j].getSecondFeature().getKeypoint().pt;
+                double d = sqrt((ptPrev.x - ptCurr.x) * (ptPrev.x - ptCurr.x) + (ptPrev.y - ptCurr.y) * (ptPrev.y - ptCurr.y));
+                if(d < param_matchingFeatureDistance_)
+                {
+                    matches[3*camFirst].push_back(ms[j]);
+                }
             }
             else
             {
@@ -102,6 +109,12 @@ std::vector<std::vector<Match>> FeatureMatcher::findOmniMatches(std::vector<cv::
             }
         }
     }
+
+    /*std::cout << "#INTRA: " << matches[0].size() << std::endl;
+    cv::Mat imof = highlightOpticalFlow(imagesCurr[0], matches[0]);
+    cv::namedWindow("optical flow before", CV_WINDOW_AUTOSIZE);
+    cv::imshow("optical flow before", imof);
+    cv::waitKey(10);*/
     
     // check for inter-camera matches (for debugging)
     /*for(int i=0; i<matches.size(); i++)
@@ -145,19 +158,28 @@ std::vector<std::vector<Match>> FeatureMatcher::findOmniMatches(std::vector<cv::
 /** Highlight optical flow in an image.
  * @param cv::Mat original image
  * @param std::vector<Match> intra-camera matches
+ * @param cv::Scalar BGR color
  * @return cv::Mat image with highlighted optical flow */
-cv::Mat FeatureMatcher::highlightOpticalFlow(cv::Mat image, std::vector<Match> matches)
+cv::Mat FeatureMatcher::highlightOpticalFlow(cv::Mat image, std::vector<Match> matches, cv::Scalar color)
 {
     cv::Mat imageOptFlow;
-    cv::cvtColor(image, imageOptFlow, CV_GRAY2BGR);
-    
+
+    if(image.channels() == 1)
+    {
+        cv::cvtColor(image, imageOptFlow, CV_GRAY2BGR);
+    }
+    else
+    {
+        imageOptFlow = image;
+    }
+
     // for each intra-camera match draw a line between previous and current feature
     for(int i=0; i<matches.size(); i++)
     {
         cv::Point2f pt_1 = matches[i].getFirstFeature().getKeypoint().pt;
         cv::Point2f pt_2 = matches[i].getSecondFeature().getKeypoint().pt;
         
-        cv::line(imageOptFlow, pt_1, pt_2, cv::Scalar(0, 255, 0));
+        cv::line(imageOptFlow, pt_1, pt_2, color);
     }
     
     return imageOptFlow;
@@ -168,10 +190,10 @@ cv::Mat FeatureMatcher::highlightOpticalFlow(cv::Mat image, std::vector<Match> m
  * @param cv::Mat image in the current frame
  * @param <std::vector<Feature> vector of features found in the previous frame
  * @param <std::vector<Feature> vector of features found in the current frame
- * @param std::vector<Feature> output vector of features in the left camera
- * @param std::vector<Feature> output vector of features in the right camera
+ * @param std::vector<Feature>& modifiable vector of features in the left camera
+ * @param std::vector<Feature>& modifiable vector of features in the right camera
  * @return void */
-void FeatureMatcher::trackIntraCamera(cv::Mat imagePrev, cv::Mat imageCurr, std::vector<Feature> featuresPrev, std::vector<Feature> &featuresCurr, std::vector<Feature> &featuresLeft, std::vector<Feature> &featuresRight)
+void FeatureMatcher::trackIntraCamera(cv::Mat imagePrev, cv::Mat imageCurr, std::vector<Feature> featuresPrev, std::vector<Feature> featuresCurr, std::vector<Feature> &featuresLeft, std::vector<Feature> &featuresRight)
 {
     std::vector<cv::Point2f> pointsPrev = features2Points(featuresPrev);
     std::vector<cv::Point2f> pointsCurr = features2Points(featuresCurr);
@@ -200,11 +222,6 @@ void FeatureMatcher::trackIntraCamera(cv::Mat imagePrev, cv::Mat imageCurr, std:
             {
                 featuresRight.push_back(featuresPrev[i]);
             } 
-            // is near no border -> do nothing
-            else
-            {
-                
-            }
         }
     }
 }
@@ -258,4 +275,3 @@ std::vector<cv::Point2f> FeatureMatcher::features2Points(std::vector<Feature> fe
     }
     return points;
 }
-

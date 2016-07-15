@@ -22,6 +22,8 @@
 #include <multicam_vo/Match.h>
 #include <multicam_vo/FeatureMatcher.h>
 
+#define PI (3.141592653589793)
+
 //! Class responsible for computing the multi-camera system's motion given a set of feature matches 
 class MulticamOdometer
 {
@@ -131,7 +133,48 @@ class MulticamOdometer
 		 * @param std::vector<double> vector with extrinsic parameters
 		 * @return Eigen::Matrix4f transform */
         Eigen::Matrix4f extrinsicData2Transform(std::vector<double> extrinsicData);
+
+		/** Compute yaw angle using matches of the top camera.
+		* @param std::vector<Match> vector with matches of the top camera
+		* @param double& output yaw angle
+		* @return bool true is success, false otherwise */
+		//bool computeYaw(std::vector<Match> matchesTop, double &angle);
+
+		/** Compute line that joins two points, in homogeneous coordinates.
+		* @param cv::Point2f first point
+		* @param cv::Point2f second point
+		* @return cv::Point2f line */
+		cv::Point2f computeLine(cv::Point2f point1, cv::Point2f point2);
+
+		/** Compute angle between 2 lines.
+		* @param cv::Point2f first line
+		* @param cv::Point2f second line
+		* @return double angle */
+		double computeAngle(cv::Point2f line1, cv::Point2f line2);
 		
+		/** Search most frequent element in a vector.
+		* @param std::vector<int> vector
+		* @return int most frequent element */
+		int mostFrequentElem(std::vector<int> vec);
+
+		/** Search maximum integer in a vector.
+		* @param std::vector<int> vector
+		* @return int maximum integer */
+		int maxElement(std::vector<int> vec);
+
+		/** Search minimum integer in a vector.
+		* @param std::vector<int> vector
+		* @return int minimum integer */
+		int minElement(std::vector<int> vec);
+
+		/** Compute fundamental martix out of rotation and translation.
+		* @param Eigen::Matrix3f rotation matrix
+		* @param Eigen::Vector3f translation vector
+		* @param Eigen::Matrix3f intrinsics matrix of the previous camera
+		* @param Eigen::Matrix3f intrinsics matrix of the current camera
+		* @return Eigen::Matrix3f fundamental matrix */
+		Eigen::Matrix3f Rt2F(Eigen::Matrix3f R, Eigen::Vector3f t, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr);
+
 		ros::NodeHandle node_; 						/*!< ROS node for reading odometer parameters */
         
 		int param_odometerMinNumberMatches_;		/*!< Odometer parameter: minimum number of points required */

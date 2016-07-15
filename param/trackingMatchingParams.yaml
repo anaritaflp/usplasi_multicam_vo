@@ -1,6 +1,6 @@
 
-param_matchingDescriptorDistance: 50
-param_matchingFeatureDistance: 30.0
+param_matchingDescriptorDistance: 100
+param_matchingFeatureDistance: 100.0
 param_trackingWindowSize: 21
 param_trackingMaxLevel: 0
 param_trackingMinEigThreshold: 0.001

@@ -13,6 +13,7 @@
 #include <image_geometry/pinhole_camera_model.h>
 #include <sensor_msgs/CameraInfo.h>
 #include <camera_calibration_parsers/parse_yml.h>
+#include <tf/tf.h>
 
 // Ladybug2 includes
 #include <ladybug2/ladybugUtilities.h>
@@ -59,7 +60,26 @@ namespace odom
 			 * @param void
 			 * @return void */
             void getCalibration();
+
+            bool computeYaw(cv::Mat imTopPrev, cv::Mat imTopCurr, std::vector<Match> matchesTop, double &angle);
         
+            /** Compute line that joins two points, in homogeneous coordinates.
+            * @param cv::Point2f first point
+            * @param cv::Point2f second point
+            * @return cv::Point2f line */
+            cv::Point2f computeLine(cv::Point2f point1, cv::Point2f point2);
+
+            /** Compute angle between 2 lines.
+            * @param cv::Point2f first line
+            * @param cv::Point2f second line
+            * @return double angle */
+            double computeAngle(cv::Point2f line1, cv::Point2f line2);
+
+            /** Convert transform to odometry message.
+            * @param Eigen::Matrix4f transform
+            * @return nav_msgs::Odometry odometry message */
+            nav_msgs::Odometry transform2OdometryMsg(Eigen::Matrix4f transform);
+
             ros::NodeHandle node_;										/*!< ROS node for reading parameters */
             image_transport::Subscriber subImage_;						/*!< ROS subscriber to image messages */
             ros::Publisher pubOdom_;									/*!< ROS odometry publisher */ 
@@ -68,15 +88,15 @@ namespace odom
 			std::vector<image_geometry::PinholeCameraModel> calib;		/*!< Vector with calibration data of each camera */
             
 			bool first_;												/*!< Flag for indicating the first frame */
-            int lostFrameCounter;										/*!< Lost frame counter */
+            int lostFrameCounter_;										/*!< Lost frame counter */
+			
+            int seqNumberPrev_;											/*!< Number of the previously processed frame */
+			std::vector<cv::Mat> imagesRectPrev_;						/*!< Vector with previous rectified images */
+            std::vector<std::vector<Feature>> featuresAllCamerasPrev_;	/*!< Vector with each cameras' features in previous frame */
             
-			int seqNumberPrev;											/*!< Number of the previously processed frame */
-			std::vector<cv::Mat> imagesRectPrev;						/*!< Vector with previous rectified images */
-            std::vector<std::vector<Feature>> featuresAllCamerasPrev;	/*!< Vector with each cameras' features in previous frame */
-            
-			FeatureDetector featureDetector;							/*!< Feature detector */
-            FeatureMatcher featureMatcher;							    /*!< Feature matcher */	
-            MulticamOdometer odometer;						            /*!< Multi-camera odometer */
+			FeatureDetector featureDetector_;							/*!< Feature detector */
+            FeatureMatcher featureMatcher_;							    /*!< Feature matcher */	
+            MulticamOdometer odometer_;						            /*!< Multi-camera odometer */
     };    
     
     
