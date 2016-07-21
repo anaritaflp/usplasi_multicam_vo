@@ -59,10 +59,10 @@ MulticamOdometer::MulticamOdometer(std::vector<image_geometry::PinholeCameraMode
     // initialize vector of absolute poses with identities
     for(int i=0; i<3*numCameras_; i++)
     {
-        absolutePoses.push_back(Eigen::Matrix4f::Identity());
+        absolutePosesLocal.push_back(Eigen::Matrix4f::Identity());
         firstRow_.push_back(true);
     }
-    lastAbsolutePose = Eigen::Matrix4f::Identity();
+    absolutePoseGlobal = Eigen::Matrix4f::Identity();
 }
 
 /** MulticamOdometer destructor. */
@@ -252,7 +252,7 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
             tGlobal << TGlobal(0, 3), TGlobal(1, 3), TGlobal(2, 3);
 
             // integrate to absolute pose
-            absolutePoses[i] = absolutePoses[i] * TGlobal;
+            absolutePosesLocal[i] = absolutePosesLocal[i] * TGlobal;
 
             // plot inidvidual camera estimates (for debugging)
             if(firstRow_[i])
@@ -264,7 +264,7 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
                 (*files_[i]) << ";" << std::endl;
             }
 
-            Eigen::Matrix4f p(absolutePoses[i]);
+            Eigen::Matrix4f p(absolutePosesLocal[i]);
                 
             (*files_[i]) << "\t" << p(0, 0) << ",\t" << p(0, 1) << ",\t" << p(0, 2) << ",\t" << p(0, 3) << ",\t"
                                  << p(1, 0) << ",\t" << p(1, 1) << ",\t" << p(1, 2) << ",\t" << p(1, 3) << ",\t"
@@ -304,9 +304,9 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
             }
         }
     }
-    lastAbsolutePose = lastAbsolutePose * bestPose;
+    absolutePoseGlobal = absolutePoseGlobal * bestPose;
     std::cout << "best camera: " << bestCamera << std::endl;
-    return absolutePoses[bestCamera];
+    return absolutePoseGlobal;
 }
 
 /** Normalize 2D feature points

@@ -177,34 +177,34 @@ class MulticamOdometer
 		* @return Eigen::Matrix3f fundamental matrix */
 		Eigen::Matrix3f Rt2F(Eigen::Matrix3f R, Eigen::Vector3f t, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr);
 
-		ros::NodeHandle node_; 						/*!< ROS node for reading odometer parameters */
+		ros::NodeHandle node_; 								/*!< ROS node for reading odometer parameters */
         
-		int param_odometerMinNumberMatches_;		/*!< Odometer parameter: minimum number of points required */
-        int param_odometerRansacIters_;				/*!< Odometer parameter: number of RANSAC iterations */
-        double param_odometerInlierThreshold_;		/*!< Odometer parameter: inlier threshold */
-        double param_odometerMotionThreshold_;		/*!< Odometer parameter: motion threshold */
+		int param_odometerMinNumberMatches_;				/*!< Odometer parameter: minimum number of points required */
+        int param_odometerRansacIters_;						/*!< Odometer parameter: number of RANSAC iterations */
+        double param_odometerInlierThreshold_;				/*!< Odometer parameter: inlier threshold */
+        double param_odometerMotionThreshold_;				/*!< Odometer parameter: motion threshold */
         
-		std::vector<double> param_cameraPitches_;	/*!< Camera parameter: each camera's pitch */
-        std::vector<double> param_cameraHeights_;	/*!< Camera parameter: each camera's height */
+		std::vector<double> param_cameraPitches_;			/*!< Camera parameter: each camera's pitch */
+        std::vector<double> param_cameraHeights_;			/*!< Camera parameter: each camera's height */
 
-		std::vector<double> param_extrinsicsCam0_;	/*!< Camera parameter: Camera 0's extrinsic parameters */
-		std::vector<double> param_extrinsicsCam1_;	/*!< Camera parameter: Camera 1's extrinsic parameters */
-		std::vector<double> param_extrinsicsCam2_;	/*!< Camera parameter: Camera 2's extrinsic parameters */
-		std::vector<double> param_extrinsicsCam3_;	/*!< Camera parameter: Camera 3's extrinsic parameters */
-		std::vector<double> param_extrinsicsCam4_;	/*!< Camera parameter: Camera 4's extrinsic parameters */
-		std::vector<double> param_extrinsicsCam5_;	/*!< Camera parameter: Camera 5's extrinsic parameters */
+		std::vector<double> param_extrinsicsCam0_;			/*!< Camera parameter: Camera 0's extrinsic parameters */
+		std::vector<double> param_extrinsicsCam1_;			/*!< Camera parameter: Camera 1's extrinsic parameters */
+		std::vector<double> param_extrinsicsCam2_;			/*!< Camera parameter: Camera 2's extrinsic parameters */
+		std::vector<double> param_extrinsicsCam3_;			/*!< Camera parameter: Camera 3's extrinsic parameters */
+		std::vector<double> param_extrinsicsCam4_;			/*!< Camera parameter: Camera 4's extrinsic parameters */
+		std::vector<double> param_extrinsicsCam5_;			/*!< Camera parameter: Camera 5's extrinsic parameters */
 
-		std::vector<Eigen::Matrix3f> intrinsics;	/*!< Vector with camera matrices (i.e., matrix with intrinsic parameters) */
-		std::vector<Eigen::Matrix4f> extrinsics;	/*!< Vector with transformations of camera i described in global coordinates */
+		std::vector<Eigen::Matrix3f> intrinsics;			/*!< Vector with camera matrices (i.e., matrix with intrinsic parameters) */
+		std::vector<Eigen::Matrix4f> extrinsics;			/*!< Vector with transformations of camera i described in global coordinates */
 
-		std::vector<Eigen::Matrix4f> absolutePoses;	/*!< Vector of absolute poses estimated by intra- and consecutive inter-camera matches */
+		std::vector<Eigen::Matrix4f> absolutePosesLocal;	/*!< Vector of absolute poses estimated by intra- and consecutive inter-camera matches */
 
-		int numCameras_;							/*!< Number of cameras that form the omnidirectional system (excluding the camera looking upwards) */
+		int numCameras_;									/*!< Number of cameras that form the omnidirectional system (excluding the camera looking upwards) */
 
-		std::vector<std::ofstream*> files_;			/*!< For debugging: for writing estimated poses in matlab files */
-		std::vector<bool> firstRow_;				/*!< For debugging: auxiliary flag for writing MatLab files */
+		std::vector<std::ofstream*> files_;					/*!< For debugging: for writing estimated poses in matlab files */
+		std::vector<bool> firstRow_;						/*!< For debugging: auxiliary flag for writing MatLab files */
 
-		Eigen::Matrix4f lastAbsolutePose;			/*!< Absolute pose estimated in the previous frame */
+		Eigen::Matrix4f absolutePoseGlobal;					/*!< Absolute pose estimated in the previous frame */
 };
 
 #endif
