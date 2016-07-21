@@ -25,6 +25,14 @@
     <!-- ############################################################################### -->
     <!-- ###### Bagfile -->
     
-    <node pkg="rosbag" type="play" name="bag" args="-r 0.05 $(find ladybug2)/bagfiles/test.bag" />
+    <node pkg="rosbag" type="play" name="bag" args="-r 0.05 $(find ladybug2)/bagfiles/motions.bag" />
+
+
+    <!-- ############################################################################### -->
+    <!-- ###### Plot VO -->
+
+    <node pkg="evaluate_vo" type="get_vo_node" name="get_vo" args="$(find multicam_vo)/matlab/vo_opt.m vo_opt odometry" output="screen">
+        <remap from="get_data/visual_odometry" to="/vo/multicam_vo/odometry" />
+    </node>
 
 </launch>

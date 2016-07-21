@@ -43,9 +43,11 @@ class MulticamOdometer
         ~MulticamOdometer();
     
         /** Estimate the motion of the multi-camera system.
-         * @param std::vector<std::vector<Match>> a vector with each camera's matches
-         * @return Eigen::Matrix4f transformation with the relative motion of the multi-camera system */
-        Eigen::Matrix4f estimateMotion(std::vector<std::vector<Match>> matches);
+		* @param std::vector<std::vector<Match>> a vector with each camera's matches
+		* @param vector of output matlab files to be filled with the estimated poses
+		* @param int& output index of the camera with the most successful motion estimation
+		* @return Eigen::Matrix4f transformation with the relative motion of the multi-camera system */
+		Eigen::Matrix4f estimateMotion(std::vector<std::vector<Match>> matches, int &bestCamera);
     
     private:
 
@@ -201,6 +203,8 @@ class MulticamOdometer
 
 		std::vector<std::ofstream*> files_;			/*!< For debugging: for writing estimated poses in matlab files */
 		std::vector<bool> firstRow_;				/*!< For debugging: auxiliary flag for writing MatLab files */
+
+		Eigen::Matrix4f lastAbsolutePose;			/*!< Absolute pose estimated in the previous frame */
 };
 
 #endif

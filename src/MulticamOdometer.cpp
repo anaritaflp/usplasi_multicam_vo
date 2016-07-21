@@ -46,7 +46,6 @@ MulticamOdometer::MulticamOdometer(std::vector<image_geometry::PinholeCameraMode
     for(int i=0; i<6; i++)
     {
         extrinsics[i] = extrinsics[i] * rotMat;
-        std::cout << "camera " << i << std::endl << extrinsics[i] << std::endl << std::endl;
     }
     
     // build vector with camera matrices (i.e., intrinsic parameters)
@@ -57,12 +56,13 @@ MulticamOdometer::MulticamOdometer(std::vector<image_geometry::PinholeCameraMode
         intrinsics.push_back(K);
     }
 
-    // initialize vector of absolute poses with identities]
+    // initialize vector of absolute poses with identities
     for(int i=0; i<3*numCameras_; i++)
     {
         absolutePoses.push_back(Eigen::Matrix4f::Identity());
         firstRow_.push_back(true);
     }
+    lastAbsolutePose = Eigen::Matrix4f::Identity();
 }
 
 /** MulticamOdometer destructor. */
@@ -74,8 +74,9 @@ MulticamOdometer::~MulticamOdometer()
 /** Estimate the motion of the multi-camera system.
  * @param std::vector<std::vector<Match>> a vector with each camera's matches
  * @param vector of output matlab files to be filled with the estimated poses
+ * @param int& output index of the camera with the most successful motion estimation
  * @return Eigen::Matrix4f transformation with the relative motion of the multi-camera system */
-Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>> matches)
+Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>> matches, int &bestCamera)
 {
     // rotation and translation estimates obtained with the correspondences between each combination of cameras
     std::vector<Eigen::Matrix3f> R;
@@ -224,16 +225,16 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
         success[i] = true;
         
 		// adjust translation scale
-        //double scale = getTranslationScale(close3DPoints, median, param_cameraPitch_[i/3], param_cameraHeight_);
+        //double scale = getTranslationScale(close3DPoints, median, 0.0, 1.65);
         //t[i] = t[i] * scale;
     }
 
 	// find out which R,t gets the most inliers from ALL matches
     int maxInliers = 0;
-    int bestCamera = 0;
+    bestCamera = 0;
+    Eigen::Matrix4f bestPose = Eigen::Matrix4f::Identity();
     for(int i=0; i<matches.size(); i++)
     {
-        int sumInliers = 0;
 		// if R,t were successfully obtained...
         if(success[i])
         {
@@ -254,27 +255,25 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
             absolutePoses[i] = absolutePoses[i] * TGlobal;
 
             // plot inidvidual camera estimates (for debugging)
-            for(int i=0; i<3*numCameras_; i++)
+            if(firstRow_[i])
             {
-                if(firstRow_[i])
-                {
-                    firstRow_[i] = false;
-                }
-                else
-                {
-                    (*files_[i]) << ";" << std::endl;
-                }
-
-                Eigen::Matrix4f p(absolutePoses[i]);
-                
-                (*files_[i]) << "\t" << p(0, 0) << ", " << p(0, 1) << ", " << p(0, 2) << ", " << p(0, 3) << ", "
-                                    << p(1, 0) << ", " << p(1, 1) << ", " << p(1, 2) << ", " << p(1, 3) << ", "
-                                    << p(2, 0) << ", " << p(2, 1) << ", " << p(2, 2) << ", " << p(2, 3) << ", "
-                                    << p(3, 0) << ", " << p(3, 1) << ", " << p(3, 2) << ", " << p(3, 3);
-                (*files_[i]).flush();
+                firstRow_[i] = false;
+            }
+            else
+            {
+                (*files_[i]) << ";" << std::endl;
             }
 
+            Eigen::Matrix4f p(absolutePoses[i]);
+                
+            (*files_[i]) << "\t" << p(0, 0) << ",\t" << p(0, 1) << ",\t" << p(0, 2) << ",\t" << p(0, 3) << ",\t"
+                                 << p(1, 0) << ",\t" << p(1, 1) << ",\t" << p(1, 2) << ",\t" << p(1, 3) << ",\t"
+                                 << p(2, 0) << ",\t" << p(2, 1) << ",\t" << p(2, 2) << ",\t" << p(2, 3) << ",\t"
+                                 << p(3, 0) << ",\t" << p(3, 1) << ",\t" << p(3, 2) << ",\t" << p(3, 3);
+            (*files_[i]).flush();
+
             // count number of inliers from all sets of matches (i.e., all intra- and consecutive inter-camera matches)
+            int sumInliers = 0;
 			for(int j=0; j<matches.size(); j++)
             {
                 // get camNoPrev and camNoCurr for that j
@@ -292,19 +291,21 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
 
                 // compute F for the camera combination j with the (R,t) obtained with the camera combination i
                 Eigen::Matrix3f Fj = Rt2F(RLocal, tLocal, intrinsics[camNoPrev_j], intrinsics[camNoCurr_j]);
-                
+
                 // count inliers
                 std::vector<int> inlierIndices = getInliers(matches[j], Fj);
-                sumInliers += inlierIndices.size();                
+                sumInliers += inlierIndices.size();  
             }
             if(sumInliers > maxInliers)
             {
                 maxInliers = sumInliers;
                 bestCamera = i;
+                bestPose = TGlobal;
             }
         }
     }
-    
+    lastAbsolutePose = lastAbsolutePose * bestPose;
+    std::cout << "best camera: " << bestCamera << std::endl;
     return absolutePoses[bestCamera];
 }
 
@@ -515,8 +516,8 @@ Eigen::Matrix3f MulticamOdometer::F2E(Eigen::Matrix3f F, Eigen::Matrix3f KPrev, 
 	// re-enforce rank 2 constraint on essential matrix
     Eigen::JacobiSVD<Eigen::Matrix3f> svdE(E, Eigen::ComputeFullU | Eigen::ComputeFullV);
     Eigen::Matrix3f D(Eigen::Matrix3f::Zero());
-    D(0, 0) = svdE.singularValues()(0);
-    D(1, 1) = svdE.singularValues()(1);
+    D(0, 0) = 1.0;
+    D(1, 1) = 1.0;
     
     E = (svdE.matrixU()) * D * (svdE.matrixV()).transpose();
     return E;
@@ -541,14 +542,14 @@ void MulticamOdometer::EtoRt(Eigen::Matrix3f E, Eigen::Matrix3f KPrev, Eigen::Ma
     Eigen::JacobiSVD<Eigen::Matrix3f> svdE(E, Eigen::ComputeFullU | Eigen::ComputeFullV);
     
 	// get skew symmetric matrix of translation vector
-    Eigen::Matrix3f t_X = svdE.matrixU() * Z * (svdE.matrixU()).transpose();
+    Eigen::Matrix3f S = svdE.matrixU() * Z * (svdE.matrixU()).transpose();
 	
 	// get possible rotation matrices
     Eigen::Matrix3f Ra = svdE.matrixU() * W * (svdE.matrixV()).transpose();
     Eigen::Matrix3f Rb = svdE.matrixU() * W.transpose() * (svdE.matrixV()).transpose();
 
 	// get translation vetor from skew symmetric matrix
-    t << t_X(2, 1), t_X(0, 2), t_X(1, 0);
+    t << S(2, 1), S(0, 2), S(1, 0);
     
 	// correct signal of both rotation matrices
     if(Ra.determinant() < 0)

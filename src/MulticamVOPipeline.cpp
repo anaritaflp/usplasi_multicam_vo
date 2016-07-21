@@ -54,14 +54,12 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
     // convert msg to cv::Mat and split
     cv::Mat_<uint8_t> fullImage = cv::Mat_<uint8_t>(NUM_CAMERAS*IMAGE_WIDTH, IMAGE_HEIGHT, const_cast<uint8_t*>(&msg->data[0]), msg->step);
     std::vector<cv::Mat> splitImages = splitLadybug(fullImage, MONO);
-        
-    int seqNumber = msg->header.seq;
-    std::cout << "FRAME " << seqNumber << std::endl;
 
     // rectify images
     std::vector<cv::Mat> imagesRect = MulticamVOPipeline::rectify(splitImages);
 
     // detect features in the current frame
+    int seqNumber = msg->header.seq;
     std::vector<std::vector<Feature>> featuresAllCameras;
     for(int i=0; i<NUM_CAMERAS; i++)
     {   
@@ -84,16 +82,20 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
         std::vector<std::vector<Match>> matches = featureMatcher_.findOmniMatches(imagesRectPrev_, imagesRect, featuresAllCamerasPrev_, featuresAllCameras, NUM_CAMERAS-1);
        
         // estimate motion    
-        Eigen::Matrix4f T = odometer_.estimateMotion(matches);
-            
+        int bestCamera;
+        Eigen::Matrix4f T = odometer_.estimateMotion(matches, bestCamera);
+
         // publish odometry
-        nav_msgs::Odometry msgOdom = transform2OdometryMsg(T);
+        nav_msgs::Odometry msgOdom = transform2OdometryMsg(T, bestCamera);
+        msgOdom.header.stamp = msg->header.stamp;
         pubOdom_.publish(msgOdom);
     }
     else
     {
+        seqNumberOffset_ = seqNumber;
         // publish identity on first frame
-        nav_msgs::Odometry msgOdom = transform2OdometryMsg(Eigen::Matrix4f::Identity());
+        nav_msgs::Odometry msgOdom = transform2OdometryMsg(Eigen::Matrix4f::Identity(), -1);
+        msgOdom.header.stamp = msg->header.stamp;
         first_ = false;
     }
         
@@ -102,6 +104,8 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
     featuresAllCamerasPrev_ = featuresAllCameras;
 
     seqNumberPrev_ = seqNumber;
+
+    std::cout << "PROCESSED FRAME " << (seqNumber - seqNumberOffset_ + 1) << std::endl;
 }    
     
 /** Rectify individual images.
@@ -291,8 +295,9 @@ double MulticamVOPipeline::computeAngle(cv::Point2f line1, cv::Point2f line2)
 
 /** Convert transform to odometry message.
  * @param Eigen::Matrix4f transform
+ * @param int camera index with the most successful motion estimation
  * @return nav_msgs::Odometry odometry message */
-nav_msgs::Odometry MulticamVOPipeline::transform2OdometryMsg(Eigen::Matrix4f T)
+nav_msgs::Odometry MulticamVOPipeline::transform2OdometryMsg(Eigen::Matrix4f T, int bestCamera)
 {
     nav_msgs::Odometry msg;
 
@@ -309,6 +314,17 @@ nav_msgs::Odometry MulticamVOPipeline::transform2OdometryMsg(Eigen::Matrix4f T)
     q.setRPY(roll, pitch, yaw);
 
     quaternionTFToMsg(q, msg.pose.pose.orientation);
+
+    char childFrameId[25];
+    if(bestCamera != -1)
+    {
+        sprintf(childFrameId, "ladybug_cam_%02d", bestCamera);
+    }
+    else
+    {
+        sprintf(childFrameId, "none");
+    }    
+    msg.child_frame_id = std::string(childFrameId);
 
     return msg;
 }
