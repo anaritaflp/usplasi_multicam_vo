@@ -1,7 +1,0 @@
-<map id="MulticamVOPipeline.h" name="MulticamVOPipeline.h">
-<area shape="rect" id="node12" href="$FeatureDetector_8h.html" title="multicam_vo/FeatureDetector.h" alt="" coords="16,179,221,205"/>
-<area shape="rect" id="node20" href="$FeatureMatcher_8h.html" title="multicam_vo/FeatureMatcher.h" alt="" coords="964,179,1167,205"/>
-<area shape="rect" id="node24" href="$MulticamOdometer_8h.html" title="multicam_vo/MulticamOdometer.h" alt="" coords="689,88,911,115"/>
-<area shape="rect" id="node19" href="$Feature_8h.html" title="multicam_vo/Feature.h" alt="" coords="652,336,805,363"/>
-<area shape="rect" id="node22" href="$Match_8h.html" title="multicam_vo/Match.h" alt="" coords="713,261,860,288"/>
-</map>
