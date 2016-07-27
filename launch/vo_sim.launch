@@ -1,0 +1,23 @@
+<launch>
+
+    <!-- ############################################################################### -->
+    <!-- ###### Multi-Camera VO -->
+    
+    <node pkg="multicam_vo" type="multicam_vo_sim_node" name="vo_sim" output="screen">
+        <rosparam file="$(find multicam_vo)/param/simVOParams.yaml" />
+        <param name="simulation" value="true" />
+        <param name="calib_file_cam_ideal" value="$(find ladybug2)/param/cam_ideal.yaml" />
+        <rosparam file="$(find ladybug2)/param/ladybugExtrinsics.yaml" />
+        <rosparam file="$(find multicam_vo)/param/odometerParams.yaml" />          
+    </node>
+
+
+    <!-- ############################################################################### -->
+    <!-- ###### Plot VO -->
+    
+    <node pkg="evaluate_vo" type="get_vo_node" name="get_vo" args="$(find multicam_vo)/matlab/vo_opt.m vo_opt odometry" output="screen">
+        <remap from="get_data/visual_odometry" to="/sim_multicam_vo/odometry" />
+    </node>
+    
+
+</launch>

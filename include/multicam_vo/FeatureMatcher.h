@@ -15,7 +15,7 @@
 #include <opencv2/opencv.hpp>
 
 // Ladybug2 includes
-#include <ladybug2/ladybugUtilities.h>
+#include <ladybug2/Ladybug2.h>
 
 // project includes
 #include <multicam_vo/Feature.h>
@@ -27,10 +27,13 @@ class FeatureMatcher
     
     public:
     
-        /** Default FeatureMatcher constructor.
-         * @param void
-         * @return a FeatureMatcher object */
+        /** Default FeatureMatcher Constructor. */
         FeatureMatcher();
+
+        /** FeatureMatcher Constructor.
+         * @param Ladybug2 ladybug object
+         * @return a FeatureMatcher object */
+        FeatureMatcher(Ladybug2 lb2);
     
         /** FeatureMatcher destructor. */
         ~FeatureMatcher(); 
@@ -81,6 +84,9 @@ class FeatureMatcher
         std::vector<cv::Point2f> features2Points(std::vector<Feature> features);
     
         ros::NodeHandle node_;                  /*!< ROS node for retrieving matching parameters */ 
+
+        Ladybug2 lb2_;                          /*!< Ladybug2 object */
+
         int param_matchingDescriptorDistance_;  /*!< Matching parameter: maximum descriptor distance */ 
         double param_matchingFeatureDistance_;  /*!< Matching parameter: maximum feature distance */
         int param_trackingWindowSize_;          /*!< Tracking parameter: tracking window size */
@@ -89,6 +95,7 @@ class FeatureMatcher
         int param_trackingTermcritCount_;       /*!< Tracking parameter: maximum number of iterations */
         double param_trackingTermcritEPS_;      /*!< Tracking parameter: maximum window motion */
         double param_borderPercentage_;         /*!< Tracking parameter: maximum width percentage that a feature can move */
+        
         int matchCounter;                       /*!< Match counter for saving match images in a folder (for debug) */
     
 };

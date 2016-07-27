@@ -16,11 +16,12 @@
 #include <image_geometry/pinhole_camera_model.h>
 
 // Ladybug2 includes
-#include <ladybug2/ladybugUtilities.h>
+#include <ladybug2/Ladybug2.h>
 
 // project includes
 #include <multicam_vo/Match.h>
 #include <multicam_vo/FeatureMatcher.h>
+#include <multicam_vo/utils.h>
 
 #define PI (3.141592653589793)
 
@@ -33,11 +34,10 @@ class MulticamOdometer
 		MulticamOdometer();
 
 		/** MulticamOdometer constructor.
-		 * @param std::vector<image_geometry::PinholeCameraModel> vector with each camera's calibration data
-		 * @param int number of cameras in the sensor (only leveled cameras, i.e., excluding the camera facing upwards)
+		 * @param Ladybug2 ladybug object
 		 * @param std::vector<std::ofstream*> vector with files to write estimated poses
          * @return MulticamOdometer object */
-        MulticamOdometer(std::vector<image_geometry::PinholeCameraModel> calibData, int numCameras, std::vector<std::ofstream*> files);
+        MulticamOdometer(Ladybug2 lb2, std::vector<std::ofstream*> files);
     
         /** MulticamOdometer destructor. */
         ~MulticamOdometer();
@@ -58,23 +58,11 @@ class MulticamOdometer
 		 * @return std::vector<Match> vector with normalized matches */
         std::vector<Match> normalize2DPoints(std::vector<Match> matches, Eigen::Matrix3f &NormTPrev, Eigen::Matrix3f &NormTCurr);
     
-        /** Get samplesize random integers between zero and totalNumber-1
-		 * @param int maximum possibly sectected number + 1
-		 * @param int number of random integers to be selected
-		 * @return std::vector<int> vector with the random integers */
-        std::vector<int> getRandomSample(int totalNumber, int sampleSize);
-		
-		/** Check if a given integer x exists in a vector of integers, vec
-		 * @param std::vector<int> vector vec with integers
-		 * @param int integer x to be searched
-		 * @return bool true if x is in vec, false otherwise */
-        bool elemInVec(std::vector<int> vec, int x);
-    
         /** Compute fundamental matrix out of eight feature correspondences between the previous and current frame.
 		 * @param std::vector<Match> vector with feature matches
 		 * @param std::vector<int> vector with eight indices of the vector with matches
 		 * @return Eigen::Matrix3f fundamental matrix */
-        Eigen::Matrix3f getFundamentalMatrix(std::vector<Match> matches, std::vector<int> indices);
+        Eigen::Matrix3f getF(std::vector<Match> matches, std::vector<int> indices);
     
         /** Get the inliers among all matches that comply with a given fundamental matrix.
 		 * @param std::vector<Match> vector with feature matches
@@ -98,7 +86,7 @@ class MulticamOdometer
 		 * @param Eigen::Vector3f output translation vector
 		 * @param Eigen::Matrix<float, 4, Eigen::Dynamic> output matrix with computed 3D points
 		 * @return void */
-        void EtoRt(Eigen::Matrix3f E, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr, std::vector<Match> matches, Eigen::Matrix3f &R, Eigen::Vector3f &t, Eigen::Matrix<float, 4, Eigen::Dynamic> &points3D);
+        void E2Rt(Eigen::Matrix3f E, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr, std::vector<Match> matches, Eigen::Matrix3f &R, Eigen::Vector3f &t, Eigen::Matrix<float, 4, Eigen::Dynamic> &points3D);
     
         /** Triangulate 3D points.
 		 * @param std::vector<Match> vector with matches
@@ -131,44 +119,6 @@ class MulticamOdometer
 		 * @return double optimal scale */
         double getTranslationScale(std::vector<Eigen::Vector4f> points3D, double median, double pitch, double height);
 
-		/** Compute transform out of vector with extrinsic parameters, i.e., Euler angles and translation components.
-		 * @param std::vector<double> vector with extrinsic parameters
-		 * @return Eigen::Matrix4f transform */
-        Eigen::Matrix4f extrinsicData2Transform(std::vector<double> extrinsicData);
-
-		/** Compute yaw angle using matches of the top camera.
-		* @param std::vector<Match> vector with matches of the top camera
-		* @param double& output yaw angle
-		* @return bool true is success, false otherwise */
-		//bool computeYaw(std::vector<Match> matchesTop, double &angle);
-
-		/** Compute line that joins two points, in homogeneous coordinates.
-		* @param cv::Point2f first point
-		* @param cv::Point2f second point
-		* @return cv::Point2f line */
-		cv::Point2f computeLine(cv::Point2f point1, cv::Point2f point2);
-
-		/** Compute angle between 2 lines.
-		* @param cv::Point2f first line
-		* @param cv::Point2f second line
-		* @return double angle */
-		double computeAngle(cv::Point2f line1, cv::Point2f line2);
-		
-		/** Search most frequent element in a vector.
-		* @param std::vector<int> vector
-		* @return int most frequent element */
-		int mostFrequentElem(std::vector<int> vec);
-
-		/** Search maximum integer in a vector.
-		* @param std::vector<int> vector
-		* @return int maximum integer */
-		int maxElement(std::vector<int> vec);
-
-		/** Search minimum integer in a vector.
-		* @param std::vector<int> vector
-		* @return int minimum integer */
-		int minElement(std::vector<int> vec);
-
 		/** Compute fundamental martix out of rotation and translation.
 		* @param Eigen::Matrix3f rotation matrix
 		* @param Eigen::Vector3f translation vector
@@ -178,6 +128,8 @@ class MulticamOdometer
 		Eigen::Matrix3f Rt2F(Eigen::Matrix3f R, Eigen::Vector3f t, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr);
 
 		ros::NodeHandle node_; 								/*!< ROS node for reading odometer parameters */
+
+		Ladybug2 lb2_;										/*!< Ladybug2 object */
         
 		int param_odometerMinNumberMatches_;				/*!< Odometer parameter: minimum number of points required */
         int param_odometerRansacIters_;						/*!< Odometer parameter: number of RANSAC iterations */
@@ -187,19 +139,7 @@ class MulticamOdometer
 		std::vector<double> param_cameraPitches_;			/*!< Camera parameter: each camera's pitch */
         std::vector<double> param_cameraHeights_;			/*!< Camera parameter: each camera's height */
 
-		std::vector<double> param_extrinsicsCam0_;			/*!< Camera parameter: Camera 0's extrinsic parameters */
-		std::vector<double> param_extrinsicsCam1_;			/*!< Camera parameter: Camera 1's extrinsic parameters */
-		std::vector<double> param_extrinsicsCam2_;			/*!< Camera parameter: Camera 2's extrinsic parameters */
-		std::vector<double> param_extrinsicsCam3_;			/*!< Camera parameter: Camera 3's extrinsic parameters */
-		std::vector<double> param_extrinsicsCam4_;			/*!< Camera parameter: Camera 4's extrinsic parameters */
-		std::vector<double> param_extrinsicsCam5_;			/*!< Camera parameter: Camera 5's extrinsic parameters */
-
-		std::vector<Eigen::Matrix3f> intrinsics;			/*!< Vector with camera matrices (i.e., matrix with intrinsic parameters) */
-		std::vector<Eigen::Matrix4f> extrinsics;			/*!< Vector with transformations of camera i described in global coordinates */
-
 		std::vector<Eigen::Matrix4f> absolutePosesLocal;	/*!< Vector of absolute poses estimated by intra- and consecutive inter-camera matches */
-
-		int numCameras_;									/*!< Number of cameras that form the omnidirectional system (excluding the camera looking upwards) */
 
 		std::vector<std::ofstream*> files_;					/*!< For debugging: for writing estimated poses in matlab files */
 		std::vector<bool> firstRow_;						/*!< For debugging: auxiliary flag for writing MatLab files */

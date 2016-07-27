@@ -1,11 +1,19 @@
 #include <multicam_vo/FeatureMatcher.h>
 
-/** Default FeatureMatcher constructor.
- * @param void
+/** Default FeatureMatcher Constructor. */
+FeatureMatcher::FeatureMatcher()
+{
+
+}
+
+/** FeatureMatcher constructor.
+ * @param Ladybug2 ladybug object
  * @return a FeatureMatcher object */
-FeatureMatcher::FeatureMatcher(): node_("~")
+FeatureMatcher::FeatureMatcher(Ladybug2 lb2): node_("~")
 {
     matchCounter = 0;
+
+    lb2_ = lb2;
     
     // read parameters
     node_.param<int>("param_matchingDescriptorDistance", param_matchingDescriptorDistance_, 50);
@@ -38,7 +46,7 @@ std::vector<std::vector<Match>> FeatureMatcher::findOmniMatches(std::vector<cv::
     {
         // get left and right neighbouring cameras
         int iLeft, iRight;
-        getLeftRightCameras(i, iLeft, iRight);
+        lb2_.getLeftRightCameras(i, iLeft, iRight);
         
         // track features in the camera and store features that disappear in the lateral borders in the feature vectors of the neighbouring cameras
         trackIntraCamera(imagesPrev[i], imagesCurr[i], featuresPrev[i], featuresCurr[i], featuresPrev[iLeft], featuresPrev[iRight]);
@@ -96,7 +104,7 @@ std::vector<std::vector<Match>> FeatureMatcher::findOmniMatches(std::vector<cv::
             else
             {
                 int camLeft, camRight;
-                getLeftRightCameras(camFirst, camLeft, camRight);
+                lb2_.getLeftRightCameras(camFirst, camLeft, camRight);
                 
                 if(camSecond == camRight)
                 {
@@ -275,3 +283,4 @@ std::vector<cv::Point2f> FeatureMatcher::features2Points(std::vector<Feature> fe
     }
     return points;
 }
+

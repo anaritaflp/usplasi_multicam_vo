@@ -138,8 +138,8 @@ class FeatureDetector
         double ShiTomasi_qualityLevel_;     /*!< Shi-Tomasi detection parameter: quality level */
         double ShiTomasi_minDistance_;      /*!< Shi-Tomasi detection parameter: minimum distance between features */
         int ShiTomasi_blockSize_;           /*!< Shi-Tomasi detection parameter: block size */
-        int bucketing_numberHorizontal_;    /*!< Bucketing parameter: number of horizontal sections */
-        int bucketing_numberVertical_;      /*!< Bucketing parameter: number of vertical sections */
+        int bucket_width_;                  /*!< Bucketing parameter: number of horizontal sections */
+        int bucket_height_;                 /*!< Bucketing parameter: number of vertical sections */
 };
 
 

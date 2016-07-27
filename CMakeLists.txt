@@ -33,6 +33,14 @@ include_directories(
     include
 )
 
+add_library(Utils
+    src/utils.cpp
+)
+
+target_link_libraries(Utils
+    ${catkin_LIBRARIES}
+)
+
 add_library(MultiFeatures
     src/FeatureDetector.cpp
     src/FeatureMatcher.cpp
@@ -51,6 +59,7 @@ add_library(MulticamOdometer
 
 target_link_libraries(MulticamOdometer
     MultiFeatures
+    Utils
 )
 
 add_library(MulticamVOPipeline
@@ -64,6 +73,16 @@ target_link_libraries(MulticamVOPipeline
     MulticamOdometer
 )
 
+add_library(MulticamVOSimPipeline
+    src/MulticamVOSimPipeline.cpp
+)
+
+target_link_libraries(MulticamVOSimPipeline
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBS}
+    MulticamOdometer
+)
+
 add_executable(multicam_vo_node
     src/main.cpp
 )
@@ -72,6 +91,16 @@ target_link_libraries(multicam_vo_node
     ${catkin_LIBRARIES}
     ${OpenCV_LIBS}
     MulticamVOPipeline
+)
+
+add_executable(multicam_vo_sim_node
+    src/main_sim.cpp
+)
+
+target_link_libraries(multicam_vo_sim_node
+    ${catkin_LIBRARIES}
+    ${OpenCV_LIBS}
+    MulticamVOSimPipeline
 )
 
 

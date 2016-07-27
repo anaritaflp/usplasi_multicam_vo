@@ -153,8 +153,8 @@ void FeatureDetector::getParams(std::string detectionMethod)
     }
     
     // bucketing parameters
-    node_.param<int>("bucketing_numberHorizontal", bucketing_numberHorizontal_, 1);
-    node_.param<int>("bucketing_numberVertical", bucketing_numberVertical_, 2);
+    node_.param<int>("bucket_width", bucket_width_, 50);
+    node_.param<int>("bucket_height", bucket_height_, 50);
 }
 
 /** Divide image into sections (buckets).
@@ -164,48 +164,61 @@ void FeatureDetector::getParams(std::string detectionMethod)
  * @return void */
 void FeatureDetector::getBuckets(cv::Mat image, std::vector<cv::Mat> &buckets, std::vector<cv::Point2f> &offsets)
 {
-    // compute bucket width and height
-    int bucketWidth = round((double)image.cols / bucketing_numberHorizontal_);
-    int bucketHeight = round((double)image.rows / bucketing_numberVertical_);
-        
-    int offset_v = 0;
-    double width, height;
-    for(int i=0; i<bucketing_numberVertical_; i++)
+    // compute bucket width and height    
+    int nBucketsHorizontal = image.cols / bucket_width_;
+    int nBucketsVertical = image.rows / bucket_height_;
+
+    int restHorizontal = image.cols % bucket_width_;
+    int restVertical = image.rows % bucket_height_;
+
+    if(restHorizontal >= (double)bucket_width_/2.0)
     {
-        int offset_h = 0;
+        nBucketsHorizontal++;
+    }
+    if(restVertical >= (double)bucket_height_/2.0)
+    {
+        nBucketsVertical++;
+    }
+    
+    int offset_h, offset_v;
+    int width, height;
+
+    offset_v = 0;
+    for(int i=0; i<nBucketsVertical; i++)
+    {
+        offset_h = 0;
         
-        // if it's the last bucket in the column, bucket height is the remainin height
-        if(i == bucketing_numberVertical_ - 1)
+        if(i == nBucketsVertical - 1)
         {
-            height = image.rows - i*bucketHeight;
+            height = image.rows - i * bucket_height_;
         }
         else
         {
-            height = bucketHeight;
+            height = bucket_height_;
         }
-        for(int j=0; j<bucketing_numberHorizontal_; j++)
+
+        for(int j=0; j<nBucketsHorizontal; j++)
         {
-            // if it's the last bucket in the row, bucket width is the remaining width
-            if(j == bucketing_numberHorizontal_ - 1)
+            if(j == nBucketsHorizontal - 1)
             {
-                width = image.cols - j*bucketWidth;
+                width = image.cols - j * bucket_width_;
             }
             else
             {
-                width = bucketWidth;
+                width = bucket_width_;
             }
 
             // store the bucket (a rectangular section of the original image)
             cv::Mat b = image(cv::Rect(offset_h, offset_v, width, height));
             buckets.push_back(b);
-            
+
             // also store the coordinates of the bucket's upper left corner
             cv::Point2f o(offset_h, offset_v);
             offsets.push_back(o);
-            
-            offset_h += bucketWidth;
+
+            offset_h += bucket_width_;
         }
-        offset_v += bucketHeight;
+        offset_v += bucket_height_;
     }
 }
 

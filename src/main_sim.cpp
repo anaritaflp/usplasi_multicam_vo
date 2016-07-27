@@ -5,31 +5,20 @@
 #include <time.h>
 #include <signal.h>
 
-#include <multicam_vo/MulticamVOPipeline.h>
+#include <multicam_vo/MulticamVOSimPipeline.h>
 
 std::vector<std::ofstream*> files;
-
-void mySigintHandler(int sig)
-{
-    for(int i=0; i<3*NUM_OMNI_CAMERAS; i++)
-    {
-        (*files[i]) << "\n\t];" << std::endl;
-        (*files[i]).close();
-    }
-    
-    ros::shutdown();
-}
 
 int main(int argc, char **argv)
 {
     srand(time(NULL));
     
-    ros::init(argc, argv, "multicam_vo_node");
+    ros::init(argc, argv, "multicam_vo_sim_node");
 
     // for debugging: write estimated poses in matlab files    
     files.resize(3*NUM_OMNI_CAMERAS);
     std::string path = "/home/anaritapereira/ROS/catkin_ws/src/multicam_vo/matlab/";
-    for(int i=0; i<3*NUM_OMNI_CAMERAS; i++)
+    for(int i=0; i<3*(NUM_CAMERAS-1); i++)
     {
         char filename[20];
         sprintf(filename, "plot_%02d.m", i);
@@ -37,11 +26,11 @@ int main(int argc, char **argv)
         (*files[i]) << "pose_" << i << " = [" << std::endl;
     }
 
-    odom::MulticamVOPipeline vo_pipeline(files);    
+    odom_sim::MulticamVOSimPipeline vo_sim_pipeline(files);    
 
-    signal(SIGINT, mySigintHandler);
-
-    vo_pipeline.spin();     
+    vo_sim_pipeline.loop(files);
+ 
     return 0;
 }
 
+ 
