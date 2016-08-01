@@ -28,6 +28,7 @@ MulticamVOSimPipeline::MulticamVOSimPipeline(std::vector<std::ofstream*> files)
     // read parameters
     node_.param<std::string>("path_to_sim_points", param_pathToSimPoints_, "");
     node_.param<int>("num_frames", param_numFrames_, 0);
+    node_.param<double>("noise_variance", param_noiseVariance_, 0.0);
 }
         
 /** Default MulticamVOSimPipeline destructor. */
@@ -262,7 +263,8 @@ void MulticamVOSimPipeline::loop(std::vector<std::ofstream*> files)
         reducedMatches.resize(3 * NUM_OMNI_CAMERAS);
         for(int i=0; i<3*NUM_OMNI_CAMERAS; i++)
         {
-            reducedMatches[i] = reduceMatches(matches[i], 100);            
+            reducedMatches[i] = reduceMatches(matches[i], 100);  
+            reducedMatches[i] = addNoise(reducedMatches[i]); 
         }
 
         // estimate motion
@@ -321,6 +323,40 @@ std::vector<Match> MulticamVOSimPipeline::reduceMatches(std::vector<Match> match
     }
 
     return reducedMatches;
+}
+
+std::vector<Match> MulticamVOSimPipeline::addNoise(std::vector<Match> matches)
+{
+    std::default_random_engine generator;
+    std::normal_distribution<double> distribution(0.0, param_noiseVariance_);
+
+    std::vector<Match> matchesNoise;
+
+    for(int i=0; i<matches.size(); i++)
+    {
+        double xOffsetPrev = distribution(generator);
+        double yOffsetPrev = distribution(generator);
+
+        double xOffsetCurr = distribution(generator);
+        double yOffsetCurr = distribution(generator);
+
+        cv::KeyPoint kpPrev = matches[i].getFirstFeature().getKeypoint();
+        cv::KeyPoint kpCurr = matches[i].getSecondFeature().getKeypoint();
+
+        kpPrev.pt += cv::Point2f(xOffsetPrev, yOffsetPrev);
+        kpCurr.pt += cv::Point2f(xOffsetCurr, yOffsetCurr);
+
+        Feature fPrev(matches[i].getFirstFeature());
+        Feature fCurr(matches[i].getSecondFeature());
+
+        fPrev.setKeypoint(kpPrev);
+        fCurr.setKeypoint(kpCurr);
+
+        Match mNoise(fPrev, fCurr, 0.0);
+        matchesNoise.push_back(mNoise);
+    }
+
+    return matchesNoise;
 }
 
 }

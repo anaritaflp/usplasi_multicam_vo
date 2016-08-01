@@ -4,6 +4,7 @@
 // std includes
 #include <fstream>
 #include <algorithm>
+#include <random>
 
 // Boost includes
 #include <boost/algorithm/string.hpp>
@@ -61,6 +62,8 @@ class MulticamVOSimPipeline
          * @return std::vector<Match> reduced vector with N of matches */
         std::vector<Match> reduceMatches(std::vector<Match> matches, int N);
 
+        std::vector<Match> addNoise(std::vector<Match> matches);
+
         ros::NodeHandle node_;										/*!< ROS node for reading parameters */
         ros::Publisher pubOdom_;									/*!< ROS odometry publisher */ 
 
@@ -70,6 +73,7 @@ class MulticamVOSimPipeline
 
         std::string param_pathToSimPoints_;                         /*!< Path to directory with simulated points */
         int param_numFrames_;                                       /*!< Number of frames */
+        double param_noiseVariance_;                                /*!< Variance of gaussian noise introduced in the 2D points */
 };
 
 }
