@@ -77,6 +77,10 @@ class FeatureDetector
          * @return std::vector<Feature> */
         std::vector<Feature> buildFeatures(std::vector<cv::KeyPoint> keypoints, cv::Mat descriptors, int seqNo, int camNo);
 
+        std::vector<cv::Point2f> keypoints2points(std::vector<cv::KeyPoint> keypoints);
+
+        void points2keypoints(std::vector<cv::KeyPoint> &keypoints, std::vector<cv::Point2f> points);
+
         /** Detect FAST corners in an image.
          * @param cv::Mat image
          * @return std::vector<Feature> vector with detected features */

@@ -128,7 +128,7 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
 		// compute fundamental matrix out of all inliers
         F = getF(matchesNorm, inlierIndices);
 
-        if(i == 0)
+        /*if(i == 0)
         {
             std::vector<Match> inlierMatches;
             std::vector<Match> outlierMatches;
@@ -144,15 +144,15 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
                 }
             }
 
-            /*std::cout << "\t#INLIERS: " << inlierIndices.size() << " / " << matches[i].size() << std::endl;
+            std::cout << "\t#INLIERS: " << inlierIndices.size() << " / " << matches[i].size() << std::endl;
             cv::Mat image(1024, 768, CV_8UC1, cv::Scalar(0));
             FeatureMatcher fm;
             cv::Mat of1 = fm.highlightOpticalFlow(image, inlierMatches, cv::Scalar(0, 255, 0));
             cv::Mat of2 = fm.highlightOpticalFlow(of1, outlierMatches, cv::Scalar(0, 0, 255));
             cv::namedWindow("optical flow", CV_WINDOW_AUTOSIZE);
             cv::imshow("optical flow", of2);
-            cv::waitKey(10);*/
-        }
+            cv::waitKey(10);
+        }*/
        
 		// denormalize F
         F = NormTCurr.transpose() * F * NormTPrev;

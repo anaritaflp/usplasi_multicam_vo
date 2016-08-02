@@ -65,34 +65,14 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
     std::vector<cv::Mat> splitImages = lb2.splitLadybug(fullImage, "mono8");
 
     // rectify images
-    std::vector<cv::Mat> imagesRect = lb2.rectifyManually(splitImages);
-
-    /*cv::imwrite("/home/anaritapereira/rect0.png", imagesRect[0]);
-    cv::imwrite("/home/anaritapereira/rect1.png", imagesRect[1]);
-    cv::imwrite("/home/anaritapereira/rect2.png", imagesRect[2]);
-    cv::imwrite("/home/anaritapereira/rect3.png", imagesRect[3]);
-    cv::imwrite("/home/anaritapereira/rect4.png", imagesRect[4]);
-    cv::imwrite("/home/anaritapereira/rect5.png", imagesRect[5]);
-
-
-    cv::namedWindow("rect 0", CV_WINDOW_AUTOSIZE);
-    cv::imshow("rect 0", imagesRect[0]);
-    cv::namedWindow("rect 1", CV_WINDOW_AUTOSIZE);
-    cv::imshow("rect 1", imagesRect[1]);
-    cv::namedWindow("rect 2", CV_WINDOW_AUTOSIZE);
-    cv::imshow("rect 2", imagesRect[2]);
-    cv::namedWindow("rect 3", CV_WINDOW_AUTOSIZE);
-    cv::imshow("rect 3", imagesRect[3]);
-    cv::namedWindow("rect 4", CV_WINDOW_AUTOSIZE);
-    cv::imshow("rect 4", imagesRect[4]);
-    cv::namedWindow("rect 5", CV_WINDOW_AUTOSIZE);
-    cv::imshow("rect 5", imagesRect[5]);
-    cv::waitKey(0);*/
+    std::vector<cv::Mat> imagesRect = lb2.rectify(splitImages);
 
     // reduce images to their ROI
+    std::vector<cv::Mat> imagesRectReduced;
+    imagesRectReduced.resize(NUM_CAMERAS);
     for(int i=0; i<NUM_CAMERAS; i++)
     {
-        imagesRect[i] = imagesRect[i](cv::Rect(param_ROIs_[i][0], param_ROIs_[i][1], param_ROIs_[i][2], param_ROIs_[i][3]));
+        imagesRectReduced[i] = imagesRect[i](cv::Rect(param_ROIs_[i][0], param_ROIs_[i][1], param_ROIs_[i][2], param_ROIs_[i][3]));
     }
 
     // detect features in all cameras
@@ -101,9 +81,21 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
     for(int i=0; i<NUM_CAMERAS; i++)
     {   
         std::vector<Feature> features;
-        features = featureDetector_.detectFeatures(imagesRect[i], seqNumber, i);        
+        features = featureDetector_.detectFeatures(imagesRectReduced[i], seqNumber, i);   
+        for(int j=0; j<features.size(); j++)
+        {
+            cv::KeyPoint kp = features[j].getKeypoint();
+            kp.pt += cv::Point2f(param_ROIs_[i][0], param_ROIs_[i][1]);
+            features[j].setKeypoint(kp);
+        }       
         featuresAllCameras.push_back(features);
     }
+
+
+    /*cv::Mat imFeats = featureDetector_.highlightFeatures(imagesRect[0], featuresAllCameras[0]);
+    cv::namedWindow("features", CV_WINDOW_AUTOSIZE);
+    cv::imshow("features", imFeats);
+    cv::waitKey(10);*/
 
     if(!first_)
     {
@@ -116,11 +108,18 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
         
         // match features
         std::vector<std::vector<Match>> matches = featureMatcher_.findOmniMatches(imagesRectPrev_, imagesRect, featuresAllCamerasPrev_, featuresAllCameras, NUM_OMNI_CAMERAS);
-       
+        
+        std::cout << "#MATCHES: "; std::cout.flush();
+        for(int i=0; i<3*NUM_OMNI_CAMERAS; i++)
+        {
+            std::cout << " " << matches[i].size(); std::cout.flush();
+        }
+        std::cout << std::endl;
+        
         // estimate motion    
         int bestCamera;
         Eigen::Matrix4f T = odometer_.estimateMotion(matches, bestCamera);
-
+        
         // publish odometry
         nav_msgs::Odometry msgOdom = transform2OdometryMsg(T, bestCamera);
         msgOdom.header.stamp = msg->header.stamp;

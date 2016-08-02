@@ -1,6 +1,6 @@
 param_odometerMinNumberMatches: 10
-param_odometerRansacIters: 500
-param_odometerInlierThreshold: 1.0
+param_odometerRansacIters: 400
+param_odometerInlierThreshold: 0.001
 param_odometerMotionThreshold: 100000.0
 param_cameraPitches: [0.0, 0.0, 0.0, 0.0, 0.0]
 param_cameraHeights: [1.65, 1.65, 1.65, 1.65, 1.65]

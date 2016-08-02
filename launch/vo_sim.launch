@@ -8,8 +8,8 @@
         <param name="simulation" value="true" />
         <param name="calib_file_cam_ideal" value="$(find ladybug2)/param/cam_ideal.yaml" />
         <param name="path_to_sim_points" value="/home/anaritapereira/Dropbox/ladybug_sim/points2D/" />
-        <param name="num_frames" value="100" />
-        <param name="noise_variance" value="0.5" />
+        <param name="num_frames" value="4084" />
+        <param name="noise_variance" value="0.05" />
         <rosparam file="$(find ladybug2)/param/ladybugExtrinsics.yaml" />
         <rosparam file="$(find multicam_vo)/param/odometerParams.yaml" />          
     </node>
@@ -19,7 +19,7 @@
     <!-- ###### Plot VO -->
     
     <node pkg="evaluate_vo" type="get_vo_node" name="get_vo" args="$(find multicam_vo)/matlab/vo_opt.m vo_opt odometry" output="screen">
-        <remap from="get_data/visual_odometry" to="/sim_multicam_vo/odometry" />
+        <remap from="get_data/visual_odometry" to="/vo_sim/sim_multicam_vo/odometry" />
     </node>
     
 

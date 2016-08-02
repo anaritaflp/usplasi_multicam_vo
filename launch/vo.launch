@@ -6,12 +6,12 @@
     <node pkg="multicam_vo" type="multicam_vo_node" name="vo" output="screen">
         <param name="image_topic" value="/camera/image_raw" />
         <param name="simulation" value="false" />
-        <param name="calib_file_cam_0" value="$(find ladybug2)/param/cam0.yaml" />
-        <param name="calib_file_cam_1" value="$(find ladybug2)/param/cam1.yaml" />
-        <param name="calib_file_cam_2" value="$(find ladybug2)/param/cam2.yaml" />
-        <param name="calib_file_cam_3" value="$(find ladybug2)/param/cam3.yaml" />
-        <param name="calib_file_cam_4" value="$(find ladybug2)/param/cam4.yaml" />
-        <param name="calib_file_cam_5" value="$(find ladybug2)/param/cam5.yaml" />
+        <param name="calib_file_cam_0" value="$(find ladybug2)/param/provided_calibration/cam0.yaml" />
+        <param name="calib_file_cam_1" value="$(find ladybug2)/param/provided_calibration/cam1.yaml" />
+        <param name="calib_file_cam_2" value="$(find ladybug2)/param/provided_calibration/cam2.yaml" />
+        <param name="calib_file_cam_3" value="$(find ladybug2)/param/provided_calibration/cam3.yaml" />
+        <param name="calib_file_cam_4" value="$(find ladybug2)/param/provided_calibration/cam4.yaml" />
+        <param name="calib_file_cam_5" value="$(find ladybug2)/param/provided_calibration/cam5.yaml" />
         <rosparam file="$(find ladybug2)/param/ladybugExtrinsics.yaml" />
         <!--<rosparam file="$(find ladybug2)/param/rectificationMaps.yaml" />-->
         <rosparam file="$(find multicam_vo)/param/fastParams.yaml" />
@@ -21,7 +21,7 @@
         <rosparam file="$(find multicam_vo)/param/bucketingParams.yaml" />
         <rosparam file="$(find multicam_vo)/param/trackingMatchingParams.yaml" />
         <rosparam file="$(find multicam_vo)/param/odometerParams.yaml" />  
-        <rosparam file="$(find multicam_vo)/param/ROI.yaml" />        
+        <rosparam file="$(find multicam_vo)/param/ROI_providedCalib.yaml" />        
     </node>
 
 

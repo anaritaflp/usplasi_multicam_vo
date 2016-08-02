@@ -67,8 +67,16 @@ std::vector<Feature> FeatureDetector::detectFeatures(cv::Mat image, int seqNo, i
     std::vector<cv::Point2f> offsets;
     
     // divide image into "buckets"
-    getBuckets(image, buckets, offsets);
-        
+    if(bucket_width_ == 0 || bucket_height_ == 0)
+    {
+        buckets.push_back(image);
+        offsets.push_back(cv::Point2f(0.0, 0.0));
+    }
+    else
+    {
+        getBuckets(image, buckets, offsets);
+    }
+
     std::vector<Feature> features;
     
     // for each bucket...
@@ -77,7 +85,18 @@ std::vector<Feature> FeatureDetector::detectFeatures(cv::Mat image, int seqNo, i
         // detect keypoints in the bucket and, for each keypoint, compute a descriptor
         std::vector<cv::KeyPoint> kpts_bucket = ((FeatureDetector*)this->*detectPtr_)(buckets[i]);
         cv::Mat ds = ((FeatureDetector*)this->*computeDescriptorPtr_)(buckets[i], kpts_bucket);
-        
+
+        if(kpts_bucket.size() > 0)
+        {
+            // subpixel refinement
+            std::vector<cv::Point2f> pts = keypoints2points(kpts_bucket);
+            cv::Size winSize = cv::Size(5, 5);
+            cv::Size zeroZone = cv::Size(-1, -1);
+            cv::TermCriteria criteria = cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 40, 0.001);
+            cv::cornerSubPix(buckets[i], pts, winSize, zeroZone, criteria);            
+            points2keypoints(kpts_bucket, pts);
+        }
+
         // get the coordinates of the points in the full image
         std::vector<cv::KeyPoint> kpts;
         for(int j=0; j<kpts_bucket.size(); j++)
@@ -238,6 +257,27 @@ std::vector<Feature> FeatureDetector::buildFeatures(std::vector<cv::KeyPoint> ke
         features.push_back(f);
     }
     return features;
+}
+
+std::vector<cv::Point2f> FeatureDetector::keypoints2points(std::vector<cv::KeyPoint> keypoints)
+{
+    std::vector<cv::Point2f> points;
+
+    for(int i=0; i<keypoints.size(); i++)
+    {
+        cv::Point2f pt = keypoints[i].pt;
+        points.push_back(pt);
+    }
+
+    return points;
+}
+
+void FeatureDetector::points2keypoints(std::vector<cv::KeyPoint> &keypoints, std::vector<cv::Point2f> points)
+{
+    for(int i=0; i<keypoints.size(); i++)
+    {
+        keypoints[i].pt = points[i];
+    }
 }
 
 /** Detect FAST corners in an image.

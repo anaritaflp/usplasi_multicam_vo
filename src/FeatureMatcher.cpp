@@ -47,7 +47,7 @@ std::vector<std::vector<Match>> FeatureMatcher::findOmniMatches(std::vector<cv::
         // get left and right neighbouring cameras
         int iLeft, iRight;
         lb2_.getLeftRightCameras(i, iLeft, iRight);
-        
+
         // track features in the camera and store features that disappear in the lateral borders in the feature vectors of the neighbouring cameras
         trackIntraCamera(imagesPrev[i], imagesCurr[i], featuresPrev[i], featuresCurr[i], featuresPrev[iLeft], featuresPrev[iRight]);
     }
@@ -61,10 +61,14 @@ std::vector<std::vector<Match>> FeatureMatcher::findOmniMatches(std::vector<cv::
     //   position 3*i+2:  inter-camera matches between cam. i and its left neighbour camera
     std::vector<std::vector<Match>> matches;
     matches.resize(3*numCameras);
-    
+
     // for each camera, match features
     for(int i=0; i<numCameras; i++)
     {
+        if(featuresPrev[i].size() == 0 || featuresCurr[i].size() == 0)
+        {
+            continue;
+        }
         cv::Mat descriptorsPrev = getDescriptorsFromFeatures(featuresPrev[i]);
         cv::Mat descriptorsCurr = getDescriptorsFromFeatures(featuresCurr[i]);
         
@@ -72,7 +76,7 @@ std::vector<std::vector<Match>> FeatureMatcher::findOmniMatches(std::vector<cv::
         cv::BFMatcher matcher(cv::NORM_HAMMING, true);
         std::vector<cv::DMatch> dmatches;
         matcher.match(descriptorsPrev, descriptorsCurr, dmatches);
-        
+
         // discard poor descriptor matches
         std::vector<cv::DMatch> goodDMatches;
         for(int i=0; i<dmatches.size(); i++)
@@ -82,7 +86,6 @@ std::vector<std::vector<Match>> FeatureMatcher::findOmniMatches(std::vector<cv::
                 goodDMatches.push_back(dmatches[i]);
             }
         }
-        
         std::vector<Match> ms = DMatches2Matches(featuresPrev[i], featuresCurr[i], goodDMatches);
         
         // insert matches in the corresponding position in the matches vector
@@ -212,7 +215,14 @@ void FeatureMatcher::trackIntraCamera(cv::Mat imagePrev, cv::Mat imageCurr, std:
     cv::Size windowSize(param_trackingWindowSize_, param_trackingWindowSize_);
     
     // track features within the camera
-    cv::calcOpticalFlowPyrLK(imagePrev, imageCurr, pointsPrev, pointsCurr, status, error, windowSize, param_trackingMaxLevel_, termcrit, 0, param_trackingMaxLevel_);
+    if(pointsPrev.size() > 0)
+    {
+        cv::calcOpticalFlowPyrLK(imagePrev, imageCurr, pointsPrev, pointsCurr, status, error, windowSize, param_trackingMaxLevel_, termcrit, 0, param_trackingMaxLevel_);
+    }
+    else
+    {
+        return;
+    } 
     
     // if a feature disappears near a lateral border, it shall be searched for in the neighbouring camera 
     for(int i=0; i<featuresPrev.size(); i++)
