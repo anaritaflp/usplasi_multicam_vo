@@ -87,36 +87,36 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
     Eigen::Matrix4f bestPose = Eigen::Matrix4f::Identity();
     for(int i=0; i<matches.size(); i++)
     {
-		// if R,t were successfully obtained in camera i...
+        // get camNoPrev and camNoCurr for camera i            
+        int camNoPrev_i, camNoCurr_i;
+        getPrevAndCurrCamIndex(lb2_, i, camNoPrev_i, camNoCurr_i);  
+        
+        // transform motion estimation to global (ladybug) coordinates
+        Eigen::Matrix4f T = Rt2T(R[i], t[i]);
+        Eigen::Matrix4f TGlobal = lb2_.cam2LadybugRef(T, camNoPrev_i, camNoCurr_i);
+
+        // integrate to absolute mono VO pose estimated by camera i
+        absolutePosesLocal_[i] = absolutePosesLocal_[i] * TGlobal;
+
+        // write individual camera estimates in matlab file for plotting (for debugging)
+        if(firstRow_[i])
+        {
+            firstRow_[i] = false;
+        }
+        else
+        {
+            (*files_[i]) << ";" << std::endl;
+        }
+        Eigen::Matrix4f p(absolutePosesLocal_[i]);                
+        (*files_[i]) << "\t" << p(0, 0) << ",\t" << p(0, 1) << ",\t" << p(0, 2) << ",\t" << p(0, 3) << ",\t"
+                                << p(1, 0) << ",\t" << p(1, 1) << ",\t" << p(1, 2) << ",\t" << p(1, 3) << ",\t"
+                                << p(2, 0) << ",\t" << p(2, 1) << ",\t" << p(2, 2) << ",\t" << p(2, 3) << ",\t"
+                                << p(3, 0) << ",\t" << p(3, 1) << ",\t" << p(3, 2) << ",\t" << p(3, 3);
+        (*files_[i]).flush();
+		
+        // if R,t were successfully obtained in camera i...
         if(success[i])
         {
-            // get camNoPrev and camNoCurr for camera i            
-            int camNoPrev_i, camNoCurr_i;
-            getPrevAndCurrCamIndex(lb2_, i, camNoPrev_i, camNoCurr_i);  
-            
-            // transform motion estimation to global (ladybug) coordinates
-            Eigen::Matrix4f T = Rt2T(R[i], t[i]);
-            Eigen::Matrix4f TGlobal = lb2_.cam2LadybugRef(T, camNoPrev_i, camNoCurr_i);
-
-            // integrate to absolute mono VO pose estimated by camera i
-            absolutePosesLocal_[i] = absolutePosesLocal_[i] * TGlobal;
-
-            // write individual camera estimates in matlab file for plotting (for debugging)
-            if(firstRow_[i])
-            {
-                firstRow_[i] = false;
-            }
-            else
-            {
-                (*files_[i]) << ";" << std::endl;
-            }
-            Eigen::Matrix4f p(absolutePosesLocal_[i]);                
-            (*files_[i]) << "\t" << p(0, 0) << ",\t" << p(0, 1) << ",\t" << p(0, 2) << ",\t" << p(0, 3) << ",\t"
-                                 << p(1, 0) << ",\t" << p(1, 1) << ",\t" << p(1, 2) << ",\t" << p(1, 3) << ",\t"
-                                 << p(2, 0) << ",\t" << p(2, 1) << ",\t" << p(2, 2) << ",\t" << p(2, 3) << ",\t"
-                                 << p(3, 0) << ",\t" << p(3, 1) << ",\t" << p(3, 2) << ",\t" << p(3, 3);
-            (*files_[i]).flush();
-
             // vote for motion estimation by camera i
             int sumInliers = 0;
 

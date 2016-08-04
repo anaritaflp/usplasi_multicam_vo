@@ -34,6 +34,8 @@ bool MonoOdometer::estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KP
     if(N < param_odometerMinNumberMatches_)
     {
         // too few matches to compute F
+        R = Eigen::Matrix3f::Identity();
+        t << 0.0, 0.0, 0.0;
         return false;
     }
 
@@ -65,6 +67,8 @@ bool MonoOdometer::estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KP
     // check number of inliers
     if(inlierIndices.size() < param_odometerMinNumberMatches_)
     {
+        R = Eigen::Matrix3f::Identity();
+        t << 0.0, 0.0, 0.0;
         return false;
     }
 
@@ -120,6 +124,8 @@ bool MonoOdometer::estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KP
     // check number of valid points
     if(valid3DPoints.size() < param_odometerMinNumberMatches_)
     {
+        R = Eigen::Matrix3f::Identity();
+        t << 0.0, 0.0, 0.0;
         return false;
     }
 
@@ -131,6 +137,8 @@ bool MonoOdometer::estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KP
     // if big median (small motion), return error
     if(median > param_odometerMotionThreshold_)
     {
+        R = Eigen::Matrix3f::Identity();
+        t << 0.0, 0.0, 0.0;
         return false;
     }
 
