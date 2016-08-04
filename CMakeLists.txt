@@ -54,6 +54,7 @@ target_link_libraries(MultiFeatures
 )
 
 add_library(MulticamOdometer
+    src/MonoOdometer.cpp
     src/MulticamOdometer.cpp
 )
 

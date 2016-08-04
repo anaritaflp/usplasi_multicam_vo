@@ -259,6 +259,9 @@ std::vector<Feature> FeatureDetector::buildFeatures(std::vector<cv::KeyPoint> ke
     return features;
 }
 
+/** Extract set of cv::Point2f from set of cv::KeyPoint.
+ * @param std::vector<cv::KeyPoint> keypoints
+ * @return std::vector<cv::Point2f> points */
 std::vector<cv::Point2f> FeatureDetector::keypoints2points(std::vector<cv::KeyPoint> keypoints)
 {
     std::vector<cv::Point2f> points;
@@ -272,6 +275,9 @@ std::vector<cv::Point2f> FeatureDetector::keypoints2points(std::vector<cv::KeyPo
     return points;
 }
 
+/** Update cv::Point2f points in set of cv::KeyPoint keypoints.
+ * @param std::vector<cv::KeyPoint>& input/output set of keypoints
+ * @param std::vector<cv::Point2f> new points */
 void FeatureDetector::points2keypoints(std::vector<cv::KeyPoint> &keypoints, std::vector<cv::Point2f> points)
 {
     for(int i=0; i<keypoints.size(); i++)

@@ -54,4 +54,17 @@ std::vector<int> getRandomSample(int totalNumber, int sampleSize);
  * @return nav_msgs::Odometry odometry message */
 nav_msgs::Odometry transform2OdometryMsg(Eigen::Matrix4f T, int bestCamera);
 
+/** Get transform matrix for a given rotation matrix and translation vector.
+ * @param Eigen::Matrix3f rotation matrix
+ * @param Eigen::Vector3f translation vector
+ * @return Eigen::Matrix4f transform */
+Eigen::Matrix4f Rt2T(Eigen::Matrix3f R, Eigen::Vector3f t);
+
+/** Extract rotation matrix and translation vector from a given transform matrix.
+ * @param Eigen::Matrix4f transform
+ * @param Eigen::Matrix3f output rotation matrix
+ * @param Eigen::Vector3f output translation vector
+ * @return void */
+void T2Rt(Eigen::Matrix4f T, Eigen::Matrix3f &R, Eigen::Vector3f &t);
+
  #endif

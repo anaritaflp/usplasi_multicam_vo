@@ -149,3 +149,25 @@ nav_msgs::Odometry transform2OdometryMsg(Eigen::Matrix4f T, int bestCamera)
 
     return msg;
 }
+
+/** Get transform matrix for a given rotation matrix and translation vector.
+ * @param Eigen::Matrix3f rotation matrix
+ * @param Eigen::Vector3f translation vector
+ * @return Eigen::Matrix4f transform */
+Eigen::Matrix4f Rt2T(Eigen::Matrix3f R, Eigen::Vector3f t)
+{
+    Eigen::Matrix4f T;
+    T << R(0, 0), R(0, 1), R(0, 2), t(0), R(1, 0), R(1, 1), R(1, 2), t(1), R(2, 0), R(2, 1), R(2, 2), t(2), 0.0, 0.0, 0.0, 1.0;
+    return T;
+}
+
+/** Extract rotation matrix and translation vector from a given transform matrix.
+ * @param Eigen::Matrix4f transform
+ * @param Eigen::Matrix3f output rotation matrix
+ * @param Eigen::Vector3f output translation vector
+ * @return void */
+void T2Rt(Eigen::Matrix4f T, Eigen::Matrix3f &R, Eigen::Vector3f &t)
+{
+    R << T(0, 0), T(0, 1), T(0, 2), T(1, 0), T(1, 1), T(1, 2), T(2, 0), T(2, 1), T(2, 2);
+    t << T(0, 3), T(1, 3), T(2, 3);
+}
