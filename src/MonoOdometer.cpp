@@ -1,7 +1,7 @@
 #include <multicam_vo/MonoOdometer.h>
 
 /** Default constructor. */
-MonoOdometer::MonoOdometer()
+MonoOdometer::MonoOdometer() : node_("~")
 {
     // read odometer parameters
     node_.param<int>("param_odometerMinNumberMatches", param_odometerMinNumberMatches_, 20);
@@ -26,8 +26,9 @@ MonoOdometer::~MonoOdometer()
  * @param Eigen::Matrix3f matrix with intrinsic parameters of current camera
  * @param Eigen::Matrix3f& (output) estimated rotation matrix
  * @param Eigen::Vector3f& (output) estimated translation vector
+ * @param bool show optical flow (true), don't show otherwise
  * @return bool true is motion successfully estimated, false otherwise */
-bool MonoOdometer::estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr, Eigen::Matrix3f &R, Eigen::Vector3f &t)
+bool MonoOdometer::estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr, Eigen::Matrix3f &R, Eigen::Vector3f &t, bool showOpticalFlow)
 {
     // check number of correspondences
     int N = matches.size();
@@ -76,29 +77,32 @@ bool MonoOdometer::estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KP
     F = getF(matchesNorm, inlierIndices);
 
     // plot optical flow and print #inliers (for debugging)
-    /*std::vector<Match> inlierMatches;
-    std::vector<Match> outlierMatches;
-    for(int i=0; i<matches.size(); i++)
+    if(showOpticalFlow)
     {
-        if(elemInVec(inlierIndices, i))
+        std::vector<Match> inlierMatches;
+        std::vector<Match> outlierMatches;
+        for(int i=0; i<matches.size(); i++)
         {
-            inlierMatches.push_back(matches[i]);
+            if(elemInVec(inlierIndices, i))
+            {
+                inlierMatches.push_back(matches[i]);
+            }
+            else
+            {
+                outlierMatches.push_back(matches[i]);
+            }
         }
-        else
-        {
-            outlierMatches.push_back(matches[i]);
-        }
+
+        std::cout << "\tNEW #INLIERS: " << inlierIndices.size() << " / " << matches.size() << std::endl;
+        cv::Mat image(1024, 768, CV_8UC1, cv::Scalar(0));
+        FeatureMatcher fm;
+        cv::Mat of1 = fm.highlightOpticalFlow(image, inlierMatches, cv::Scalar(0, 255, 0));
+        cv::Mat of2 = fm.highlightOpticalFlow(of1, outlierMatches, cv::Scalar(0, 0, 255));
+        cv::namedWindow("new", CV_WINDOW_AUTOSIZE);
+        cv::imshow("new", of2);
+        cv::waitKey(10);
     }
-
-    std::cout << "\t#INLIERS: " << inlierIndices.size() << " / " << matches.size() << std::endl;
-    cv::Mat image(1024, 768, CV_8UC1, cv::Scalar(0));
-    FeatureMatcher fm;
-    cv::Mat of1 = fm.highlightOpticalFlow(image, inlierMatches, cv::Scalar(0, 255, 0));
-    cv::Mat of2 = fm.highlightOpticalFlow(of1, outlierMatches, cv::Scalar(0, 0, 255));
-    cv::namedWindow("optical flow", CV_WINDOW_AUTOSIZE);
-    cv::imshow("optical flow", of2);
-    cv::waitKey(10);*/
-
+    
     // denormalize F
     F = NormTCurr.transpose() * F * NormTPrev;
     
@@ -130,7 +134,7 @@ bool MonoOdometer::estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KP
     }
 
 
-    /*// discard far-away points (i.e., that are more distant than the median)
+    // discard far-away points (i.e., that are more distant than the median)
     double median;
     std::vector<Eigen::Vector4f> close3DPoints = getClosePoints(valid3DPoints, median);
     
@@ -143,8 +147,8 @@ bool MonoOdometer::estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KP
     }
 
     // adjust translation scale
-    double scale = getTranslationScale(close3DPoints, median, 0.0, 1.65);
-    t[i] = t[i] * scale;*/
+    /*double scale = getTranslationScale(close3DPoints, median, 0.0, 1.65);
+    t = t * scale;*/
 
     return true;
 }

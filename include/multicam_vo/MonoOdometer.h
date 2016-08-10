@@ -16,6 +16,7 @@
 
 // project includes
 #include <multicam_vo/Match.h>
+#include <multicam_vo/FeatureMatcher.h>
 #include <multicam_vo/utils.h>
 
 //! Class for estimating monocular visual odometry
@@ -30,13 +31,14 @@ class MonoOdometer
         ~MonoOdometer();
 
         /** Estimate monocular visual odometry.
-        * @param std::vector<Match> vector with matches
-        * @param Eigen::Matrix3f matrix with intrinsic parameters of previous camera
-        * @param Eigen::Matrix3f matrix with intrinsic parameters of current camera
-        * @param Eigen::Matrix3f& output rotation matrix
-        * @param Eigen::Vector3f& output translation vector
-        * @return bool true is motion successfully estimated, false otherwise */
-        bool estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr, Eigen::Matrix3f &R, Eigen::Vector3f &t);
+	  	 * @param std::vector<Match> vector with matches
+		 * @param Eigen::Matrix3f matrix with intrinsic parameters of previous camera
+		 * @param Eigen::Matrix3f matrix with intrinsic parameters of current camera
+		 * @param Eigen::Matrix3f& (output) estimated rotation matrix
+		 * @param Eigen::Vector3f& (output) estimated translation vector
+		 * @param bool show optical flow (true), don't show otherwise
+		 * @return bool true is motion successfully estimated, false otherwise */
+		bool estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr, Eigen::Matrix3f &R, Eigen::Vector3f &t, bool showOpticalFlow);
 
     private:
 

@@ -78,7 +78,14 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
         Eigen::Matrix3f KCurr(lb2_.cameraMatrices_[camNoCurr]);
 
         // estimate monocular visual odometry
-        success[i] = monoOdometer.estimateMotion(matches[i], KPrev, KCurr, R[i], t[i]);
+        if(i == 0)
+        {
+            success[i] = monoOdometer.estimateMotion(matches[i], KPrev, KCurr, R[i], t[i], true);
+        }
+        else
+        {
+            success[i] = monoOdometer.estimateMotion(matches[i], KPrev, KCurr, R[i], t[i], false);
+        }        
     }
 
 	// let ALL matches vote for the best R,t estimated in the previous mono visual odometry step
@@ -113,7 +120,7 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
                                 << p(2, 0) << ",\t" << p(2, 1) << ",\t" << p(2, 2) << ",\t" << p(2, 3) << ",\t"
                                 << p(3, 0) << ",\t" << p(3, 1) << ",\t" << p(3, 2) << ",\t" << p(3, 3);
         (*files_[i]).flush();
-		
+
         // if R,t were successfully obtained in camera i...
         if(success[i])
         {
@@ -121,6 +128,7 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
             int sumInliers = 0;
 
             // test motion estimation by camera i in each camera j
+            std::cout << "#Inliers cam " << i; std::cout.flush();
 			for(int j=0; j<matches.size(); j++)
             {
                 // get camNoPrev and camNoCurr for camera j
@@ -139,7 +147,10 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
                 // count inliers of camera j for motion estimation of camera i
                 std::vector<int> inlierIndices = getInliers(matches[j], Fj);
                 sumInliers += inlierIndices.size();  
+
+                std::cout << "\t" << inlierIndices.size(); std::cout.flush();
             }
+            std::cout << std::endl;
             // the camera i with the most inliers is the best camera
             if(sumInliers > maxInliers)
             {

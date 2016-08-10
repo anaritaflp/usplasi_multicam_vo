@@ -86,7 +86,7 @@ std::vector<Feature> FeatureDetector::detectFeatures(cv::Mat image, int seqNo, i
         std::vector<cv::KeyPoint> kpts_bucket = ((FeatureDetector*)this->*detectPtr_)(buckets[i]);
         cv::Mat ds = ((FeatureDetector*)this->*computeDescriptorPtr_)(buckets[i], kpts_bucket);
 
-        if(kpts_bucket.size() > 0)
+        /*if(kpts_bucket.size() > 0)
         {
             // subpixel refinement
             std::vector<cv::Point2f> pts = keypoints2points(kpts_bucket);
@@ -95,7 +95,7 @@ std::vector<Feature> FeatureDetector::detectFeatures(cv::Mat image, int seqNo, i
             cv::TermCriteria criteria = cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 40, 0.001);
             cv::cornerSubPix(buckets[i], pts, winSize, zeroZone, criteria);            
             points2keypoints(kpts_bucket, pts);
-        }
+        }*/
 
         // get the coordinates of the points in the full image
         std::vector<cv::KeyPoint> kpts;

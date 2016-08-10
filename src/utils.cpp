@@ -136,6 +136,8 @@ nav_msgs::Odometry transform2OdometryMsg(Eigen::Matrix4f T, int bestCamera)
 
     quaternionTFToMsg(q, msg.pose.pose.orientation);
 
+    msg.header.frame_id = "world";
+
     char childFrameId[25];
     if(bestCamera != -1)
     {

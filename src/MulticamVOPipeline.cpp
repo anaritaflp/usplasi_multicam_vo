@@ -91,12 +91,6 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
         featuresAllCameras.push_back(features);
     }
 
-
-    /*cv::Mat imFeats = featureDetector_.highlightFeatures(imagesRect[0], featuresAllCameras[0]);
-    cv::namedWindow("features", CV_WINDOW_AUTOSIZE);
-    cv::imshow("features", imFeats);
-    cv::waitKey(10);*/
-
     if(!first_)
     {
         // check if a frame was lost
@@ -108,14 +102,7 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
         
         // match features
         std::vector<std::vector<Match>> matches = featureMatcher_.findOmniMatches(imagesRectPrev_, imagesRect, featuresAllCamerasPrev_, featuresAllCameras, NUM_OMNI_CAMERAS);
-        
-        std::cout << "#MATCHES: "; std::cout.flush();
-        for(int i=0; i<3*NUM_OMNI_CAMERAS; i++)
-        {
-            std::cout << " " << matches[i].size(); std::cout.flush();
-        }
-        std::cout << std::endl;
-        
+
         // estimate motion    
         int bestCamera;
         Eigen::Matrix4f T = odometer_.estimateMotion(matches, bestCamera);
