@@ -46,8 +46,10 @@ class FeatureDetector
          * @param cv::Mat image
 		 * @param int frame number
 		 * @param int camera index
+         * @param bool divide image in buckets (true) or search in the image as a whole (false)
+         * @param double resize factor, for resizing small images in order to allow extracting descriptors
          * @return std::vector<Feature> vector of features */
-        std::vector<Feature> detectFeatures(cv::Mat image, int seqNo, int camNo);
+        std::vector<Feature> detectFeatures(cv::Mat image, int seqNo, int camNo, bool doBucketing, double resizeFactor);
     
         /** Highlight features in an image.
          * @param cv::Mat original image

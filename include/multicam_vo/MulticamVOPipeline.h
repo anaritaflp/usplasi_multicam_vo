@@ -51,6 +51,13 @@ namespace odom
 		 * @return void */
         void imageCallback(const sensor_msgs::Image::ConstPtr &msg);
 
+        /** Triangulate stereo points, i.e. points that are visible in neighboring cameras at the same time.
+         * @param std::vector<cv::Mat vector with images, already reduced to their ROI (i.e. without the black borders)
+         * @param int sequence number of the current frame
+         * @param std::vector<std::vector<Feature>> output vector with stereo features in each camera, for matching with the next image
+         * @return std::vector<std::vector<Eigen::Vector3f>> vector with 3D stereo points in each neighboring camera pair. I.e, position 0 has points triangulated using camera 0 and 1. Position 1 has points triangulated using camera 1 and 2. etc. **/
+        std::vector<std::vector<Eigen::Vector3f>> triangulateStereo(std::vector<cv::Mat> imagesROI, int seqNumber, std::vector<std::vector<Feature>> &features);
+
         Ladybug2 lb2;                                               /*!< Ladybug2 object */    
 
         ros::NodeHandle node_;										/*!< ROS node for reading parameters */
@@ -72,6 +79,8 @@ namespace odom
         MulticamOdometer odometer_;						            /*!< Multi-camera odometer */
 
         std::vector<std::vector<double>> param_ROIs_;               /*!< Region of interest of all cameras */
+        std::vector<std::vector<double>> cameraOverlaps_;	        /*!< Vector with each camera's left and right overlap limits: Pixels under the left limit overlap with the left camera and pixels above the right limit overlap with the right camera. */		
+
 };    
     
     

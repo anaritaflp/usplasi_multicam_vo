@@ -60,14 +60,16 @@ FeatureDetector::~FeatureDetector()
  * @param cv::Mat image
  * @param int frame number
  * @param int camera index
+ * @param bool divide image in buckets (true) or search in the image as a whole (false)
+ * @param double resize factor, for resizing small images in order to allow extracting descriptors
  * @return std::vector<Feature> vector of features */
-std::vector<Feature> FeatureDetector::detectFeatures(cv::Mat image, int seqNo, int camNo)
+std::vector<Feature> FeatureDetector::detectFeatures(cv::Mat image, int seqNo, int camNo, bool doBucketing, double resizeFactor)
 {
     std::vector<cv::Mat> buckets;
     std::vector<cv::Point2f> offsets;
     
     // divide image into "buckets"
-    if(bucket_width_ == 0 || bucket_height_ == 0)
+    if(bucket_width_ == 0 || bucket_height_ == 0 || !doBucketing)
     {
         buckets.push_back(image);
         offsets.push_back(cv::Point2f(0.0, 0.0));
@@ -82,20 +84,36 @@ std::vector<Feature> FeatureDetector::detectFeatures(cv::Mat image, int seqNo, i
     // for each bucket...
     for(int i=0; i<buckets.size(); i++)
     {
-        // detect keypoints in the bucket and, for each keypoint, compute a descriptor
-        std::vector<cv::KeyPoint> kpts_bucket = ((FeatureDetector*)this->*detectPtr_)(buckets[i]);
-        cv::Mat ds = ((FeatureDetector*)this->*computeDescriptorPtr_)(buckets[i], kpts_bucket);
+        // resize the image for finding descriptors
+        cv::Mat bucketResized;
+        if(resizeFactor != 1.0)
+        {
+            cv::resize(buckets[i], bucketResized, cv::Size(resizeFactor*buckets[i].cols, resizeFactor*buckets[i].rows));
+        }
 
-        /*if(kpts_bucket.size() > 0)
+        // detect keypoints in the bucket
+        std::vector<cv::KeyPoint> kpts_bucket = ((FeatureDetector*)this->*detectPtr_)(bucketResized);
+
+        // extract descriptors from the keypoints
+        cv::Mat ds = ((FeatureDetector*)this->*computeDescriptorPtr_)(bucketResized, kpts_bucket);
+
+        // bring keypoints back to the un-resized image
+        for(int j=0; j<kpts_bucket.size(); j++)
+        {
+            kpts_bucket[j].pt.x /= resizeFactor;
+            kpts_bucket[j].pt.y /= resizeFactor;
+        }
+
+        if(kpts_bucket.size() > 0)
         {
             // subpixel refinement
             std::vector<cv::Point2f> pts = keypoints2points(kpts_bucket);
             cv::Size winSize = cv::Size(5, 5);
             cv::Size zeroZone = cv::Size(-1, -1);
             cv::TermCriteria criteria = cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 40, 0.001);
-            cv::cornerSubPix(buckets[i], pts, winSize, zeroZone, criteria);            
+            cv::cornerSubPix(bucketResized, pts, winSize, zeroZone, criteria);            
             points2keypoints(kpts_bucket, pts);
-        }*/
+        }
 
         // get the coordinates of the points in the full image
         std::vector<cv::KeyPoint> kpts;
@@ -104,15 +122,15 @@ std::vector<Feature> FeatureDetector::detectFeatures(cv::Mat image, int seqNo, i
             cv::KeyPoint kp(kpts_bucket[j]);
             kp.pt = kpts_bucket[j].pt + offsets[i];
             kpts.push_back(kp);
-        }        
+        }    
         
         // get vector with the features in that bucket
         std::vector<Feature> fs = buildFeatures(kpts, ds, seqNo, camNo);
-
+        
         // append bucket features to the full image feature vector
         features.insert(features.end(), fs.begin(), fs.end());
     }
-    
+
     return features;    
 }
 
@@ -250,11 +268,15 @@ void FeatureDetector::getBuckets(cv::Mat image, std::vector<cv::Mat> &buckets, s
 std::vector<Feature> FeatureDetector::buildFeatures(std::vector<cv::KeyPoint> keypoints, cv::Mat descriptors, int seqNo, int camNo)
 {
     std::vector<Feature> features;
-    for(int i=0; i<keypoints.size(); i++)
+
+    if(descriptors.cols > 0)
     {
-        cv::Mat d = descriptors(cv::Rect(0, i, descriptors.cols, 1));
-        Feature f(keypoints[i], d, seqNo, camNo);
-        features.push_back(f);
+        for(int i=0; i<keypoints.size(); i++)
+        {
+            cv::Mat d = descriptors(cv::Rect(0, i, descriptors.cols, 1));
+            Feature f(keypoints[i], d, seqNo, camNo);
+            features.push_back(f);
+        }
     }
     return features;
 }

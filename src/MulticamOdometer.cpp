@@ -78,14 +78,7 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
         Eigen::Matrix3f KCurr(lb2_.cameraMatrices_[camNoCurr]);
 
         // estimate monocular visual odometry
-        if(i == 0)
-        {
-            success[i] = monoOdometer.estimateMotion(matches[i], KPrev, KCurr, R[i], t[i], true);
-        }
-        else
-        {
-            success[i] = monoOdometer.estimateMotion(matches[i], KPrev, KCurr, R[i], t[i], false);
-        }        
+        success[i] = monoOdometer.estimateMotion(matches[i], KPrev, KCurr, R[i], t[i], false);
     }
 
 	// let ALL matches vote for the best R,t estimated in the previous mono visual odometry step
@@ -128,7 +121,7 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
             int sumInliers = 0;
 
             // test motion estimation by camera i in each camera j
-            std::cout << "#Inliers cam " << i; std::cout.flush();
+            //std::cout << "#Inliers cam " << i; std::cout.flush();
 			for(int j=0; j<matches.size(); j++)
             {
                 // get camNoPrev and camNoCurr for camera j
@@ -145,12 +138,12 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
                 Eigen::Matrix3f Fj = Rt2F(RLocal, tLocal, lb2_.cameraMatrices_[camNoPrev_j], lb2_.cameraMatrices_[camNoCurr_j]);
 
                 // count inliers of camera j for motion estimation of camera i
-                std::vector<int> inlierIndices = getInliers(matches[j], Fj);
+                std::vector<int> inlierIndices = getInliers(matches[j], Fj, param_odometerInlierThreshold_);
                 sumInliers += inlierIndices.size();  
 
-                std::cout << "\t" << inlierIndices.size(); std::cout.flush();
+                //std::cout << "\t" << inlierIndices.size(); std::cout.flush();
             }
-            std::cout << std::endl;
+            //std::cout << std::endl;
             // the camera i with the most inliers is the best camera
             if(sumInliers > maxInliers)
             {
@@ -169,8 +162,9 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
 /** Get the inliers among all matches that comply with a given fundamental matrix.
  * @param std::vector<Match> vector with feature matches
  * @param Eigen::Matrix3f fundamental matrix
+ * @param double inlier threshold
  * @return std::vector<int> vector with indices of the inliers */
-std::vector<int> MulticamOdometer::getInliers(std::vector<Match> matches, Eigen::Matrix3f F)
+std::vector<int> MulticamOdometer::getInliers(std::vector<Match> matches, Eigen::Matrix3f F, double threshold)
 {
     std::vector<int> inlierIndices;
     
@@ -194,7 +188,7 @@ std::vector<int> MulticamOdometer::getInliers(std::vector<Match> matches, Eigen:
 		// compute Sampson distance (distance to epipolar line)
         double dSampson = (x2tFx1 * x2tFx1) / ((Fx1(0)*Fx1(0)) + (Fx1(1)*Fx1(1)) + (Ftx2(0)*Ftx2(0)) + (Ftx2(1)*Ftx2(1)));
 
-        if(dSampson < param_odometerInlierThreshold_)
+        if(dSampson < threshold)
         {
             inlierIndices.push_back(i);
         }
@@ -229,3 +223,4 @@ Eigen::Matrix3f MulticamOdometer::Rt2F(Eigen::Matrix3f R, Eigen::Vector3f t, Eig
     
     return F;
 }
+

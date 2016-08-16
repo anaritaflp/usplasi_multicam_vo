@@ -1,0 +1,5 @@
+param_overlapCam0: [60.0, 240.0]
+param_overlapCam1: [55.0, 240.0]
+param_overlapCam2: [50.0, 220.0]
+param_overlapCam3: [60.0, 245.0]
+param_overlapCam4: [45.0, 225.0]

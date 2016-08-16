@@ -45,14 +45,13 @@ class MulticamOdometer
 		* @param int& output index of the camera with the most successful motion estimation
 		* @return Eigen::Matrix4f transformation with the relative motion of the multi-camera system */
 		Eigen::Matrix4f estimateMotion(std::vector<std::vector<Match>> matches, int &bestCamera);
-    
-    private:
 
-        /** Get the inliers among all matches that comply with a given fundamental matrix.
+		/** Get the inliers among all matches that comply with a given fundamental matrix.
 		 * @param std::vector<Match> vector with feature matches
 		 * @param Eigen::Matrix3f fundamental matrix
+		 * @param double inlier threshold
 		 * @return std::vector<int> vector with indices of the inliers */
-        std::vector<int> getInliers(std::vector<Match> matches, Eigen::Matrix3f F);
+        std::vector<int> getInliers(std::vector<Match> matches, Eigen::Matrix3f F, double threshold);
 
 		/** Compute fundamental martix out of rotation and translation.
 		* @param Eigen::Matrix3f rotation matrix
@@ -61,13 +60,15 @@ class MulticamOdometer
 		* @param Eigen::Matrix3f intrinsics matrix of the current camera
 		* @return Eigen::Matrix3f fundamental matrix */
 		Eigen::Matrix3f Rt2F(Eigen::Matrix3f R, Eigen::Vector3f t, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr);
+    
+    private:
 
 		ros::NodeHandle node_; 								/*!< ROS node for reading odometer parameters */
 
 		Ladybug2 lb2_;										/*!< Ladybug2 object */
         
-        double param_odometerInlierThreshold_;				/*!< Odometer parameter: inlier threshold */		
-
+        double param_odometerInlierThreshold_;				/*!< Odometer parameter: inlier threshold */
+		
 		std::vector<std::ofstream*> files_;					/*!< For debugging: for writing estimated poses in matlab files */
 		std::vector<bool> firstRow_;						/*!< For debugging: auxiliary flag for writing MatLab files */
 

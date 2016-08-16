@@ -46,13 +46,27 @@ class FeatureMatcher
 		 * @param int number of images
          * @return std::vector<std::vector<Match>> vector with each camera's matches */
         std::vector<std::vector<Match>> findOmniMatches(std::vector<cv::Mat> imagesPrev, std::vector<cv::Mat> imagesCurr, std::vector<std::vector<Feature>> featuresPrev, std::vector<std::vector<Feature>> featuresCurr, int numCameras);
-    
+
+        /** Find matches in an omnidirectional multi-camera system. Matches are search in each camera and between onsecutive cameras.
+         * @param std::vector<Feature> vector with features in the first image
+         * @param std::vector<Feature> vector with features in the second image
+         * @return std::vector<Match> vector with feature matches */
+        std::vector<Match> matchFeatures(std::vector<Feature> features1, std::vector<Feature> features2);
+
         /** Highlight optical flow in an image.
         * @param cv::Mat original image
         * @param std::vector<Match> intra-camera matches
         * @param cv::Scalar BGR color
         * @return cv::Mat image with highlighted optical flow */
         cv::Mat highlightOpticalFlow(cv::Mat image, std::vector<Match> matches, cv::Scalar color);
+
+        /** Highlight matches.
+        * @param cv::Mat first image
+        * @param cv::Mat second image
+        * @param std::vector<Match> matches
+        * @param cv::Scalar BGR color
+        * @return cv::Mat image with highlighted optical flow */
+        cv::Mat highlightMatches(cv::Mat image1, cv::Mat image2, std::vector<Match> matches, cv::Scalar color);
     
     private:
 
@@ -88,7 +102,6 @@ class FeatureMatcher
         Ladybug2 lb2_;                          /*!< Ladybug2 object */
 
         int param_matchingDescriptorDistance_;  /*!< Matching parameter: maximum descriptor distance */ 
-        double param_matchingFeatureDistance_;  /*!< Matching parameter: maximum feature distance */
         int param_trackingWindowSize_;          /*!< Tracking parameter: tracking window size */
         int param_trackingMaxLevel_;            /*!< Tracking parameter: maximum level */
         double param_trackingMinEigThreshold_;  /*!< Tracking parameter: smallest eigenvalue threshold */

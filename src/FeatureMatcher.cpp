@@ -17,7 +17,6 @@ FeatureMatcher::FeatureMatcher(Ladybug2 lb2): node_("~")
     
     // read parameters
     node_.param<int>("param_matchingDescriptorDistance", param_matchingDescriptorDistance_, 50);
-    node_.param<double>("param_matchingFeatureDistance", param_matchingFeatureDistance_, 100.0);
     node_.param<int>("param_trackingWindowSize", param_trackingWindowSize_, 21);
     node_.param<int>("param_trackingMaxLevel", param_trackingMaxLevel_, 0);
     node_.param<double>("param_trackingMinEigThreshold", param_trackingMinEigThreshold_, 0.001);
@@ -65,28 +64,12 @@ std::vector<std::vector<Match>> FeatureMatcher::findOmniMatches(std::vector<cv::
     // for each camera, match features
     for(int i=0; i<numCameras; i++)
     {
-        if(featuresPrev[i].size() == 0 || featuresCurr[i].size() == 0)
+        // match features between previous and current images
+        std::vector<Match> ms = matchFeatures(featuresPrev[i], featuresCurr[i]);
+        if(ms.size() == 0)
         {
             continue;
         }
-        cv::Mat descriptorsPrev = getDescriptorsFromFeatures(featuresPrev[i]);
-        cv::Mat descriptorsCurr = getDescriptorsFromFeatures(featuresCurr[i]);
-        
-        // brute force matching
-        cv::BFMatcher matcher(cv::NORM_HAMMING, true);
-        std::vector<cv::DMatch> dmatches;
-        matcher.match(descriptorsPrev, descriptorsCurr, dmatches);
-
-        // discard poor descriptor matches
-        std::vector<cv::DMatch> goodDMatches;
-        for(int i=0; i<dmatches.size(); i++)
-        {
-            if(dmatches[i].distance < param_matchingDescriptorDistance_)
-            {
-                goodDMatches.push_back(dmatches[i]);
-            }
-        }
-        std::vector<Match> ms = DMatches2Matches(featuresPrev[i], featuresCurr[i], goodDMatches);
         
         // insert matches in the corresponding position in the matches vector
         for(int j=0; j<ms.size(); j++)
@@ -99,10 +82,7 @@ std::vector<std::vector<Match>> FeatureMatcher::findOmniMatches(std::vector<cv::
                 cv::Point2f ptPrev = ms[j].getFirstFeature().getKeypoint().pt;
                 cv::Point2f ptCurr = ms[j].getSecondFeature().getKeypoint().pt;
                 double d = sqrt((ptPrev.x - ptCurr.x) * (ptPrev.x - ptCurr.x) + (ptPrev.y - ptCurr.y) * (ptPrev.y - ptCurr.y));
-                if(d < param_matchingFeatureDistance_)
-                {
-                    matches[3*camFirst].push_back(ms[j]);
-                }
+                matches[3*camFirst].push_back(ms[j]);
             }
             else
             {
@@ -120,51 +100,43 @@ std::vector<std::vector<Match>> FeatureMatcher::findOmniMatches(std::vector<cv::
             }
         }
     }
-
-    /*std::cout << "#INTRA: " << matches[0].size() << std::endl;
-    cv::Mat imof = highlightOpticalFlow(imagesCurr[0], matches[0]);
-    cv::namedWindow("optical flow before", CV_WINDOW_AUTOSIZE);
-    cv::imshow("optical flow before", imof);
-    cv::waitKey(10);*/
-    
-    // check for inter-camera matches (for debugging)
-    /*for(int i=0; i<matches.size(); i++)
-    {
-        if(matches[i].getFirstFeature().getCamNumber() != matches[i].getSecondFeature().getCamNumber())
-        {
-            std::cout << "inter-camera matching! -> " << matches[i].getFirstFeature().getCamNumber() << "@" << matches[i].getFirstFeature().getSeqNumber() << " <-> " << matches[i].getSecondFeature().getCamNumber() << "@" << matches[i].getSecondFeature().getSeqNumber() << std::endl;
-        }
-        
-        // show matches
-        int wHalf = 20;
-        int xPrev = matches[i].getFirstFeature().getKeypoint().pt.x - wHalf;
-        int yPrev = matches[i].getFirstFeature().getKeypoint().pt.y - wHalf;
-        int xCurr = matches[i].getSecondFeature().getKeypoint().pt.x - wHalf;
-        int yCurr = matches[i].getSecondFeature().getKeypoint().pt.y - wHalf;
-        
-        if(xPrev<0 ||yPrev<0 || xCurr<0 || yCurr<0 ||xPrev+wHalf>=768 ||yPrev+wHalf>=1024 ||xCurr+wHalf>=768 ||yCurr+wHalf>=1024 )
-        {
-            continue;
-        }
-        
-        cv::Mat wPrev = imagesPrev[matches[i].getFirstFeature().getCamNumber()](cv::Rect(xPrev, yPrev, 2*wHalf+1, 2*wHalf+1));            
-        cv::cvtColor(wPrev, wPrev, CV_GRAY2BGR);
-        cv::circle(wPrev, cv::Point2f(wHalf, wHalf), 3, cv::Scalar(0,255,0), 2);
-        
-        cv::Mat wCurr = imagesCurr[matches[i].getSecondFeature().getCamNumber()](cv::Rect(xCurr, yCurr, 2*wHalf+1, 2*wHalf+1));
-        cv::cvtColor(wCurr, wCurr, CV_GRAY2BGR);
-        cv::circle(wCurr, cv::Point2f(wHalf, wHalf), 3, cv::Scalar(0,255,0), 2);
-                    
-        cv::Mat cat;
-        cv::hconcat(wPrev, wCurr, cat);
-        std::string path = "/home/anaritapereira/ROS/catkin_ws/src/multicam_vo/images/matches/";
-        char filename[50];
-        sprintf(filename, "patch_%06d.png", matchCounter);
-        imwrite(path + std::string(filename), cat);
-        matchCounter++;     
-    }*/
 	return matches;
 }
+
+/** Find matches in an omnidirectional multi-camera system. Matches are search in each camera and between onsecutive cameras.
+ * @param std::vector<Feature> vector with features in the first image
+ * @param std::vector<Feature> vector with features in the second image
+ * @return std::vector<Match> vector with feature matches */
+std::vector<Match> FeatureMatcher::matchFeatures(std::vector<Feature> features1, std::vector<Feature> features2)
+{
+    std::vector<Match> matches;
+
+    if(features1.size() == 0 || features2.size() == 0)
+    {
+        return matches;
+    }
+    cv::Mat descriptors1 = getDescriptorsFromFeatures(features1);
+    cv::Mat descriptors2 = getDescriptorsFromFeatures(features2);
+    
+    // brute force matching
+    cv::BFMatcher matcher(cv::NORM_HAMMING, true);
+    std::vector<cv::DMatch> dmatches;
+    matcher.match(descriptors1, descriptors2, dmatches);
+
+    // discard poor descriptor matches
+    std::vector<cv::DMatch> goodDMatches;
+    for(int i=0; i<dmatches.size(); i++)
+    {
+        if(dmatches[i].distance < param_matchingDescriptorDistance_)
+        {
+            goodDMatches.push_back(dmatches[i]);
+        }
+    }
+    matches = DMatches2Matches(features1, features2, goodDMatches);
+
+    return matches;
+}
+
 
 /** Highlight optical flow in an image.
  * @param cv::Mat original image
@@ -194,6 +166,47 @@ cv::Mat FeatureMatcher::highlightOpticalFlow(cv::Mat image, std::vector<Match> m
     }
     
     return imageOptFlow;
+}
+
+/** Highlight matches.
+ * @param cv::Mat first image
+ * @param cv::Mat second image
+ * @param std::vector<Match> matches
+ * @param cv::Scalar BGR color
+ * @return cv::Mat image with highlighted optical flow */
+cv::Mat FeatureMatcher::highlightMatches(cv::Mat image1, cv::Mat image2, std::vector<Match> matches, cv::Scalar color)
+{
+    // leverage images in case of different heights
+    if(image1.rows > image2.rows)
+    {
+        cv::Mat rest(image1.rows - image2.rows, image2.cols, CV_8UC1, cv::Scalar(0));
+        cv::vconcat(image2, rest, image2);
+    }
+    else if(image2.rows > image1.rows)
+    {
+        cv::Mat rest(image2.rows - image1.rows, image1.cols, CV_8UC1, cv::Scalar(0));
+        cv::vconcat(image1, rest, image1);
+    }
+
+    // concatenate images horizontally
+    cv::Mat cat;
+    cv::hconcat(image1, image2, cat);
+
+    // convert to color
+    cv::cvtColor(cat, cat, CV_GRAY2BGR);
+
+    // draw lines connecting matching features
+    for(int i=0; i<matches.size(); i++)
+    {
+        cv::Point2f pt1 = matches[i].getFirstFeature().getKeypoint().pt;
+        cv::Point2f pt2 = matches[i].getSecondFeature().getKeypoint().pt;
+        pt2 += cv::Point2f(image1.cols, 0);
+
+        cv::line(cat, pt1, pt2, color);
+        cv::circle(cat, pt1, 3, color);
+        cv::circle(cat, pt2, 3, color);
+    }
+    return cat;
 }
 
 /** Track features in a camera.
