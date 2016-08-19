@@ -105,6 +105,7 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
     }
 
     // estimate motion (T)
+    std::vector<std::vector<Match>> matches;
     Eigen::Matrix4f T;
     int bestCamera;
     if(!first_)
@@ -117,7 +118,7 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
         }
         
         // match features
-        std::vector<std::vector<Match>> matches = featureMatcher_.findOmniMatches(imagesRectPrev_, imagesRect, featuresAllCamerasPrev_, featuresAllCameras, NUM_OMNI_CAMERAS);
+        matches = featureMatcher_.findOmniMatches(imagesRectPrev_, imagesRect, featuresAllCamerasPrev_, featuresAllCameras, NUM_OMNI_CAMERAS);
 
         // estimate motion    
         T = odometer_.estimateMotion(matches, bestCamera);
@@ -134,11 +135,6 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
         first_ = false;
     }
 
-    // adjust translation escale
-    // triangulate stereo points in the same instant
-    std::vector<std::vector<Feature>> commonFeatures;
-    std::vector<std::vector<Eigen::Vector3f>> stereoPoints = triangulateStereo(imagesRectReduced, seqNumber, commonFeatures);
-
     // publish motion
     nav_msgs::Odometry msgOdom = transform2OdometryMsg(T, bestCamera);
     msgOdom.header.stamp = msg->header.stamp;
@@ -147,7 +143,6 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
     // update image and features for tracking    
     imagesRectPrev_ = imagesRect;
     featuresAllCamerasPrev_ = featuresAllCameras;
-
     seqNumberPrev_ = seqNumber;
 
     std::cout << "PROCESSED FRAME " << (seqNumber - seqNumberOffset_ + 1) << std::endl;
@@ -254,14 +249,14 @@ std::vector<std::vector<Eigen::Vector3f>> MulticamVOPipeline::triangulateStereo(
         }*/
 
         std::vector<Match> inlierMatches = matchesStereo;
-        std::cout << i << "  MATCHES: " << inlierMatches.size()  << " / " << matchesStereo.size() << std::endl;
+        /*std::cout << i << "  MATCHES: " << inlierMatches.size()  << " / " << matchesStereo.size() << std::endl;
 
         cv::Mat imMatches = featureMatcher_.highlightMatches(imagesROI[iLeft], imagesROI[iRight], matchesStereoROI, cv::Scalar(0, 255, 0));
         char name[20];
         sprintf(name, "m_%d", i);
         cv::namedWindow(std::string(name), CV_WINDOW_AUTOSIZE);
         cv::imshow(std::string(name), imMatches);
-        cv::waitKey(10);
+        cv::waitKey(10);*/
 
         // triangulate 3D points
         for(int j=0; j<inlierMatches.size(); j++)

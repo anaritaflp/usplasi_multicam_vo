@@ -80,7 +80,6 @@ namespace odom
 
         std::vector<std::vector<double>> param_ROIs_;               /*!< Region of interest of all cameras */
         std::vector<std::vector<double>> cameraOverlaps_;	        /*!< Vector with each camera's left and right overlap limits: Pixels under the left limit overlap with the left camera and pixels above the right limit overlap with the right camera. */		
-
 };    
     
     

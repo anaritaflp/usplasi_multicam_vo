@@ -3,6 +3,7 @@
     <!-- ############################################################################### -->
     <!-- ###### Multi-Camera VO -->
     
+
     <node pkg="multicam_vo" type="multicam_vo_node" name="vo" output="screen">
         <param name="image_topic" value="/camera/image_raw" />
         <param name="simulation" value="false" />

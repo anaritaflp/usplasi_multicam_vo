@@ -18,6 +18,13 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(OpenCV REQUIRED)
 find_package(cmake_modules REQUIRED)
 find_package(Eigen REQUIRED)
+find_package(Eigen3 REQUIRED)
+find_package(Boost REQUIRED COMPONENTS
+	thread
+	system
+)
+
+set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_RELEASE}")
 
 catkin_package(
     INCLUDE_DIRS include
@@ -30,6 +37,7 @@ include_directories(
     ${catkin_INCLUDE_DIRS}
     ${Eigen_INCLUDE_DIRS} 
     ${OpenCV_INCLUDE_DIRS}
+    ${Boost_INCLUDE_DIRS}
     include
 )
 
@@ -39,6 +47,20 @@ add_library(Utils
 
 target_link_libraries(Utils
     ${catkin_LIBRARIES}
+)
+
+add_library(Optimization
+    src/Points.cpp
+    src/ISAMOptimizer.cpp
+)
+
+target_link_libraries(Optimization
+    ${Boost_LIBRARIES}
+    ${OpenCV_LIBS}
+    tbb
+    tbbmalloc
+    gtsam
+    Utils
 )
 
 add_library(MultiFeatures
