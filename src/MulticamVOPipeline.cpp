@@ -94,7 +94,8 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
     for(int i=0; i<NUM_CAMERAS; i++)
     {   
         std::vector<Feature> features;
-        features = featureDetector_.detectFeatures(imagesRectReduced[i], seqNumber, i, true, 1.0);   
+        features = featureDetector_.detectFeatures(imagesRectReduced[i], seqNumber, i, true, 1.0); 
+
         for(int j=0; j<features.size(); j++)
         {
             cv::KeyPoint kp = features[j].getKeypoint();
@@ -122,6 +123,15 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
 
         // estimate motion    
         T = odometer_.estimateMotion(matches, bestCamera);
+
+        // add measurements to optimizer
+        // if true
+            // update each camera's pose
+            // update Ladybug pose (T) - mean of all poses? bestCam's pose?
+        
+        // if false
+            // reset optimizer
+            // add 3d points and prior pose
     }
     else
     {

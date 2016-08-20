@@ -37,8 +37,10 @@ class MonoOdometer
 		 * @param Eigen::Matrix3f& (output) estimated rotation matrix
 		 * @param Eigen::Vector3f& (output) estimated translation vector
 		 * @param bool show optical flow (true), don't show otherwise
+		 * @param std::vector<Match> output vector with all inlier matches
+		 * @param std::vector<Eigen::Vector3f> output vector with 3D points, triangulated from all inlier matches
 		 * @return bool true is motion successfully estimated, false otherwise */
-		bool estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr, Eigen::Matrix3f &R, Eigen::Vector3f &t, bool showOpticalFlow);
+		bool estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr, Eigen::Matrix3f &R, Eigen::Vector3f &t, bool showOpticalFlow, std::vector<Match> &inlierMatches, std::vector<Eigen::Vector3f> &points3D);
 
     private:
 

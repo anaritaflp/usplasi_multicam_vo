@@ -18,7 +18,6 @@ find_package(catkin REQUIRED COMPONENTS
 find_package(OpenCV REQUIRED)
 find_package(cmake_modules REQUIRED)
 find_package(Eigen REQUIRED)
-find_package(Eigen3 REQUIRED)
 find_package(Boost REQUIRED COMPONENTS
 	thread
 	system
@@ -92,8 +91,9 @@ add_library(MulticamVOPipeline
 target_link_libraries(MulticamVOPipeline
     ${catkin_LIBRARIES}
     ${OpenCV_LIBS}
+    Optimization
     MultiFeatures
-    MulticamOdometer
+    MulticamOdometer    
 )
 
 add_library(MulticamVOSimPipeline

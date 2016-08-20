@@ -5,6 +5,9 @@
 #include <iostream>
 #include <vector>
 
+// ROS includes
+#include <ros/ros.h>
+
 // GTSAM includes
 #include <gtsam/geometry/Point2.h>
 #include <gtsam/geometry/Point3.h>
@@ -26,7 +29,7 @@ class ISAMOptimizer
         ~ISAMOptimizer();
         void reset();
         void addPriorPose(Eigen::Matrix4f priorPose);
-        void addPoints(std::vector<Eigen::Vector3f> points);
+        void addPoints(std::vector<Eigen::Vector3f> points, std::vector<Match> matches);
         void addPoseEstimates(std::vector<Eigen::Matrix4f> poseEstimates);
         bool addMeasurements(std::vector<Match> matches);
         void optimize();
@@ -38,6 +41,7 @@ class ISAMOptimizer
         std::vector<Point3D> points_;
         std::vector<std::vector<gtsam::Pose3>> cameraPoses_;
         std::vector<gtsam::Cal3_S2> Ks_;
+        gtsam::Values initialEstimate_;
 
         gtsam::noiseModel::Isotropic::shared_ptr measurementNoise_;
         gtsam::noiseModel::Isotropic::shared_ptr pointNoise_;
@@ -47,10 +51,11 @@ class ISAMOptimizer
         gtsam::ISAM2Params isamParameters_;
         gtsam::ISAM2 isam_;
         gtsam::NonlinearFactorGraph graph_;
+        double ISAMRelinearizeThreshold_;
+        int ISAMRelinearizeSkip_;
         int ISAMIters_;
 
-        
-        
+        ros::NodeHandle node_;       
 };
 
 #endif

@@ -85,17 +85,21 @@ std::vector<Feature> FeatureDetector::detectFeatures(cv::Mat image, int seqNo, i
     for(int i=0; i<buckets.size(); i++)
     {
         // resize the image for finding descriptors
-        cv::Mat bucketResized;
+        cv::Mat bucketToGo;
         if(resizeFactor != 1.0)
         {
-            cv::resize(buckets[i], bucketResized, cv::Size(resizeFactor*buckets[i].cols, resizeFactor*buckets[i].rows));
+            cv::resize(buckets[i], bucketToGo, cv::Size(resizeFactor*buckets[i].cols, resizeFactor*buckets[i].rows));
+        }
+        else
+        {
+            bucketToGo = buckets[i];
         }
 
         // detect keypoints in the bucket
-        std::vector<cv::KeyPoint> kpts_bucket = ((FeatureDetector*)this->*detectPtr_)(bucketResized);
+        std::vector<cv::KeyPoint> kpts_bucket = ((FeatureDetector*)this->*detectPtr_)(bucketToGo);
 
         // extract descriptors from the keypoints
-        cv::Mat ds = ((FeatureDetector*)this->*computeDescriptorPtr_)(bucketResized, kpts_bucket);
+        cv::Mat ds = ((FeatureDetector*)this->*computeDescriptorPtr_)(bucketToGo, kpts_bucket);
 
         // bring keypoints back to the un-resized image
         for(int j=0; j<kpts_bucket.size(); j++)
@@ -111,7 +115,7 @@ std::vector<Feature> FeatureDetector::detectFeatures(cv::Mat image, int seqNo, i
             cv::Size winSize = cv::Size(5, 5);
             cv::Size zeroZone = cv::Size(-1, -1);
             cv::TermCriteria criteria = cv::TermCriteria(CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 40, 0.001);
-            cv::cornerSubPix(bucketResized, pts, winSize, zeroZone, criteria);            
+            cv::cornerSubPix(bucketToGo, pts, winSize, zeroZone, criteria);            
             points2keypoints(kpts_bucket, pts);
         }
 

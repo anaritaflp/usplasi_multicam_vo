@@ -22,7 +22,8 @@
         <rosparam file="$(find multicam_vo)/param/trackingMatchingParams.yaml" />
         <rosparam file="$(find multicam_vo)/param/odometerParams.yaml" />  
         <rosparam file="$(find multicam_vo)/param/ROI_providedCalib.yaml" />   
-        <rosparam file="$(find multicam_vo)/param/overlap.yaml" />        
+        <rosparam file="$(find multicam_vo)/param/overlap.yaml" /> 
+        <rosparam file="$(find multicam_vo)/param/optimizationParams.yaml" />        
     </node>
 
     <!-- ############################################################################### -->

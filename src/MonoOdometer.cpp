@@ -27,8 +27,10 @@ MonoOdometer::~MonoOdometer()
  * @param Eigen::Matrix3f& (output) estimated rotation matrix
  * @param Eigen::Vector3f& (output) estimated translation vector
  * @param bool show optical flow (true), don't show otherwise
+ * @param std::vector<Match> output vector with all inlier matches
+ * @param std::vector<Eigen::Vector3f> output vector with 3D points, triangulated from all inlier matches
  * @return bool true is motion successfully estimated, false otherwise */
-bool MonoOdometer::estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr, Eigen::Matrix3f &R, Eigen::Vector3f &t, bool showOpticalFlow)
+bool MonoOdometer::estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr, Eigen::Matrix3f &R, Eigen::Vector3f &t, bool showOpticalFlow, std::vector<Match> &inlierMatches, std::vector<Eigen::Vector3f> &points3D)
 {
     // check number of correspondences
     int N = matches.size();
@@ -76,23 +78,23 @@ bool MonoOdometer::estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KP
     // compute fundamental matrix out of all inliers
     F = getF(matchesNorm, inlierIndices);
 
+    // save inlier and outlier matches
+    std::vector<Match> outlierMatches;
+    for(int i=0; i<matches.size(); i++)
+    {
+        if(elemInVec(inlierIndices, i))
+        {
+            inlierMatches.push_back(matches[i]);
+        }
+        else
+        {
+            outlierMatches.push_back(matches[i]);
+        }
+    }
+
     // plot optical flow and print #inliers (for debugging)
     if(showOpticalFlow)
     {
-        std::vector<Match> inlierMatches;
-        std::vector<Match> outlierMatches;
-        for(int i=0; i<matches.size(); i++)
-        {
-            if(elemInVec(inlierIndices, i))
-            {
-                inlierMatches.push_back(matches[i]);
-            }
-            else
-            {
-                outlierMatches.push_back(matches[i]);
-            }
-        }
-
         std::cout << "\tNEW #INLIERS: " << inlierIndices.size() << " / " << matches.size() << std::endl;
         cv::Mat image(1024, 768, CV_8UC1, cv::Scalar(0));
         FeatureMatcher fm;
@@ -110,46 +112,34 @@ bool MonoOdometer::estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KP
     E = F2E(F, KPrev, KCurr);
 
     // get rotation and translation and triangulate points
-    Eigen::Matrix<float, 4, Eigen::Dynamic> points3D;
-    E2Rt(E, KPrev, KCurr, matches, R, t, points3D);
+    Eigen::Matrix<float, 4, Eigen::Dynamic> points3DMat;
+    E2Rt(E, KPrev, KCurr, inlierMatches, R, t, points3DMat);
 
     // normalize 3D points (force last coordinate to 0)
-    std::vector<Eigen::Vector4f> valid3DPoints;
-    for(int j=0; j<points3D.cols(); j++)
+    for(int j=0; j<points3DMat.cols(); j++)
     {
-        Eigen::Vector4f pt = points3D.block<4, 1>(0, j);
-        pt = pt / pt(3);
+        Eigen::Vector3f pt = points3DMat.block<3, 1>(0, j);
+        double lastCoord = points3DMat(3, j);
+        pt = pt / lastCoord;
         if(pt(2) > 0)
         {
-            valid3DPoints.push_back(pt);
+            points3D.push_back(pt);
+        }
+        else
+        {
+            // remove match if not a valid point
+            inlierMatches.erase(inlierMatches.begin() + j);
         }
     }
 
     // check number of valid points
-    if(valid3DPoints.size() < param_odometerMinNumberMatches_)
+    if(points3D.size() < param_odometerMinNumberMatches_)
     {
         R = Eigen::Matrix3f::Identity();
         t << 0.0, 0.0, 0.0;
         return false;
     }
-
-
-    // discard far-away points (i.e., that are more distant than the median)
-    double median;
-    std::vector<Eigen::Vector4f> close3DPoints = getClosePoints(valid3DPoints, median);
     
-    // if big median (small motion), return error
-    if(median > param_odometerMotionThreshold_)
-    {
-        R = Eigen::Matrix3f::Identity();
-        t << 0.0, 0.0, 0.0;
-        return false;
-    }
-
-    // adjust translation scale
-    /*double scale = getTranslationScale(close3DPoints, median, 0.0, 1.65);
-    t = t * scale;*/
-
     return true;
 }
 

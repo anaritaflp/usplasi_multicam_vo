@@ -78,7 +78,9 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
         Eigen::Matrix3f KCurr(lb2_.cameraMatrices_[camNoCurr]);
 
         // estimate monocular visual odometry
-        success[i] = monoOdometer.estimateMotion(matches[i], KPrev, KCurr, R[i], t[i], false);
+        std::vector<Match> inlierMatches;
+        std::vector<Eigen::Vector3f> points3D;
+        success[i] = monoOdometer.estimateMotion(matches[i], KPrev, KCurr, R[i], t[i], false, inlierMatches, points3D);
     }
 
 	// let ALL matches vote for the best R,t estimated in the previous mono visual odometry step
