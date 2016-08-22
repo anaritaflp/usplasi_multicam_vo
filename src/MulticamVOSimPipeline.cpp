@@ -269,7 +269,9 @@ void MulticamVOSimPipeline::loop(std::vector<std::ofstream*> files)
 
         // estimate motion
         int bestCamera;
-        Eigen::Matrix4f T = odometer_.estimateMotion(reducedMatches, bestCamera);
+        std::vector<std::vector<Match>> inlierMatches;
+        std::vector<std::vector<Eigen::Vector3f>> points3D;
+        Eigen::Matrix4f T = odometer_.estimateMotion(reducedMatches, bestCamera, inlierMatches, points3D);
 
         // publish optimal motion estimation
         nav_msgs::Odometry msgOdom = transform2OdometryMsg(T, bestCamera);

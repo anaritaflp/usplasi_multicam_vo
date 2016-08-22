@@ -17,6 +17,7 @@
 #include <gtsam/nonlinear/Values.h>
 #include <gtsam/slam/PriorFactor.h>
 #include <gtsam/slam/ProjectionFactor.h>
+#include <gtsam/nonlinear/NonlinearISAM.h>
 
 // project includes
 #include <multicam_vo/Points.h>
@@ -26,22 +27,24 @@ class ISAMOptimizer
 {
     public:
         ISAMOptimizer();
+        ISAMOptimizer(Eigen::Matrix3f cameraMatrix);
         ~ISAMOptimizer();
         void reset();
-        void addPriorPose(Eigen::Matrix4f priorPose);
-        void addPoints(std::vector<Eigen::Vector3f> points, std::vector<Match> matches);
-        void addPoseEstimates(std::vector<Eigen::Matrix4f> poseEstimates);
-        bool addMeasurements(std::vector<Match> matches);
+        bool addData(std::vector<Eigen::Vector3f> points, std::vector<Match> matches, Eigen::Matrix4f pose);
         void optimize();
 
     private:
+
+        int findCorrespondingPoint(Match match);
+        
         int nCameras_;        
         int nPoses_;
 
         std::vector<Point3D> points_;
-        std::vector<std::vector<gtsam::Pose3>> cameraPoses_;
-        std::vector<gtsam::Cal3_S2> Ks_;
+        std::vector<gtsam::Pose3> cameraPoses_;
+        gtsam::Cal3_S2 K_;
         gtsam::Values initialEstimate_;
+        int poseNumber_;
 
         gtsam::noiseModel::Isotropic::shared_ptr measurementNoise_;
         gtsam::noiseModel::Isotropic::shared_ptr pointNoise_;
@@ -49,13 +52,14 @@ class ISAMOptimizer
         int minCorrespondedPoints_;
 
         gtsam::ISAM2Params isamParameters_;
-        gtsam::ISAM2 isam_;
+        gtsam::NonlinearISAM isam_;
         gtsam::NonlinearFactorGraph graph_;
+        int ISAMRelinearizeInterval_;
         double ISAMRelinearizeThreshold_;
         int ISAMRelinearizeSkip_;
         int ISAMIters_;
 
-        ros::NodeHandle node_;       
+        ros::NodeHandle node_;     
 };
 
 #endif

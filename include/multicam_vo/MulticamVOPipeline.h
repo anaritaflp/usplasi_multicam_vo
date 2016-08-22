@@ -62,7 +62,7 @@ namespace odom
          * @return std::vector<std::vector<Eigen::Vector3f>> vector with 3D stereo points in each neighboring camera pair. I.e, position 0 has points triangulated using camera 0 and 1. Position 1 has points triangulated using camera 1 and 2. etc. **/
         std::vector<std::vector<Eigen::Vector3f>> triangulateStereo(std::vector<cv::Mat> imagesROI, int seqNumber, std::vector<std::vector<Feature>> &features);
 
-        Ladybug2 lb2;                                               /*!< Ladybug2 object */    
+        Ladybug2 lb2_;                                               /*!< Ladybug2 object */    
 
         ros::NodeHandle node_;										/*!< ROS node for reading parameters */
         image_transport::Subscriber subImage_;						/*!< ROS subscriber to image messages */
@@ -81,7 +81,7 @@ namespace odom
 		FeatureDetector featureDetector_;							/*!< Feature detector */
         FeatureMatcher featureMatcher_;							    /*!< Feature matcher */	
         MulticamOdometer odometer_;						            /*!< Multi-camera odometer */
-        ISAMOptimizer optimizer_;
+        std::vector<ISAMOptimizer> optimizers_;
 
         std::vector<std::vector<double>> param_ROIs_;               /*!< Region of interest of all cameras */
         std::vector<std::vector<double>> cameraOverlaps_;	        /*!< Vector with each camera's left and right overlap limits: Pixels under the left limit overlap with the left camera and pixels above the right limit overlap with the right camera. */		

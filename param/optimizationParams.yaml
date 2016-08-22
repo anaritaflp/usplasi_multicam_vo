@@ -3,5 +3,6 @@ pointNoise: 0.1
 poseNoise: [0.3, 0.3, 0.3, 0.1, 0.1, 0.1]
 minCorrespondedPoints: 20
 ISAMIters: 1
+ISAMRelinearizeInterval: 3
 ISAMRelinearizeThreshold: 0.01
 ISAMRelinearizeSkip: 1

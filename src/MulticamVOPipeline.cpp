@@ -9,7 +9,7 @@ namespace odom
 MulticamVOPipeline::MulticamVOPipeline(std::vector<std::ofstream*> files): node_("~")
 {
     // initialize ladybug
-    lb2 = Ladybug2(node_);
+    lb2_ = Ladybug2(node_);
     
     // get image topic
     node_.param<std::string>("image_topic", param_imageTopic_, "/camera/image_raw");
@@ -43,8 +43,16 @@ MulticamVOPipeline::MulticamVOPipeline(std::vector<std::ofstream*> files): node_
     lostFrameCounter_ = 0;
     
     featureDetector_ = FeatureDetector(SHI_TOMASI, ORB);
-    featureMatcher_ = FeatureMatcher(lb2);
-    odometer_ = MulticamOdometer(lb2, files);
+    featureMatcher_ = FeatureMatcher(lb2_);
+    odometer_ = MulticamOdometer(lb2_, files);
+    
+    // initialize ISAM optimizer for each camera
+    optimizers_.resize(NUM_OMNI_CAMERAS);
+    for(int i=0; i<NUM_OMNI_CAMERAS; i++)
+    {   
+        optimizers_[i] = ISAMOptimizer(lb2_.cameraMatrices_[i]);
+    }
+    
     
     // advertise odometry topic
     pubOdom_ = node_.advertise<nav_msgs::Odometry>("multicam_vo/odometry", 1);
@@ -75,10 +83,10 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
 {
     // convert msg to cv::Mat and split
     cv::Mat_<uint8_t> fullImage = cv::Mat_<uint8_t>(NUM_CAMERAS*IMAGE_WIDTH, IMAGE_HEIGHT, const_cast<uint8_t*>(&msg->data[0]), msg->step);
-    std::vector<cv::Mat> splitImages = lb2.splitLadybug(fullImage, "mono8");
+    std::vector<cv::Mat> splitImages = lb2_.splitLadybug(fullImage, "mono8");
 
     // rectify images
-    std::vector<cv::Mat> imagesRect = lb2.rectify(splitImages);
+    std::vector<cv::Mat> imagesRect = lb2_.rectify(splitImages);
 
     // reduce images to their ROI
     std::vector<cv::Mat> imagesRectReduced;
@@ -122,16 +130,20 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
         matches = featureMatcher_.findOmniMatches(imagesRectPrev_, imagesRect, featuresAllCamerasPrev_, featuresAllCameras, NUM_OMNI_CAMERAS);
 
         // estimate motion    
-        T = odometer_.estimateMotion(matches, bestCamera);
+        std::vector<std::vector<Match>> inlierMatches;
+        std::vector<std::vector<Eigen::Vector3f>> points3D;
+        T = odometer_.estimateMotion(matches, bestCamera, inlierMatches, points3D);
 
-        // add measurements to optimizer
-        // if true
-            // update each camera's pose
-            // update Ladybug pose (T) - mean of all poses? bestCam's pose?
-        
-        // if false
-            // reset optimizer
-            // add 3d points and prior pose
+        // convert best pose to each camera's coordinates
+        std::vector<Eigen::Matrix4f> bestPoseCameras;
+        bestPoseCameras.resize(NUM_OMNI_CAMERAS);
+
+        for(int i=0; i<NUM_OMNI_CAMERAS; i++)
+        {
+            bestPoseCameras[i] = lb2_.Ladybug2CamRef(T, i, i);
+            std::cout << "CAM " << i << ": " << std::endl;
+            optimizers_[i].addData(points3D[i], inlierMatches[i], bestPoseCameras[i]);
+        }
     }
     else
     {
@@ -234,7 +246,7 @@ std::vector<std::vector<Eigen::Vector3f>> MulticamVOPipeline::triangulateStereo(
         }
 
         // left - right transformation
-        Eigen::Matrix4f TLeftRight = lb2.getCamX2CamYTransform(iLeft, iRight);
+        Eigen::Matrix4f TLeftRight = lb2_.getCamX2CamYTransform(iLeft, iRight);
         Eigen::Matrix3f RLeftRight;
         Eigen::Vector3f tLeftRight;
         T2Rt(TLeftRight, RLeftRight, tLeftRight);
@@ -246,7 +258,7 @@ std::vector<std::vector<Eigen::Vector3f>> MulticamVOPipeline::triangulateStereo(
         T2Rt(TRightLeft, RRightLeft, tRightLeft);
 
         // remove wrong matches using the known static transformations between cameras
-        /*Eigen::Matrix3f FStereo = odometer_.Rt2F(RRightLeft, tRightLeft, lb2.cameraMatrices_[iLeft], lb2.cameraMatrices_[iRight]);
+        /*Eigen::Matrix3f FStereo = odometer_.Rt2F(RRightLeft, tRightLeft, lb2_.cameraMatrices_[iLeft], lb2_.cameraMatrices_[iRight]);
         std::vector<int> inlierIndices = odometer_.getInliers(matchesStereo, FStereo, 1.0);
         
         std::vector<Match> inlierMatches;
@@ -275,15 +287,15 @@ std::vector<std::vector<Eigen::Vector3f>> MulticamVOPipeline::triangulateStereo(
             cv::Point2f ptLeft = inlierMatches[j].getFirstFeature().getKeypoint().pt;
             cv::Point2f ptRight = inlierMatches[j].getSecondFeature().getKeypoint().pt;
 
-            double fxLeft = lb2.intrinsics_[iLeft].fx();
-            double fyLeft = lb2.intrinsics_[iLeft].fy();
-            double cxLeft = lb2.intrinsics_[iLeft].cx();
-            double cyLeft = lb2.intrinsics_[iLeft].cy();
+            double fxLeft = lb2_.intrinsics_[iLeft].fx();
+            double fyLeft = lb2_.intrinsics_[iLeft].fy();
+            double cxLeft = lb2_.intrinsics_[iLeft].cx();
+            double cyLeft = lb2_.intrinsics_[iLeft].cy();
 
-            double fxRight = lb2.intrinsics_[iRight].fx();
-            double fyRight = lb2.intrinsics_[iRight].fy();
-            double cxRight = lb2.intrinsics_[iRight].cx();
-            double cyRight = lb2.intrinsics_[iRight].cy();
+            double fxRight = lb2_.intrinsics_[iRight].fx();
+            double fyRight = lb2_.intrinsics_[iRight].fy();
+            double cxRight = lb2_.intrinsics_[iRight].cx();
+            double cyRight = lb2_.intrinsics_[iRight].cy();
 
             Eigen::Vector3f rayLeft, rayRight;            
             rayLeft << ((ptLeft.x - cxLeft) / fxLeft), ((ptLeft.y - cyLeft) / fyLeft), 1.0;

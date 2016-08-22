@@ -1,9 +1,14 @@
 
 #include <multicam_vo/ISAMOptimizer.h>
 
-ISAMOptimizer::ISAMOptimizer() : node_("~")
+ISAMOptimizer::ISAMOptimizer()
 {
-    // read params, fill variables
+
+}
+
+ISAMOptimizer::ISAMOptimizer(Eigen::Matrix3f cameraMatrix) : node_("~")
+{
+    // read noise parameters
     std::vector<double> vecPoseNoise;
     double measurementNoise, pointNoise;
     vecPoseNoise.resize(6);
@@ -16,10 +21,25 @@ ISAMOptimizer::ISAMOptimizer() : node_("~")
     pointNoise_ = gtsam::noiseModel::Isotropic::Sigma(3, pointNoise);
     poseNoise_ = gtsam::noiseModel::Diagonal::Sigmas((gtsam::Vector(6) << vecPoseNoise[0], vecPoseNoise[1], vecPoseNoise[2], vecPoseNoise[3], vecPoseNoise[4], vecPoseNoise[5]));
 
+    // read other parameters
     node_.param<int>("minCorrespondedPoints", minCorrespondedPoints_, 20);
     node_.param<int>("ISAMIters", ISAMIters_, 2);
+    node_.param<int>("ISAMRelinearizeInterval", ISAMRelinearizeInterval_, 5);
     node_.param<double>("ISAMRelinearizeThreshold", ISAMRelinearizeThreshold_, 0.1);
     node_.param<int>("ISAMRelinearizeSkip", ISAMRelinearizeSkip_, 10);
+
+    // add calibration
+    double fx = cameraMatrix(0, 0);
+    double fy = cameraMatrix(1, 1);
+    double cx = cameraMatrix(0, 2);
+    double cy = cameraMatrix(1, 2);
+    K_ =  gtsam::Cal3_S2(fx, fy, 0, cx, cy);
+
+    // create nonlinear ISAM
+    isam_ = gtsam::NonlinearISAM(ISAMRelinearizeInterval_);
+
+    // initialize pose number
+    poseNumber_ = 0;
 }
 
 ISAMOptimizer::~ISAMOptimizer()
@@ -29,67 +49,74 @@ ISAMOptimizer::~ISAMOptimizer()
 
 void ISAMOptimizer::reset()
 {
-    // leave params, clear points and poses vectors
-}
-
-void ISAMOptimizer::addPriorPose(Eigen::Matrix4f priorPose)
-{
 
 }
 
-void ISAMOptimizer::addPoints(std::vector<Eigen::Vector3f> points, std::vector<Match> matches)
+bool ISAMOptimizer::addData(std::vector<Eigen::Vector3f> points, std::vector<Match> matches, Eigen::Matrix4f pose)
 {
-    // fill points vector
-    for(int i=0; i<points.size(); i++)
-    {
-        // build Point3D structure
-        gtsam::Point3 p(points[i](0), points[i](1), points[i](2));
-        Point3D p3D(p, matches[i]);
-        points_.push_back(p3D);
+    int visiblePoints = 0;
 
-        // add point estimates of points to graph
-        initialEstimate_.insert(gtsam::Symbol('l', i), points_[i].getPoint());
-
-        // add prior of first landmark to graph
-        if(i == 0)
-        {
-            graph_.push_back(gtsam::PriorFactor<gtsam::Point3>(gtsam::Symbol('l', 0), points_[0].getPoint(), pointNoise_));
-        }
-    }
-}
-
-void ISAMOptimizer::addPoseEstimates(std::vector<Eigen::Matrix4f> poseEstimates)
-{
-
-}
-
-bool ISAMOptimizer::addMeasurements(std::vector<Match> matches)
-{
-    std::vector<int> correspondedPointsIndices;
+    // add 2D measurements
     for(int i=0; i<matches.size(); i++)
     {
-        for(int j=0; j<points_.size(); j++)
-        {
-            if(elemInVec(correspondedPointsIndices, j))
-            {
-                continue;
-            }
+        // check if the corresponding point already exists
+        int correspondingIndex = findCorrespondingPoint(matches[i]);
 
-            if(points_[j].isCorresponding(matches[i].getFirstFeature()))
-            {
-                points_[j].addMeasurement(matches[i].getFirstFeature());
-                correspondedPointsIndices.push_back(j);
-                break;
-            }
+        if(correspondingIndex > 0)
+        {
+            points_[correspondingIndex].addMeasurement(matches[i].getSecondFeature());
+            visiblePoints++;
+
+            cv::KeyPoint kpt = matches[i].getFirstFeature().getKeypoint();
+            gtsam::Point2 point2D(kpt.pt.x, kpt.pt.y);
+            //graph_.add(gtsam::GenericProjectionFactor<gtsam::Pose3, gtsam::Point3, gtsam::Cal3_S2>(point2D, measurementNoise_, gtsam::Symbol('x', poseNumber_), gtsam::Symbol('l', correspondingIndex), K_));
         }
     }
 
-    if(correspondedPointsIndices.size() < minCorrespondedPoints_)
+    std::cout << "\tVisible points: " << visiblePoints << std::endl;
+    if(visiblePoints < minCorrespondedPoints_)
     {
         return false;
     }
 
+    // add initial pose estimate
+    gtsam::Rot3 R(pose(0, 0), pose(0, 1), pose(0, 2), pose(1, 0), pose(1, 1), pose(1, 2), pose(2, 0), pose(2, 1), pose(2, 2));
+    gtsam::Point3 t(pose(0, 3), pose(1, 3), pose(2, 3));
+    gtsam::Pose3 pose3(R, t);    
+    initialEstimate_.insert(gtsam::Symbol('x', poseNumber_), pose3);
+
+    // if it is the first pose
+    if(poseNumber_ == 0)
+    {
+        // add prior on first pose
+        graph_.add(gtsam::PriorFactor<gtsam::Pose3>(gtsam::Symbol('x', 0), pose3, poseNoise_));
+
+        // add prior on first landmark
+        gtsam::Point3 point3(points[0](0), points[0](1), points[0](2));
+        graph_.add(gtsam::PriorFactor<gtsam::Point3>(gtsam::Symbol('l', 0), point3, pointNoise_));
+    
+        // add initial estimates of all 3D points
+        for(int j=0; j<points.size(); j++)
+        {
+            point3 = gtsam::Point3(points[0](0), points[0](1), points[0](2));
+            initialEstimate_.insert(gtsam::Symbol('l', j), point3);
+        }
+    }
+
+    poseNumber_++;
     return true;
+}
+
+int ISAMOptimizer::findCorrespondingPoint(Match match)
+{
+    for(int i=0; i<points_.size(); i++)
+    {
+        if(points_[i].isCorresponding(match.getFirstFeature()))
+        {
+            return i;
+        }
+    }
+    return -1;
 }
 
 void ISAMOptimizer::optimize()
