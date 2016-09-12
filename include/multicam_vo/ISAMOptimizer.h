@@ -36,13 +36,12 @@ class ISAMOptimizer
     private:
 
         int findCorrespondingPoint(Match match);
-        
-        int nCameras_;        
-        int nPoses_;
+        void markPointsAsOutdated();
+        void removeOutdatedPoints();
 
         std::vector<Point3D> points_;
-        std::vector<gtsam::Pose3> cameraPoses_;
-        gtsam::Cal3_S2 K_;
+        std::vector<gtsam::Pose3> poses_;
+        gtsam::Cal3_S2::shared_ptr K_;
         gtsam::Values initialEstimate_;
         int poseNumber_;
 

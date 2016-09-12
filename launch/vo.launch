@@ -29,13 +29,14 @@
     <!-- ############################################################################### -->
     <!-- ###### Plot VO -->
 
-    <node pkg="evaluate_vo" type="get_vo_node" name="get_vo" args="$(find multicam_vo)/matlab/vo_opt.m vo_opt odometry" output="screen">
+    <node pkg="evaluate_vo" type="get_vogt_node" name="get_vogt" args="$(find multicam_vo)/matlab/plano_ladybug odometry gps" output="screen">
         <remap from="get_data/visual_odometry" to="/vo/multicam_vo/odometry" />
+        <remap from="get_data/ground_truth" to="/asterx2_node/lrm_gps" />
     </node>
 
     <!-- ############################################################################### -->
     <!-- ###### Bagfile -->
     
-    <node pkg="rosbag" type="play" name="bag" args="-r 0.05 $(find ladybug2)/bagfiles/jun19_campus1.bag" />
+    <node pkg="rosbag" type="play" name="bag" args="-r 0.05 /home/anaritapereira/ROS/catkin_ws/bags_ladybug_bumblebee/bagfiles_0209/relevo_ladybug.bag" />
 
 </launch>

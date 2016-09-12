@@ -66,6 +66,7 @@ void Point2D::setMeasurement(gtsam::Point2 measurement)
 Point3D::Point3D()
 {
     point_ = gtsam::Point3(0.0, 0.0, 0.0);
+    flagUpdated_ = false;
 }
 
 Point3D::Point3D(gtsam::Point3 point, Match match)
@@ -74,6 +75,7 @@ Point3D::Point3D(gtsam::Point3 point, Match match)
     Point2D p2D(match.getSecondFeature());
     measurements_.push_back(p2D);
     lastDescriptor_ = match.getSecondFeature().getDescriptor();
+    flagUpdated_ = true;
 }
 
 Point3D::Point3D(const Point3D &other)
@@ -81,6 +83,7 @@ Point3D::Point3D(const Point3D &other)
     point_ = other.point_;
     measurements_ = other.measurements_;
     lastDescriptor_ = other.lastDescriptor_;
+    flagUpdated_ = other.flagUpdated_;
 }
 
 Point3D & Point3D::operator=(const Point3D &other)
@@ -88,6 +91,7 @@ Point3D & Point3D::operator=(const Point3D &other)
     point_ = other.point_;
     measurements_ = other.measurements_;
     lastDescriptor_ = other.lastDescriptor_;
+    flagUpdated_ = other.flagUpdated_;
 }
 
 Point3D::~Point3D()
@@ -110,11 +114,27 @@ cv::Mat Point3D::getLastDescriptor()
     return lastDescriptor_;
 }
 
+bool Point3D::isUpdated()
+{
+    return flagUpdated_;
+}
+
 void Point3D::addMeasurement(Feature feature)
 {
     Point2D p2D(feature);
     measurements_.push_back(p2D);
     lastDescriptor_ = feature.getDescriptor();
+    flagUpdated_ = true;
+}
+
+void Point3D::markAsOutdated()
+{
+    flagUpdated_ = false;
+}
+
+void Point3D::markAsUpdated()
+{
+    flagUpdated_ = true;
 }
 
 bool Point3D::isCorresponding(Feature feature)

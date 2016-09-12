@@ -29,10 +29,13 @@ class Point2D
         int getCamNumber();
         int getSeqNumber();
         gtsam::Point2 getMeasurement();
+        bool isUpdated();
 
         void setCamNumber(int camNumber);
         void setSeqNumber(int seqNumber);
         void setMeasurement(gtsam::Point2 measurement);
+        void markAsOutdated();
+        void markAsUpdated();
 
 
     private:
@@ -56,11 +59,16 @@ class Point3D
 
         void addMeasurement(Feature feature);
         bool isCorresponding(Feature feature);
+        bool isUpdated();
+        void markAsOutdated();
+        void markAsUpdated();
+
         
     private:
         gtsam::Point3 point_;
         std::vector<Point2D> measurements_;
         cv::Mat lastDescriptor_;
+        bool flagUpdated_;
 };
 
 #endif

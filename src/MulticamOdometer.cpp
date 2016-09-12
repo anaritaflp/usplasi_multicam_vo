@@ -114,9 +114,9 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
         }
         Eigen::Matrix4f p(absolutePosesLocal_[i]);                
         (*files_[i]) << "\t" << p(0, 0) << ",\t" << p(0, 1) << ",\t" << p(0, 2) << ",\t" << p(0, 3) << ",\t"
-                                << p(1, 0) << ",\t" << p(1, 1) << ",\t" << p(1, 2) << ",\t" << p(1, 3) << ",\t"
-                                << p(2, 0) << ",\t" << p(2, 1) << ",\t" << p(2, 2) << ",\t" << p(2, 3) << ",\t"
-                                << p(3, 0) << ",\t" << p(3, 1) << ",\t" << p(3, 2) << ",\t" << p(3, 3);
+                             << p(1, 0) << ",\t" << p(1, 1) << ",\t" << p(1, 2) << ",\t" << p(1, 3) << ",\t"
+                             << p(2, 0) << ",\t" << p(2, 1) << ",\t" << p(2, 2) << ",\t" << p(2, 3) << ",\t"
+                             << p(3, 0) << ",\t" << p(3, 1) << ",\t" << p(3, 2) << ",\t" << p(3, 3);
         (*files_[i]).flush();
 
         // if R,t were successfully obtained in camera i...

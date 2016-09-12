@@ -138,11 +138,16 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
         std::vector<Eigen::Matrix4f> bestPoseCameras;
         bestPoseCameras.resize(NUM_OMNI_CAMERAS);
 
-        for(int i=0; i<NUM_OMNI_CAMERAS; i++)
+        //for(int i=0; i<NUM_OMNI_CAMERAS; i++)
+        for(int i=0; i<1; i++)
         {
             bestPoseCameras[i] = lb2_.Ladybug2CamRef(T, i, i);
             std::cout << "CAM " << i << ": " << std::endl;
-            optimizers_[i].addData(points3D[i], inlierMatches[i], bestPoseCameras[i]);
+            if(!optimizers_[i].addData(points3D[3*i], inlierMatches[3*i], bestPoseCameras[i]))
+            {
+                optimizers_[i].reset();
+                optimizers_[i].addData(points3D[3*i], inlierMatches[3*i], bestPoseCameras[i]);
+            }
         }
     }
     else
