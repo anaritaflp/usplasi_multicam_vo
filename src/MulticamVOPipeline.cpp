@@ -46,14 +46,6 @@ MulticamVOPipeline::MulticamVOPipeline(std::vector<std::ofstream*> files): node_
     featureMatcher_ = FeatureMatcher(lb2_);
     odometer_ = MulticamOdometer(lb2_, files);
     
-    // initialize ISAM optimizer for each camera
-    optimizers_.resize(NUM_OMNI_CAMERAS);
-    for(int i=0; i<NUM_OMNI_CAMERAS; i++)
-    {   
-        optimizers_[i] = ISAMOptimizer(lb2_.cameraMatrices_[i]);
-    }
-    
-    
     // advertise odometry topic
     pubOdom_ = node_.advertise<nav_msgs::Odometry>("multicam_vo/odometry", 1);
     
@@ -81,6 +73,10 @@ void MulticamVOPipeline::spin()
  * @return void */
 void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
 {
+
+    // measure execution time
+    ros::Time startingTime = ros::Time::now();
+
     // convert msg to cv::Mat and split
     cv::Mat_<uint8_t> fullImage = cv::Mat_<uint8_t>(NUM_CAMERAS*IMAGE_WIDTH, IMAGE_HEIGHT, const_cast<uint8_t*>(&msg->data[0]), msg->step);
     std::vector<cv::Mat> splitImages = lb2_.splitLadybug(fullImage, "mono8");
@@ -88,67 +84,55 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
     // rectify images
     std::vector<cv::Mat> imagesRect = lb2_.rectify(splitImages);
 
-    // reduce images to their ROI
-    std::vector<cv::Mat> imagesRectReduced;
-    imagesRectReduced.resize(NUM_CAMERAS);
-    for(int i=0; i<NUM_CAMERAS; i++)
+    // vector with vector set of features and intra-camera matches of all cameras
+    std::vector<std::vector<Feature>> featuresAllCameras;
+    std::vector<std::vector<Match>> matches;
+    featuresAllCameras.resize(NUM_OMNI_CAMERAS);
+    matches.resize(NUM_OMNI_CAMERAS);
+
+    // get frame number
+    int seqNumber = msg->header.seq;
+
+
+
+    // check if frames were lost
+    if(seqNumber - seqNumberPrev_ > 1)
     {
-        imagesRectReduced[i] = imagesRect[i](cv::Rect(param_ROIs_[i][0], param_ROIs_[i][1], param_ROIs_[i][2], param_ROIs_[i][3]));
+        ROS_WARN("Lost %d frames!", seqNumber - seqNumberPrev_ - 1);
+        lostFrameCounter_ += seqNumber - seqNumberPrev_ - 1;
     }
 
-    // detect features in all cameras
-    int seqNumber = msg->header.seq;
-    std::vector<std::vector<Feature>> featuresAllCameras;
-    for(int i=0; i<NUM_CAMERAS; i++)
-    {   
-        std::vector<Feature> features;
-        features = featureDetector_.detectFeatures(imagesRectReduced[i], seqNumber, i, true, 1.0); 
-
-        for(int j=0; j<features.size(); j++)
+    for(int i=0; i<NUM_OMNI_CAMERAS; i++)
+    {
+        // reduce images to their ROI
+        cv::Mat imageRectReduced = imagesRect[i](cv::Rect(param_ROIs_[i][0], param_ROIs_[i][1], param_ROIs_[i][2], param_ROIs_[i][3]));
+        
+        // find features in the ROI
+        featuresAllCameras[i] = featureDetector_.detectFeatures(imageRectReduced, seqNumber, i, true, 1.0); 
+        
+        // correct points coordinates: from the ROI to the full image 
+        for(int j=0; j<featuresAllCameras[i].size(); j++)
         {
-            cv::KeyPoint kp = features[j].getKeypoint();
+            cv::KeyPoint kp = featuresAllCameras[i][j].getKeypoint();
             kp.pt += cv::Point2f(param_ROIs_[i][0], param_ROIs_[i][1]);
-            features[j].setKeypoint(kp);
-        }       
-        featuresAllCameras.push_back(features);
+            featuresAllCameras[i][j].setKeypoint(kp);
+        }
+
+        if(!first_)
+        {
+            // match features
+            matches[i] = featureMatcher_.matchFeatures(featuresAllCamerasPrev_[i], featuresAllCameras[i]);
+        }
     }
 
     // estimate motion (T)
-    std::vector<std::vector<Match>> matches;
     Eigen::Matrix4f T;
     int bestCamera;
     if(!first_)
     {
-        // check if a frame was lost
-        if(seqNumber - seqNumberPrev_ > 1)
-        {
-            ROS_WARN("Lost %d frames!", seqNumber - seqNumberPrev_ - 1);
-            lostFrameCounter_ += seqNumber - seqNumberPrev_ - 1;
-        }
-        
-        // match features
-        matches = featureMatcher_.findOmniMatches(imagesRectPrev_, imagesRect, featuresAllCamerasPrev_, featuresAllCameras, NUM_OMNI_CAMERAS);
-
-        // estimate motion    
         std::vector<std::vector<Match>> inlierMatches;
         std::vector<std::vector<Eigen::Vector3f>> points3D;
         T = odometer_.estimateMotion(matches, bestCamera, inlierMatches, points3D);
-
-        // convert best pose to each camera's coordinates
-        std::vector<Eigen::Matrix4f> bestPoseCameras;
-        bestPoseCameras.resize(NUM_OMNI_CAMERAS);
-
-        //for(int i=0; i<NUM_OMNI_CAMERAS; i++)
-        for(int i=0; i<1; i++)
-        {
-            bestPoseCameras[i] = lb2_.Ladybug2CamRef(T, i, i);
-            std::cout << "CAM " << i << ": " << std::endl;
-            if(!optimizers_[i].addData(points3D[3*i], inlierMatches[3*i], bestPoseCameras[i]))
-            {
-                optimizers_[i].reset();
-                optimizers_[i].addData(points3D[3*i], inlierMatches[3*i], bestPoseCameras[i]);
-            }
-        }
     }
     else
     {
@@ -173,6 +157,9 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
     seqNumberPrev_ = seqNumber;
 
     std::cout << "PROCESSED FRAME " << (seqNumber - seqNumberOffset_ + 1) << std::endl;
+
+    ros::Time endingTime = ros::Time::now();
+    std::cout << "EXECUTION TIME (SECONDS): " << (endingTime - startingTime).toSec() << std::endl;
 }    
 
 /** Triangulate stereo points, i.e. points that are visible in neighboring cameras at the same time.

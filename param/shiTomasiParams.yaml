@@ -1,4 +1,4 @@
 ShiTomasi_maxFeatures: 500
-ShiTomasi_qualityLevel: 0.01
+ShiTomasi_qualityLevel: 0.001
 ShiTomasi_minDistance: 3
 ShiTomasi_blockSize: 3

@@ -37,17 +37,8 @@ class FeatureMatcher
     
         /** FeatureMatcher destructor. */
         ~FeatureMatcher(); 
-    
-        /** Find matches in an omnidirectional multi-camera system. Matches are search in each camera and between onsecutive cameras.
-         * @param std::vector<cv::Mat> vector with all cameras' images in the previous frame
-		 * @param std::vector<cv::Mat> vector with all cameras' images in the current frame
-		 * @param std::vector<std::vector<Feature>> vector with all cameras' features found in the previous frame
-		 * @param std::vector<std::vector<Feature>> vector with all cameras' features found in the current frame
-		 * @param int number of images
-         * @return std::vector<std::vector<Match>> vector with each camera's matches */
-        std::vector<std::vector<Match>> findOmniMatches(std::vector<cv::Mat> imagesPrev, std::vector<cv::Mat> imagesCurr, std::vector<std::vector<Feature>> featuresPrev, std::vector<std::vector<Feature>> featuresCurr, int numCameras);
 
-        /** Find matches in an omnidirectional multi-camera system. Matches are search in each camera and between onsecutive cameras.
+        /** Match two sets of features.
          * @param std::vector<Feature> vector with features in the first image
          * @param std::vector<Feature> vector with features in the second image
          * @return std::vector<Match> vector with feature matches */
@@ -75,10 +66,9 @@ class FeatureMatcher
 		 * @param cv::Mat image in the current frame
 		 * @param <std::vector<Feature> vector of features found in the previous frame
 		 * @param <std::vector<Feature> vector of features found in the current frame
-		 * @param std::vector<Feature>& modifiable vector of features in the left camera
-		 * @param std::vector<Feature>& modifiable vector of features in the right camera
-         * @return void */
-        void trackIntraCamera(cv::Mat imagePrev, cv::Mat imageCurr, std::vector<Feature> featuresPrev, std::vector<Feature> featuresCurr, std::vector<Feature> &featuresLeft, std::vector<Feature> &featuresRight);
+         * @return std::vector<Match> vector with established matches */
+         // INCOMPLETE, NOT SURE IF WILL USE
+        std::vector<Match> trackIntraCamera(cv::Mat imagePrev, cv::Mat imageCurr, std::vector<Feature> featuresPrev, std::vector<Feature> featuresCurr);
         
         /** Convert a set of features to a cv::Mat of descriptors.
          * @param std::vector<Feature> vector of features

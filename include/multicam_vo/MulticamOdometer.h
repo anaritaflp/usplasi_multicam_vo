@@ -58,10 +58,9 @@ class MulticamOdometer
 		/** Compute fundamental martix out of rotation and translation.
 		* @param Eigen::Matrix3f rotation matrix
 		* @param Eigen::Vector3f translation vector
-		* @param Eigen::Matrix3f intrinsics matrix of the previous camera
-		* @param Eigen::Matrix3f intrinsics matrix of the current camera
+		* @param Eigen::Matrix3f intrinsics matrix
 		* @return Eigen::Matrix3f fundamental matrix */
-		Eigen::Matrix3f Rt2F(Eigen::Matrix3f R, Eigen::Vector3f t, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr);
+		Eigen::Matrix3f Rt2F(Eigen::Matrix3f R, Eigen::Vector3f t, Eigen::Matrix3f K);
     
     private:
 

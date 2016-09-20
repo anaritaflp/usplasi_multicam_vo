@@ -95,13 +95,12 @@ bool MonoOdometer::estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KP
     // plot optical flow and print #inliers (for debugging)
     if(showOpticalFlow)
     {
-        std::cout << "\tNEW #INLIERS: " << inlierIndices.size() << " / " << matches.size() << std::endl;
         cv::Mat image(1024, 768, CV_8UC1, cv::Scalar(0));
         FeatureMatcher fm;
         cv::Mat of1 = fm.highlightOpticalFlow(image, inlierMatches, cv::Scalar(0, 255, 0));
         cv::Mat of2 = fm.highlightOpticalFlow(of1, outlierMatches, cv::Scalar(0, 0, 255));
-        cv::namedWindow("new", CV_WINDOW_AUTOSIZE);
-        cv::imshow("new", of2);
+        cv::namedWindow("Optical flow", CV_WINDOW_AUTOSIZE);
+        cv::imshow("Optical flow", of2);
         cv::waitKey(10);
     }
     

@@ -11,7 +11,7 @@ std::vector<std::ofstream*> files;
 
 void mySigintHandler(int sig)
 {
-    for(int i=0; i<3*NUM_OMNI_CAMERAS; i++)
+    for(int i=0; i<NUM_OMNI_CAMERAS; i++)
     {
         (*files[i]) << "\n\t];" << std::endl;
         (*files[i]).close();
@@ -27,9 +27,9 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "multicam_vo_node");
 
     // for debugging: write estimated poses in matlab files    
-    files.resize(3*NUM_OMNI_CAMERAS);
+    files.resize(NUM_OMNI_CAMERAS);
     std::string path = "/home/anaritapereira/ROS/catkin_ws/src/multicam_vo/matlab/";
-    for(int i=0; i<3*NUM_OMNI_CAMERAS; i++)
+    for(int i=0; i<NUM_OMNI_CAMERAS; i++)
     {
         char filename[20];
         sprintf(filename, "plot_%02d.m", i);

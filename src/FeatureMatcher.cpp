@@ -30,78 +30,7 @@ FeatureMatcher::~FeatureMatcher()
 {
     
 }
-    
-/** Find matches in an omnidirectional multi-camera system. Matches are search in each camera and between onsecutive cameras.
- * @param std::vector<cv::Mat> vector with all cameras' images in the previous frame
- * @param std::vector<cv::Mat> vector with all cameras' images in the current frame
- * @param std::vector<std::vector<Feature>> vector with all cameras' features found in the previous frame
- * @param std::vector<std::vector<Feature>> vector with all cameras' features found in the current frame
- * @param int number of images
- * @return std::vector<std::vector<Match>> vector with each camera's matches */
-std::vector<std::vector<Match>> FeatureMatcher::findOmniMatches(std::vector<cv::Mat> imagesPrev, std::vector<cv::Mat> imagesCurr, std::vector<std::vector<Feature>> featuresPrev, std::vector<std::vector<Feature>> featuresCurr, int numCameras)
-{
-    // for each camera, track features
-    for(int i=0; i<numCameras; i++)
-    {
-        // get left and right neighbouring cameras
-        int iLeft, iRight;
-        lb2_.getLeftRightCameras(i, iLeft, iRight);
 
-        // track features in the camera and store features that disappear in the lateral borders in the feature vectors of the neighbouring cameras
-        trackIntraCamera(imagesPrev[i], imagesCurr[i], featuresPrev[i], featuresCurr[i], featuresPrev[iLeft], featuresPrev[iRight]);
-    }
-    
-    // vector of matches between each plausible combination of cameras
-    //    intra-camera matches
-    //    inter-camera matches, neighbouring cameras
-    // vector matches:
-    //   position 3*i:    intra-camera matches in cam. i
-    //   position 3*i+1:  inter-camera matches between cam. i and its right neighbour camera
-    //   position 3*i+2:  inter-camera matches between cam. i and its left neighbour camera
-    std::vector<std::vector<Match>> matches;
-    matches.resize(3*numCameras);
-
-    // for each camera, match features
-    for(int i=0; i<numCameras; i++)
-    {
-        // match features between previous and current images
-        std::vector<Match> ms = matchFeatures(featuresPrev[i], featuresCurr[i]);
-        if(ms.size() == 0)
-        {
-            continue;
-        }
-        
-        // insert matches in the corresponding position in the matches vector
-        for(int j=0; j<ms.size(); j++)
-        {
-            int camFirst = ms[j].getFirstFeature().getCamNumber();
-            int camSecond = ms[j].getSecondFeature().getCamNumber();
-            
-            if(camFirst == camSecond)
-            {
-                cv::Point2f ptPrev = ms[j].getFirstFeature().getKeypoint().pt;
-                cv::Point2f ptCurr = ms[j].getSecondFeature().getKeypoint().pt;
-                double d = sqrt((ptPrev.x - ptCurr.x) * (ptPrev.x - ptCurr.x) + (ptPrev.y - ptCurr.y) * (ptPrev.y - ptCurr.y));
-                matches[3*camFirst].push_back(ms[j]);
-            }
-            else
-            {
-                int camLeft, camRight;
-                lb2_.getLeftRightCameras(camFirst, camLeft, camRight);
-                
-                if(camSecond == camRight)
-                {
-                    matches[3*camFirst+1].push_back(ms[j]);
-                }
-                else if(camSecond == camLeft)
-                {
-                    matches[3*camFirst+2].push_back(ms[j]);
-                }
-            }
-        }
-    }
-	return matches;
-}
 
 /** Find matches in an omnidirectional multi-camera system. Matches are search in each camera and between onsecutive cameras.
  * @param std::vector<Feature> vector with features in the first image
@@ -214,11 +143,11 @@ cv::Mat FeatureMatcher::highlightMatches(cv::Mat image1, cv::Mat image2, std::ve
  * @param cv::Mat image in the current frame
  * @param <std::vector<Feature> vector of features found in the previous frame
  * @param <std::vector<Feature> vector of features found in the current frame
- * @param std::vector<Feature>& modifiable vector of features in the left camera
- * @param std::vector<Feature>& modifiable vector of features in the right camera
- * @return void */
-void FeatureMatcher::trackIntraCamera(cv::Mat imagePrev, cv::Mat imageCurr, std::vector<Feature> featuresPrev, std::vector<Feature> featuresCurr, std::vector<Feature> &featuresLeft, std::vector<Feature> &featuresRight)
+ * @return std::vector<Match> vector with established matches */
+std::vector<Match> FeatureMatcher::trackIntraCamera(cv::Mat imagePrev, cv::Mat imageCurr, std::vector<Feature> featuresPrev, std::vector<Feature> featuresCurr)
 {
+    std::vector<Match> matches;
+
     std::vector<cv::Point2f> pointsPrev = features2Points(featuresPrev);
     std::vector<cv::Point2f> pointsCurr = features2Points(featuresCurr);
 
@@ -232,29 +161,19 @@ void FeatureMatcher::trackIntraCamera(cv::Mat imagePrev, cv::Mat imageCurr, std:
     {
         cv::calcOpticalFlowPyrLK(imagePrev, imageCurr, pointsPrev, pointsCurr, status, error, windowSize, param_trackingMaxLevel_, termcrit, 0, param_trackingMaxLevel_);
     }
-    else
-    {
-        return;
-    } 
     
     // if a feature disappears near a lateral border, it shall be searched for in the neighbouring camera 
     for(int i=0; i<featuresPrev.size(); i++)
     {
         // if tracking was not successful
-        if(status[i] == (int)0)
+        if(status[i] == (int)1)
         {
-            // if the feature is near left border, put it in left camera feature vector
-            if(featuresPrev[i].getKeypoint().pt.x < param_borderPercentage_ * imagePrev.cols)
-            {
-                featuresLeft.push_back(featuresPrev[i]);
-            }
-            // if the feature is near right border, put it in right camera feature vector
-            else if(featuresPrev[i].getKeypoint().pt.x > (1 - param_borderPercentage_) * imagePrev.cols)
-            {
-                featuresRight.push_back(featuresPrev[i]);
-            } 
+            // build vector with matches
+            //Match m()
         }
     }
+
+    return matches;
 }
 
 /** Convert a set of features to a cv::Mat of descriptors.

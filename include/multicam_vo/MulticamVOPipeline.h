@@ -6,7 +6,8 @@
 #include <algorithm>
 
 // Eigen includes (GTSAM adaptation)
-#include </home/anaritapereira/gtsam-3.2.1/gtsam/3rdparty/Eigen/Eigen/Core>
+//#include </home/anaritapereira/gtsam-3.2.1/gtsam/3rdparty/Eigen/Eigen/Core>
+#include <Eigen/Eigen>
 
 // ROS includes
 #include <ros/ros.h>
@@ -26,7 +27,6 @@
 #include <multicam_vo/FeatureMatcher.h>
 #include <multicam_vo/MulticamOdometer.h>
 #include <multicam_vo/utils.h>
-#include <multicam_vo/ISAMOptimizer.h>
 
 namespace odom
 {
@@ -81,7 +81,6 @@ namespace odom
 		FeatureDetector featureDetector_;							/*!< Feature detector */
         FeatureMatcher featureMatcher_;							    /*!< Feature matcher */	
         MulticamOdometer odometer_;						            /*!< Multi-camera odometer */
-        std::vector<ISAMOptimizer> optimizers_;
 
         std::vector<std::vector<double>> param_ROIs_;               /*!< Region of interest of all cameras */
         std::vector<std::vector<double>> cameraOverlaps_;	        /*!< Vector with each camera's left and right overlap limits: Pixels under the left limit overlap with the left camera and pixels above the right limit overlap with the right camera. */		

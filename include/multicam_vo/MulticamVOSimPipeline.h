@@ -7,7 +7,8 @@
 #include <random>
 
 // Eigen includes (GTSAM adaptation)
-#include </home/anaritapereira/gtsam-3.2.1/gtsam/3rdparty/Eigen/Eigen/Core>
+//#include </home/anaritapereira/gtsam-3.2.1/gtsam/3rdparty/Eigen/Eigen/Core>
+#include <Eigen/Eigen>
 
 // Boost includes
 #include <boost/algorithm/string.hpp>
@@ -25,7 +26,6 @@
 // project includes
 #include <multicam_vo/MulticamOdometer.h>
 #include <multicam_vo/utils.h>
-#include <multicam_vo/ISAMOptimizer.h>
 
 namespace odom_sim
 {
@@ -81,7 +81,6 @@ class MulticamVOSimPipeline
         Ladybug2 lb2_;                                              /*!< Ladybug2 object */  
         
         MulticamOdometer odometer_;						            /*!< Multi-camera odometer */ 
-        std::vector<ISAMOptimizer> optimizers_;       
 
         std::string param_pathToSimPoints_;                         /*!< Path to directory with simulated points */
         int param_numFrames_;                                       /*!< Number of frames */

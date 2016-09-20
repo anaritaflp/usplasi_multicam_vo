@@ -25,13 +25,6 @@ MulticamVOSimPipeline::MulticamVOSimPipeline(std::vector<std::ofstream*> files)
     // create odometer
     odometer_ = MulticamOdometer(lb2_, files);
 
-    // initialize ISAM optimizer for each camera
-    optimizers_.resize(NUM_OMNI_CAMERAS);
-    for(int i=0; i<NUM_OMNI_CAMERAS; i++)
-    {   
-        optimizers_[i] = ISAMOptimizer(lb2_.cameraMatrices_[i]);
-    }
-
     // read parameters
     node_.param<std::string>("path_to_sim_points", param_pathToSimPoints_, "");
     node_.param<int>("num_frames", param_numFrames_, 0);
@@ -271,22 +264,6 @@ void MulticamVOSimPipeline::loop(std::vector<std::ofstream*> files)
         std::vector<std::vector<Match>> inlierMatches;
         std::vector<std::vector<Eigen::Vector3f>> points3D;
         Eigen::Matrix4f T = odometer_.estimateMotion(matches, bestCamera, inlierMatches, points3D);
-
-        // convert best pose to each camera's coordinates
-        std::vector<Eigen::Matrix4f> bestPoseCameras;
-        bestPoseCameras.resize(NUM_OMNI_CAMERAS);
-
-        //for(int i=0; i<NUM_OMNI_CAMERAS; i++)
-        for(int i=0; i<1; i++)
-        {
-            bestPoseCameras[i] = lb2_.Ladybug2CamRef(T, i, i);
-            std::cout << "CAM " << i << ": " << std::endl;
-            if(!optimizers_[i].addData(points3D[3*i], inlierMatches[3*i], bestPoseCameras[i]))
-            {
-                optimizers_[i].reset();
-                optimizers_[i].addData(points3D[3*i], inlierMatches[3*i], bestPoseCameras[i]);
-            }
-        }
 
         // publish optimal motion estimation
         nav_msgs::Odometry msgOdom = transform2OdometryMsg(T, bestCamera);
