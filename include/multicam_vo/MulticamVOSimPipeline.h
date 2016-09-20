@@ -6,6 +6,9 @@
 #include <algorithm>
 #include <random>
 
+// Eigen includes (GTSAM adaptation)
+#include </home/anaritapereira/gtsam-3.2.1/gtsam/3rdparty/Eigen/Eigen/Core>
+
 // Boost includes
 #include <boost/algorithm/string.hpp>
 
@@ -22,6 +25,7 @@
 // project includes
 #include <multicam_vo/MulticamOdometer.h>
 #include <multicam_vo/utils.h>
+#include <multicam_vo/ISAMOptimizer.h>
 
 namespace odom_sim
 {
@@ -50,11 +54,12 @@ class MulticamVOSimPipeline
          * @param double v-coordinate in previous image
          * @param double u-coordinate in current image
          * @param double v-coordinate in current image
-         * @param int frame number
-         * @param int index of the previous camera
-         * @param int index of the current camera
-         * @return Match match */
-        Match createMatch(double uPrev, double vPrev, double uCurr, double vCurr, int frameCounter, int camNumberPrev, int camNumberCurr);
+         * @param int point index in the points file
+        * @param int frame number
+        * @param int index of the previous camera
+        * @param int index of the current camera
+        * @return Match match */
+        Match createMatch(double uPrev, double vPrev, double uCurr, double vCurr, int pointIndex, int frameCounter, int camNumberPrev, int camNumberCurr);
 
         /** Reduce a vector of matches to N randomly selected items.
          * @param std::vector<Match> original vector with matches
@@ -64,15 +69,23 @@ class MulticamVOSimPipeline
 
         std::vector<Match> addNoise(std::vector<Match> matches);
 
+        bool allDescriptorsDifferent();
+
+        void createDescriptors();
+
+        std::vector<cv::Mat> descriptors_;
+
         ros::NodeHandle node_;										/*!< ROS node for reading parameters */
         ros::Publisher pubOdom_;									/*!< ROS odometry publisher */ 
 
         Ladybug2 lb2_;                                              /*!< Ladybug2 object */  
         
-        MulticamOdometer odometer_;						            /*!< Multi-camera odometer */        
+        MulticamOdometer odometer_;						            /*!< Multi-camera odometer */ 
+        std::vector<ISAMOptimizer> optimizers_;       
 
         std::string param_pathToSimPoints_;                         /*!< Path to directory with simulated points */
         int param_numFrames_;                                       /*!< Number of frames */
+        int param_numPoints_;
         double param_noiseVariance_;                                /*!< Variance of gaussian noise introduced in the 2D points */
 };
 

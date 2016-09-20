@@ -104,6 +104,8 @@ target_link_libraries(MulticamVOSimPipeline
     ${catkin_LIBRARIES}
     ${OpenCV_LIBS}
     MulticamOdometer
+    MultiFeatures
+    Optimization
 )
 
 add_executable(multicam_vo_node

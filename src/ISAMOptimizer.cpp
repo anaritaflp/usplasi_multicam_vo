@@ -50,9 +50,18 @@ ISAMOptimizer::~ISAMOptimizer()
 
 void ISAMOptimizer::reset()
 {
+    std::cout << "RESETTING..." << std::endl;
+
+    // clear points and poses vectors
     points_.clear();
     poses_.clear();
+
+    // reset pose number
     poseNumber_ = 0;
+
+    // clear graph and initial estimates
+    //graph_.resize(0);
+    //initialEstimate_.clear();
 }
 
 bool ISAMOptimizer::addData(std::vector<Eigen::Vector3f> points, std::vector<Match> matches, Eigen::Matrix4f pose)
@@ -65,10 +74,13 @@ bool ISAMOptimizer::addData(std::vector<Eigen::Vector3f> points, std::vector<Mat
     gtsam::Pose3 pose3(R, t);    
     poses_.push_back(pose3);
 
+    //std::cout << "GRAPH IN THE BEGINNING" << std::endl;
+    //graph_.print();
+
     // optimizer was reset - time to consider new 3D points
     if(poseNumber_ == 0)
     {
-        std::cout << "\tADDING NEW 3D: " << points.size() << std::endl;
+        std::cout << "ADDING NEW 3D POINTS: " << points.size() << std::endl;
         if(points.size() > 0)
         {
             for(int i=0; i<points.size(); i++)
@@ -93,70 +105,99 @@ bool ISAMOptimizer::addData(std::vector<Eigen::Vector3f> points, std::vector<Mat
         {
             // check if the corresponding point already exists
             int correspondingIndex = findCorrespondingPoint(matches[i]);
-
             if(correspondingIndex > 0)
             {
                 points_[correspondingIndex].addMeasurement(matches[i].getSecondFeature());
                 points_[correspondingIndex].markAsUpdated();
-
             }
         }
 
         // remove outdated points
         removeOutdatedPoints();
-    }
 
-    // check number of visible points
-    std::cout << "# VISIBLE POINTS: " << points_.size() << "   MIN: " << minCorrespondedPoints_ << std::endl;
-    if(points_.size() < minCorrespondedPoints_)
-    {
-        // add poses to graph
-        for(int i=0; i<poses_.size(); i++)
+        // order points
+        orderPoints();
+
+        // check number of visible points
+        std::cout << "# VISIBLE POINTS: " << points_.size() << "   MIN: " << minCorrespondedPoints_ << std::endl;
+        if(points_.size() < minCorrespondedPoints_)
         {
-            // add 2D measurements for that pose
-            for(int j=0; j<points_.size(); j++)
-            {
-                std::cout << "adding 2D measurement on x-" << i << " l-" << j << std::endl;
-                gtsam::Point2 p2 = points_[j].getMeasurements()[i].getMeasurement();
-                graph_.push_back(gtsam::GenericProjectionFactor<gtsam::Pose3, gtsam::Point3, gtsam::Cal3_S2>(p2, measurementNoise_, gtsam::Symbol('x', i), gtsam::Symbol('l', j), K_));
-            }
+            std::cout << "NOT ENOUGH POINTS. ADDING EVERYTHING TO GRAPH AND OPTIMIZING..." << std::endl;
 
-            // add initial guess on poses
-            std::cout << "adding pose on x-" << i << std::endl;
-            initialEstimate_.insert(gtsam::Symbol('x', i), poses_[i]);
-            std::cout << "aqui 1" << std::endl;
-            // if first pose, add prior
-            if(i == 0)
+            // add poses to graph
+            for(int i=0; i<poses_.size(); i++)
             {
-                std::cout << "adding prior on pose x-" << i << std::endl;
-                graph_.push_back(gtsam::PriorFactor<gtsam::Pose3>(gtsam::Symbol('x', i), poses_[i], poseNoise_));
-            
-                std::cout << "adding prior on 3D point l-" << i << std::endl;
-                graph_.push_back(gtsam::PriorFactor<gtsam::Point3>(gtsam::Symbol('l', 0), points_[0].getPoint(), pointNoise_));
-
-                // add initial guess of 3D points to graph
+                std::cout << "ADDING DATA FOR POSE " << i << std::endl;
+                // add 2D measurements for that pose
                 for(int j=0; j<points_.size(); j++)
                 {
-                    std::cout << "adding 3D point on l-" << j << std::endl;
-                    initialEstimate_.insert(gtsam::Symbol('l', j), points_[j].getPoint());
+                    std::cout << "\tADDING 2D POINT x-" << i << " l-" << j << " KEYS: pose - " << gtsam::Symbol('x', i) << " landmark: " << gtsam::Symbol('l', j) << std::endl;
+                    gtsam::Point2 p2 = points_[j].getMeasurements()[i].getMeasurement();
+                    graph_.push_back(gtsam::GenericProjectionFactor<gtsam::Pose3, gtsam::Point3, gtsam::Cal3_S2>(p2, measurementNoise_, gtsam::Symbol('x', i), gtsam::Symbol('l', j), K_));
                 }
-            
+
+                // add initial guess on poses
+                std::cout << "\tADDING POSE x-" << i << " KEY: " << gtsam::Symbol('x', i) << std::endl;
+                initialEstimate_.insert(gtsam::Symbol('x', i), poses_[i]);
+                
+                // if first pose, add prior
+                if(i == 0)
+                {
+                    std::cout << "FIRST POSE: ADDING PRIORS..." << std::endl;
+                    std::cout << "\tADDING PRIOR POSE x-" << i << " KEY: " << gtsam::Symbol('x', i) << std::endl;
+                    graph_.push_back(gtsam::PriorFactor<gtsam::Pose3>(gtsam::Symbol('x', i), poses_[i], poseNoise_));
+                
+                    if(points_.size() > 0)
+                    {
+                        std::cout << "\tADDING PRIOR 3D POINT l-" << 0 << "  *  POINT: (" << points_[0].getPoint().x() << ", " << points_[0].getPoint().y() << ", " << points_[0].getPoint().z() << ")" << " * KEY: " << gtsam::Symbol('l', 0) <<std::endl;
+                        graph_.push_back(gtsam::PriorFactor<gtsam::Point3>(gtsam::Symbol('l', 0), points_[0].getPoint(), pointNoise_));
+                    }
+                    
+                    // add initial guess of 3D points to graph
+                    for(int j=0; j<points_.size(); j++)
+                    {
+                        std::cout << "\tADDING 3D POINT l-" << j << " KEY: " << gtsam::Symbol('l', j) << std::endl;
+                        initialEstimate_.insert(gtsam::Symbol('l', j), points_[j].getPoint());
+                    }
+                
+                }
+
+                else
+                {
+                    std::cout << "NOT FIRST POSE. OPTIMIZING..." << std::endl;
+                    
+                    gtsam::FastSet<gtsam::Key> keys = graph_.keys();
+                    std::cout << "# KEYS: " << keys.size() << std::endl;
+                    keys.print();
+                    
+                    // update ISAM estimates
+                    std::string gn = "MY_GRAPH";
+                    std::string kf = "KEY"; 
+                    graph_.print();
+                    try
+                    {
+                        isam_.update(graph_, initialEstimate_);
+                        gtsam::Values currentEstimate = isam_.estimate();
+                    }
+                    catch (const gtsam::ValuesKeyAlreadyExists& eVKAE)
+                    {   
+                        //std::cout << "***************** INDETERMINANT LINEAR SYSTEM EXCEPTION ***************************" << std::endl;
+                        std::cout << "***************** VALUES KEY ALREADY EXISTS ***************************" << std::endl;
+                        std::cout << "EXISTING KEY: " << eVKAE.key() << std::endl;
+                    }
+
+                    // clear graph and initial estimates
+                    std::cout << "CLEANING GRAPH..." << std::endl;
+                    graph_.resize(0);
+                    initialEstimate_.clear();
+                }
             }
 
-            else
-            {
-                // update ISAM estimates
-                graph_.print();
-                std::cout << "aqui 2" << std::endl;
-                isam_.update(graph_, initialEstimate_);
-                std::cout << "aqui 3" << std::endl;
-                gtsam::Values currentEstimate = isam_.estimate();
-                std::cout << "aqui 4" << std::endl;
-                // clear graph and initial estimates
-                std::cout << "cleaning everything" << std::endl;
-                graph_.resize(0);
-                initialEstimate_.clear();
-            }
+            ret = false;
+        }
+        else
+        {
+            ret = true;
         }
     }
 
@@ -197,7 +238,26 @@ void ISAMOptimizer::removeOutdatedPoints()
     }
 }
 
-void ISAMOptimizer::optimize()
+void ISAMOptimizer::orderPoints()
 {
+    for(int i=1; i<points_.size(); i++)
+    {
+        gtsam::Point2 p2_prev_i = points_[i].getMeasurements()[0].getMeasurement();
+        gtsam::Point2 p2_curr_i = points_[i].getMeasurements()[1].getMeasurement();
+        double distance_i = sqrt((p2_prev_i.x() - p2_curr_i.x()) * (p2_prev_i.x() - p2_curr_i.x()) + (p2_prev_i.y() - p2_curr_i.y()) * (p2_prev_i.y() - p2_curr_i.y()));
 
+        for(int j=i+1; j<points_.size(); j++)
+        {
+            gtsam::Point2 p2_prev_j = points_[j].getMeasurements()[0].getMeasurement();
+            gtsam::Point2 p2_curr_j = points_[j].getMeasurements()[1].getMeasurement();
+            double distance_j = sqrt((p2_prev_j.x() - p2_curr_j.x()) * (p2_prev_j.x() - p2_curr_j.x()) + (p2_prev_j.y() - p2_curr_j.y()) * (p2_prev_j.y() - p2_curr_j.y()));
+
+            if(distance_j > distance_i)
+            {
+                Point3D aux = points_[i];
+                points_[i] = points_[j];
+                points_[j] = aux;
+            }
+        }
+    }
 }

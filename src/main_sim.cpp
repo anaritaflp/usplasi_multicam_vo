@@ -27,7 +27,6 @@ int main(int argc, char **argv)
     }
 
     odom_sim::MulticamVOSimPipeline vo_sim_pipeline(files);    
-
     vo_sim_pipeline.loop(files);
  
     return 0;

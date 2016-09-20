@@ -31,13 +31,13 @@ class ISAMOptimizer
         ~ISAMOptimizer();
         void reset();
         bool addData(std::vector<Eigen::Vector3f> points, std::vector<Match> matches, Eigen::Matrix4f pose);
-        void optimize();
 
     private:
 
         int findCorrespondingPoint(Match match);
         void markPointsAsOutdated();
-        void removeOutdatedPoints();
+        void removeOutdatedPoints();        
+        void orderPoints();
 
         std::vector<Point3D> points_;
         std::vector<gtsam::Pose3> poses_;

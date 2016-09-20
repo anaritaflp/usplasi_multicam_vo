@@ -25,10 +25,27 @@ MulticamVOSimPipeline::MulticamVOSimPipeline(std::vector<std::ofstream*> files)
     // create odometer
     odometer_ = MulticamOdometer(lb2_, files);
 
+    // initialize ISAM optimizer for each camera
+    optimizers_.resize(NUM_OMNI_CAMERAS);
+    for(int i=0; i<NUM_OMNI_CAMERAS; i++)
+    {   
+        optimizers_[i] = ISAMOptimizer(lb2_.cameraMatrices_[i]);
+    }
+
     // read parameters
     node_.param<std::string>("path_to_sim_points", param_pathToSimPoints_, "");
     node_.param<int>("num_frames", param_numFrames_, 0);
+    node_.param<int>("num_points", param_numPoints_, 0);
     node_.param<double>("noise_variance", param_noiseVariance_, 0.0);
+
+    // create random descriptor for each point. All descriptors must be different.
+    /*bool flag = true;
+    while(flag)
+    {
+        createDescriptors();
+        flag = !allDescriptorsDifferent();
+    }*/
+    createDescriptors();
 }
         
 /** Default MulticamVOSimPipeline destructor. */
@@ -42,7 +59,7 @@ MulticamVOSimPipeline::~MulticamVOSimPipeline()
  * @return void */
 void MulticamVOSimPipeline::loop(std::vector<std::ofstream*> files)
 {
-    int frameCounter = 0;
+    int frameCounter = 1;
 
     while(1)
     {
@@ -72,6 +89,7 @@ void MulticamVOSimPipeline::loop(std::vector<std::ofstream*> files)
 
         // read the two files and fill matches vector
         int iPrev = 1, iCurr = 1;
+        int pointIndex = 0;
         while(1)
         {
             // variables to be read
@@ -128,43 +146,23 @@ void MulticamVOSimPipeline::loop(std::vector<std::ofstream*> files)
                 u4c = atof(wordsCurr[14].c_str()); v4c = atof(wordsCurr[15].c_str());
                 u5c = atof(wordsCurr[16].c_str()); v5c = atof(wordsCurr[17].c_str());
 
-                /*if(frameCounter == 3206)
-                {
-                    std::cout << "---------------" << std::endl;
-                    std::cout << ok0p << " " << ok1p << " " << ok2p << " " << ok3p << " " << ok4p << " " << ok5p << " "
-                            << u0p << " " << v0p << " "
-                            << u1p << " " << v1p << " "
-                            << u2p << " " << v2p << " "
-                            << u3p << " " << v3p << " "
-                            << u4p << " " << v4p << " "
-                            << u5p << " " << v5p << std::endl;
-
-                    std::cout << ok0c << " " << ok1c << " " << ok2c << " " << ok3c << " " << ok4c << " " << ok5c << " "
-                            << u0c << " " << v0c << " "
-                            << u1c << " " << v1c << " "
-                            << u2c << " " << v2c << " "
-                            << u3c << " " << v3c << " "
-                            << u4c << " " << v4c << " "
-                            << u5c << " " << v5c << std::endl;
-                }*/
-
                 // matches where the previous feature is in camera 0
                 // intra-camera match
                 if(ok0p == 1 && ok0c == 1)
                 {
-                    Match m = createMatch(u0p, v0p, u0c, v0c, frameCounter, 0, 0);
+                    Match m = createMatch(u0p, v0p, u0c, v0c, pointIndex, frameCounter, 0, 0);
                     matches[0].push_back(m);
                 }
                 // match with right camera
                 if(ok0p == 1 && ok1c == 1)
                 {
-                    Match m = createMatch(u0p, v0p, u1c, v1c, frameCounter, 0, 1);
+                    Match m = createMatch(u0p, v0p, u1c, v1c, pointIndex, frameCounter, 0, 1);
                     matches[1].push_back(m);
                 }
                 // match with left camera
                 if(ok0p == 1 && ok4c == 1)
                 {
-                    Match m = createMatch(u0p, v0p, u4c, v4c, frameCounter, 0, 4);
+                    Match m = createMatch(u0p, v0p, u4c, v4c, pointIndex, frameCounter, 0, 4);
                     matches[2].push_back(m);
                 }
 
@@ -172,19 +170,19 @@ void MulticamVOSimPipeline::loop(std::vector<std::ofstream*> files)
                 // intra-camera match
                 if(ok1p == 1 && ok1c == 1)
                 {
-                    Match m = createMatch(u1p, v1p, u1c, v1c, frameCounter, 1, 1);
+                    Match m = createMatch(u1p, v1p, u1c, v1c, pointIndex, frameCounter, 1, 1);
                     matches[3].push_back(m);
                 }
                 // match with right camera
                 if(ok1p == 1 && ok2c == 1)
                 {
-                    Match m = createMatch(u1p, v1p, u2c, v2c, frameCounter, 1, 2);
+                    Match m = createMatch(u1p, v1p, u2c, v2c, pointIndex, frameCounter, 1, 2);
                     matches[4].push_back(m);
                 }
                 // match with left camera
                 if(ok1p == 1 && ok0c == 1)
                 {
-                    Match m = createMatch(u1p, v1p, u0c, v0c, frameCounter, 1, 0);
+                    Match m = createMatch(u1p, v1p, u0c, v0c, pointIndex, frameCounter, 1, 0);
                     matches[5].push_back(m);
                 }
 
@@ -192,19 +190,19 @@ void MulticamVOSimPipeline::loop(std::vector<std::ofstream*> files)
                 // intra-camera match
                 if(ok2p == 1 && ok2c == 1)
                 {
-                    Match m = createMatch(u2p, v2p, u2c, v2c, frameCounter, 2, 2);
+                    Match m = createMatch(u2p, v2p, u2c, v2c, pointIndex, frameCounter, 2, 2);
                     matches[6].push_back(m);
                 }
                 // match with right camera
                 if(ok2p == 1 && ok3c == 1)
                 {
-                    Match m = createMatch(u2p, v2p, u3c, v3c, frameCounter, 2, 3);
+                    Match m = createMatch(u2p, v2p, u3c, v3c, pointIndex, frameCounter, 2, 3);
                     matches[7].push_back(m);
                 }
                 // match with left camera
                 if(ok2p == 1 && ok1c == 1)
                 {
-                    Match m = createMatch(u2p, v2p, u1c, v1c, frameCounter, 2, 1);
+                    Match m = createMatch(u2p, v2p, u1c, v1c, pointIndex, frameCounter, 2, 1);
                     matches[8].push_back(m);
                 }
 
@@ -212,19 +210,19 @@ void MulticamVOSimPipeline::loop(std::vector<std::ofstream*> files)
                 // intra-camera match
                 if(ok3p == 1 && ok3c == 1)
                 {
-                    Match m = createMatch(u3p, v3p, u3c, v3c, frameCounter, 3, 3);
+                    Match m = createMatch(u3p, v3p, u3c, v3c, pointIndex, frameCounter, 3, 3);
                     matches[9].push_back(m);
                 }
                 // match with right camera
                 if(ok3p == 1 && ok4c == 1)
                 {
-                    Match m = createMatch(u3p, v3p, u4c, v4c, frameCounter, 3, 4);
+                    Match m = createMatch(u3p, v3p, u4c, v4c, pointIndex, frameCounter, 3, 4);
                     matches[10].push_back(m);
                 }
                 // match with left camera
                 if(ok3p == 1 && ok2c == 1)
                 {
-                    Match m = createMatch(u3p, v3p, u2c, v2c, frameCounter, 3, 2);
+                    Match m = createMatch(u3p, v3p, u2c, v2c, pointIndex, frameCounter, 3, 2);
                     matches[11].push_back(m);
                 }
 
@@ -232,22 +230,23 @@ void MulticamVOSimPipeline::loop(std::vector<std::ofstream*> files)
                 // intra-camera match
                 if(ok4p == 1 && ok4c == 1)
                 {
-                    Match m = createMatch(u4p, v4p, u4c, v4c, frameCounter, 4, 4);
+                    Match m = createMatch(u4p, v4p, u4c, v4c, pointIndex, frameCounter, 4, 4);
                     matches[12].push_back(m);
                 }
                 // match with right camera
                 if(ok4p == 1 && ok0c == 1)
                 {
-                    Match m = createMatch(u4p, v4p, u0c, v0c, frameCounter, 4, 0);
+                    Match m = createMatch(u4p, v4p, u0c, v0c, pointIndex, frameCounter, 4, 0);
                     matches[13].push_back(m);
                 }
                 // match with left camera
                 if(ok4p == 1 && ok3c == 1)
                 {
-                    Match m = createMatch(u4p, v4p, u3c, v3c, frameCounter, 4, 3);
+                    Match m = createMatch(u4p, v4p, u3c, v3c, pointIndex, frameCounter, 4, 3);
                     matches[14].push_back(m);
                 }
             }
+            pointIndex++;
         }
 
         std::cout << "FRAME: " << frameCounter << std::endl;
@@ -271,7 +270,23 @@ void MulticamVOSimPipeline::loop(std::vector<std::ofstream*> files)
         int bestCamera;
         std::vector<std::vector<Match>> inlierMatches;
         std::vector<std::vector<Eigen::Vector3f>> points3D;
-        Eigen::Matrix4f T = odometer_.estimateMotion(reducedMatches, bestCamera, inlierMatches, points3D);
+        Eigen::Matrix4f T = odometer_.estimateMotion(matches, bestCamera, inlierMatches, points3D);
+
+        // convert best pose to each camera's coordinates
+        std::vector<Eigen::Matrix4f> bestPoseCameras;
+        bestPoseCameras.resize(NUM_OMNI_CAMERAS);
+
+        //for(int i=0; i<NUM_OMNI_CAMERAS; i++)
+        for(int i=0; i<1; i++)
+        {
+            bestPoseCameras[i] = lb2_.Ladybug2CamRef(T, i, i);
+            std::cout << "CAM " << i << ": " << std::endl;
+            if(!optimizers_[i].addData(points3D[3*i], inlierMatches[3*i], bestPoseCameras[i]))
+            {
+                optimizers_[i].reset();
+                optimizers_[i].addData(points3D[3*i], inlierMatches[3*i], bestPoseCameras[i]);
+            }
+        }
 
         // publish optimal motion estimation
         nav_msgs::Odometry msgOdom = transform2OdometryMsg(T, bestCamera);
@@ -286,19 +301,21 @@ void MulticamVOSimPipeline::loop(std::vector<std::ofstream*> files)
  * @param double v-coordinate in previous image
  * @param double u-coordinate in current image
  * @param double v-coordinate in current image
+ * @param int point index in the points file
  * @param int frame number
  * @param int index of the previous camera
  * @param int index of the current camera
  * @return Match match */
-Match MulticamVOSimPipeline::createMatch(double uPrev, double vPrev, double uCurr, double vCurr, int frameCounter, int camNumberPrev, int camNumberCurr)
+Match MulticamVOSimPipeline::createMatch(double uPrev, double vPrev, double uCurr, double vCurr, int pointIndex, int frameCounter, int camNumberPrev, int camNumberCurr)
 {
     cv::KeyPoint kpPrev;
     kpPrev.pt = cv::Point2f(uPrev, vPrev);
-    Feature fPrev(kpPrev, cv::Mat(), frameCounter, camNumberPrev);
+    Feature fPrev(kpPrev, descriptors_[pointIndex], frameCounter, camNumberPrev);
 
     cv::KeyPoint kpCurr;
     kpCurr.pt = cv::Point2f(uCurr, vCurr);
-    Feature fCurr(kpCurr, cv::Mat(), frameCounter+1, camNumberCurr);
+    Feature fCurr(kpCurr, descriptors_[pointIndex], frameCounter+1, camNumberCurr);
+
 
     Match m(fPrev, fCurr, 0.0);
     return m;
@@ -359,6 +376,30 @@ std::vector<Match> MulticamVOSimPipeline::addNoise(std::vector<Match> matches)
     }
 
     return matchesNoise;
+}
+
+bool MulticamVOSimPipeline::allDescriptorsDifferent()
+{
+    for(int i=0; i<descriptors_.size(); i++)
+    {
+        for(int j=i+1; j<descriptors_.size(); j++)
+        {
+            if(!cv::countNonZero(descriptors_[i] != descriptors_[j]))
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+void MulticamVOSimPipeline::createDescriptors()
+{
+    for(int i=0; i<param_numPoints_; i++)
+    {
+        cv::Mat d(1, 1, CV_32S, i);
+        descriptors_.push_back(d);
+    }
 }
 
 }
