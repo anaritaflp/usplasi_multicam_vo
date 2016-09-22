@@ -141,8 +141,17 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
         }
     }
 
+    // set translation module to one
+    Eigen::Matrix3f RBest;
+    Eigen::Vector3f tBest;
+    T2Rt(bestPose, RBest, tBest);
+    Eigen::Vector3f tBestNorm1 = tBest / tBest.norm();
+    bestPose = Rt2T(RBest, tBestNorm1);
+    std::cout << "NEW NORM: " << tBestNorm1.norm() << std::endl;
+
     // concatenate motion estimation of the best camera to absolute pose and return result
     absolutePoseGlobal_ = absolutePoseGlobal_ * bestPose;
+
     return absolutePoseGlobal_;
 }
 
