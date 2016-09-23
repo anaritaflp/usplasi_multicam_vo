@@ -8,12 +8,14 @@ namespace odom
  * @return MulticamVOPipeline object */
 MulticamVOPipeline::MulticamVOPipeline(std::vector<std::ofstream*> files): node_("~")
 {
+    std::cout << "Creating visual odometry pipeline..." << std::endl;
+
     // initialize ladybug
     lb2_ = Ladybug2(node_);
     
     // get image topic
     node_.param<std::string>("image_topic", param_imageTopic_, "/camera/image_raw");
-
+    
     // get regions of interes for each camera
     param_ROIs_.resize(NUM_CAMERAS);
     node_.getParam("cam0_roi", param_ROIs_[0]);
@@ -22,7 +24,7 @@ MulticamVOPipeline::MulticamVOPipeline(std::vector<std::ofstream*> files): node_
     node_.getParam("cam3_roi", param_ROIs_[3]);
     node_.getParam("cam4_roi", param_ROIs_[4]);
     node_.getParam("cam5_roi", param_ROIs_[5]);
-
+    
     // read left and right overlapping limits
     std::vector<double> overlapCam0, overlapCam1, overlapCam2, overlapCam3, overlapCam4;
     node_.getParam("param_overlapCam0", overlapCam0);
@@ -35,17 +37,16 @@ MulticamVOPipeline::MulticamVOPipeline(std::vector<std::ofstream*> files): node_
     cameraOverlaps_.push_back(overlapCam2);
     cameraOverlaps_.push_back(overlapCam3);
     cameraOverlaps_.push_back(overlapCam4);
-        
+      
     // indicate it is the first frame
     first_ = true;
         
     // initialize lost frames counter
     lostFrameCounter_ = 0;
-    
-    featureDetector_ = FeatureDetector(SHI_TOMASI, ORB);
+    featureDetector_ = FeatureDetector(ORB, ORB);
     featureMatcher_ = FeatureMatcher(lb2_);
     odometer_ = MulticamOdometer(lb2_, files);
-    
+
     // advertise odometry topic
     pubOdom_ = node_.advertise<nav_msgs::Odometry>("multicam_vo/odometry", 1);
     
@@ -73,7 +74,7 @@ void MulticamVOPipeline::spin()
  * @return void */
 void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
 {
-
+    std::cout << "Received nem image" << std::endl;
     // measure execution time
     ros::Time startingTime = ros::Time::now();
 

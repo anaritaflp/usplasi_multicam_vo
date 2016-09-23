@@ -18,11 +18,16 @@ MulticamOdometer::MulticamOdometer(Ladybug2 lb2, std::vector<std::ofstream*> fil
 	// read odometer parameters
     node_.param<double>("param_odometerInlierThreshold", param_odometerInlierThreshold_, 0.00001);
 
-    // initialize absolute poses with identities
+    monoOdometers_.resize(NUM_OMNI_CAMERAS);
+
     for(int i=0; i<NUM_OMNI_CAMERAS; i++)
     {
+        // initialize absolute poses with identities
         absolutePosesLocal_.push_back(Eigen::Matrix4f::Identity());
         firstRow_.push_back(true);
+
+        // initialize monocular odometers
+        monoOdometers_[i] = MonoOdometer(lb2_.cameraMatrices_[i]);
     }
     absolutePoseGlobal_ = Eigen::Matrix4f::Identity();
 }
@@ -57,7 +62,6 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
     points3D.resize(NUM_OMNI_CAMERAS);
 
 	// compute rotation and translation for each set of intra-camera matches
-    MonoOdometer monoOdometer;
     for(int i=0; i<NUM_OMNI_CAMERAS; i++)
     {
 
@@ -67,11 +71,11 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
         // estimate monocular visual odometry
         if(i == 0)
         {
-            success[i] = monoOdometer.estimateMotion(matches[i], K, K, R[i], t[i], true, inlierMatches[i], points3D[i]);
+            success[i] = monoOdometers_[i].estimateMotion(matches[i],R[i], t[i], true, inlierMatches[i], points3D[i]);
         }
         else
         {
-            success[i] = monoOdometer.estimateMotion(matches[i], K, K, R[i], t[i], false, inlierMatches[i], points3D[i]);
+            success[i] = monoOdometers_[i].estimateMotion(matches[i], R[i], t[i], false, inlierMatches[i], points3D[i]);
         }
         
     }
@@ -140,14 +144,6 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
             }
         }
     }
-
-    // set translation module to one
-    Eigen::Matrix3f RBest;
-    Eigen::Vector3f tBest;
-    T2Rt(bestPose, RBest, tBest);
-    Eigen::Vector3f tBestNorm1 = tBest / tBest.norm();
-    bestPose = Rt2T(RBest, tBestNorm1);
-    std::cout << "NEW NORM: " << tBestNorm1.norm() << std::endl;
 
     // concatenate motion estimation of the best camera to absolute pose and return result
     absolutePoseGlobal_ = absolutePoseGlobal_ * bestPose;

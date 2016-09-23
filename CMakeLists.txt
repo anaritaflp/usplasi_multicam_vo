@@ -82,6 +82,7 @@ add_library(MulticamOdometer
 target_link_libraries(MulticamOdometer
     MultiFeatures
     Utils
+    Optimization 
 )
 
 add_library(MulticamVOPipeline
@@ -90,8 +91,7 @@ add_library(MulticamVOPipeline
 
 target_link_libraries(MulticamVOPipeline
     ${catkin_LIBRARIES}
-    ${OpenCV_LIBS}
-    Optimization
+    ${OpenCV_LIBS}    
     MultiFeatures
     MulticamOdometer    
 )
@@ -105,7 +105,6 @@ target_link_libraries(MulticamVOSimPipeline
     ${OpenCV_LIBS}
     MulticamOdometer
     MultiFeatures
-    Optimization
 )
 
 add_executable(multicam_vo_node

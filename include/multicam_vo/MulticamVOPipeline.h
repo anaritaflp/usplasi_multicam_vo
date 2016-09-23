@@ -5,8 +5,7 @@
 #include <fstream>
 #include <algorithm>
 
-// Eigen includes (GTSAM adaptation)
-//#include </home/anaritapereira/gtsam-3.2.1/gtsam/3rdparty/Eigen/Eigen/Core>
+// Eigen includes
 #include <Eigen/Eigen>
 
 // ROS includes

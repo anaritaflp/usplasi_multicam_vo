@@ -1,7 +1,13 @@
 #include <multicam_vo/MonoOdometer.h>
 
 /** Default constructor. */
-MonoOdometer::MonoOdometer() : node_("~")
+MonoOdometer::MonoOdometer()
+{
+
+}
+
+/** Constructor. */
+MonoOdometer::MonoOdometer(Eigen::Matrix3f K) : node_("~")
 {
     // read odometer parameters
     node_.param<int>("param_odometerMinNumberMatches", param_odometerMinNumberMatches_, 20);
@@ -12,6 +18,11 @@ MonoOdometer::MonoOdometer() : node_("~")
     // read camera parameters
     node_.getParam("param_cameraPitches", param_cameraPitches_);
     node_.getParam("param_cameraHeights", param_cameraHeights_);
+
+    K_ = K;
+
+    // initialize optimizer
+    optimizer_ = ISAMOptimizer(K_);
 }
 
 /** Destructor. */
@@ -22,15 +33,13 @@ MonoOdometer::~MonoOdometer()
 
 /** Estimate monocular visual odometry.
  * @param std::vector<Match> vector with matches
- * @param Eigen::Matrix3f matrix with intrinsic parameters of previous camera
- * @param Eigen::Matrix3f matrix with intrinsic parameters of current camera
  * @param Eigen::Matrix3f& (output) estimated rotation matrix
  * @param Eigen::Vector3f& (output) estimated translation vector
  * @param bool show optical flow (true), don't show otherwise
  * @param std::vector<Match> output vector with all inlier matches
  * @param std::vector<Eigen::Vector3f> output vector with 3D points, triangulated from all inlier matches
  * @return bool true is motion successfully estimated, false otherwise */
-bool MonoOdometer::estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr, Eigen::Matrix3f &R, Eigen::Vector3f &t, bool showOpticalFlow, std::vector<Match> &inlierMatches, std::vector<Eigen::Vector3f> &points3D)
+bool MonoOdometer::estimateMotion(std::vector<Match> matches, Eigen::Matrix3f &R, Eigen::Vector3f &t, bool showOpticalFlow, std::vector<Match> &inlierMatches, std::vector<Eigen::Vector3f> &points3D)
 {
     // check number of correspondences
     int N = matches.size();
@@ -108,11 +117,11 @@ bool MonoOdometer::estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KP
     F = NormTCurr.transpose() * F * NormTPrev;
     
     // compute essential matrix E
-    E = F2E(F, KPrev, KCurr);
+    E = F2E(F);
 
     // get rotation and translation and triangulate points
     Eigen::Matrix<float, 4, Eigen::Dynamic> points3DMat;
-    E2Rt(E, KPrev, KCurr, inlierMatches, R, t, points3DMat);
+    E2Rt(E, inlierMatches, R, t, points3DMat);
 
     // normalize 3D points (force last coordinate to 0)
     for(int j=0; j<points3DMat.cols(); j++)
@@ -137,6 +146,14 @@ bool MonoOdometer::estimateMotion(std::vector<Match> matches, Eigen::Matrix3f KP
         R = Eigen::Matrix3f::Identity();
         t << 0.0, 0.0, 0.0;
         return false;
+    }
+
+    // local bundle adjustment
+    Eigen::Matrix4f pose = Rt2T(R, t);
+    if(!optimizer_.addData(points3D, inlierMatches, pose))
+    {
+        optimizer_.reset();
+        optimizer_.addData(points3D, inlierMatches, pose);
     }
     
     return true;
@@ -299,13 +316,11 @@ std::vector<int> MonoOdometer::getInliers(std::vector<Match> matches, Eigen::Mat
 
 /** Compute essential matrix out of a given fundamental matrix.
  * @param Eigen::Matrix3f fundamental matrix
- * @param Eigen::Matrix3f intrinsic matrix of the camera of the previous frame
- * @param Eigen::Matrix3f intrinsic matrix of the camera of the current frame
  * @return Eigen::Matrix3f essential matrix */
-Eigen::Matrix3f MonoOdometer::F2E(Eigen::Matrix3f F, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr)
+Eigen::Matrix3f MonoOdometer::F2E(Eigen::Matrix3f F)
 {
 	// multiply fundamental matrix by intrinsic matrices to obtain essential matrix
-    Eigen::Matrix3f E = KCurr.transpose() * F * KPrev;
+    Eigen::Matrix3f E = K_.transpose() * F * K_;
 
 	// re-enforce rank 2 constraint on essential matrix
     Eigen::JacobiSVD<Eigen::Matrix3f> svdE(E, Eigen::ComputeFullU | Eigen::ComputeFullV);
@@ -319,14 +334,12 @@ Eigen::Matrix3f MonoOdometer::F2E(Eigen::Matrix3f F, Eigen::Matrix3f KPrev, Eige
 
 /** Extract rotation (R) and translation (t) from a given essential matrix and triangulate feature matches.
  * @param Eigen::Matrix3f essential matrix
- * @param Eigen::Matrix3f intrinsic matrix of the camera of the previous frame
- * @param Eigen::Matrix3f intrinsic matrix of the camera of the current frame
  * @param std::vector<Match> vector with matches
  * @param Eigen::Matrix3f output rotation matrix
  * @param Eigen::Vector3f output translation vector
  * @param Eigen::Matrix<float, 4, Eigen::Dynamic> output matrix with computed 3D points
  * @return void */
-void MonoOdometer::E2Rt(Eigen::Matrix3f E, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr, std::vector<Match> matches, Eigen::Matrix3f &R, Eigen::Vector3f &t, Eigen::Matrix<float, 4, Eigen::Dynamic> &points3D)
+void MonoOdometer::E2Rt(Eigen::Matrix3f E, std::vector<Match> matches, Eigen::Matrix3f &R, Eigen::Vector3f &t, Eigen::Matrix<float, 4, Eigen::Dynamic> &points3D)
 {
     Eigen::Matrix3f W, Z;
     W << 0, -1, 0, 1, 0, 0, 0, 0, 1;
@@ -368,7 +381,7 @@ void MonoOdometer::E2Rt(Eigen::Matrix3f E, Eigen::Matrix3f KPrev, Eigen::Matrix3
     int maxInliers = 0;
     for(int i=0; i<4; i++)
     {
-        int nInliers = triangulate(matches, KPrev, KCurr, solutionsR[i], solutionst[i], points3DCurr);
+        int nInliers = triangulate(matches, solutionsR[i], solutionst[i], points3DCurr);
 
 		// solution with the most inliers wins
 		if(nInliers > maxInliers)
@@ -383,21 +396,19 @@ void MonoOdometer::E2Rt(Eigen::Matrix3f E, Eigen::Matrix3f KPrev, Eigen::Matrix3
 
 /** Triangulate 3D points.
  * @param std::vector<Match> vector with matches
- * @param Eigen::Matrix3f intrinsic matrix of the camera of the previous frame
- * @param Eigen::Matrix3f intrinsic matrix of the camera of the current frame
  * @param Eigen::Matrix3f rotation matrix
  * @param Eigen::Vector3f translation vector
  * @param Eigen::Matrix<float, 4, Eigen::Dynamic> output matrix with computed 3D points
  * @return int number of inliers, i.e., points that satisfy the Chirality constraint */
-int MonoOdometer::triangulate(std::vector<Match> matches, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr, Eigen::Matrix3f R, Eigen::Vector3f t, Eigen::Matrix<float, 4, Eigen::Dynamic> &points3D)
+int MonoOdometer::triangulate(std::vector<Match> matches, Eigen::Matrix3f R, Eigen::Vector3f t, Eigen::Matrix<float, 4, Eigen::Dynamic> &points3D)
 {
     points3D.resize(4, matches.size());
     
 	// get projection matrices 
 	//    previous camera has identity rotation and translation
 	//    current camera has rotation R and translation t
-    Eigen::Matrix<float, 3, 4> projMatrixPrev = getProjectionMatrix(KPrev, Eigen::Matrix3f::Identity(), Eigen::Vector3f::Zero());        
-    Eigen::Matrix<float, 3, 4> projMatrixCurr = getProjectionMatrix(KCurr, R, t);
+    Eigen::Matrix<float, 3, 4> projMatrixPrev = getProjectionMatrix(K_, Eigen::Matrix3f::Identity(), Eigen::Vector3f::Zero());        
+    Eigen::Matrix<float, 3, 4> projMatrixCurr = getProjectionMatrix(K_, R, t);
     
 	// triangulation by orthogonal regression
     Eigen::Matrix4f J;

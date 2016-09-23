@@ -9,7 +9,6 @@
 
 // Eigen includes
 #include <Eigen/Eigen>
-#include <Eigen/SVD>
 
 // ROS includes
 #include <ros/ros.h>
@@ -67,6 +66,7 @@ class MulticamOdometer
 		ros::NodeHandle node_; 								/*!< ROS node for reading odometer parameters */
 
 		Ladybug2 lb2_;										/*!< Ladybug2 object */
+		std::vector<MonoOdometer> monoOdometers_;
         
         double param_odometerInlierThreshold_;				/*!< Odometer parameter: inlier threshold */
 		
