@@ -43,7 +43,7 @@ MulticamVOPipeline::MulticamVOPipeline(std::vector<std::ofstream*> files): node_
         
     // initialize lost frames counter
     lostFrameCounter_ = 0;
-    featureDetector_ = FeatureDetector(ORB, ORB);
+    featureDetector_ = FeatureDetector(FAST, ORB);
     featureMatcher_ = FeatureMatcher(lb2_);
     odometer_ = MulticamOdometer(lb2_, files);
 
@@ -74,7 +74,6 @@ void MulticamVOPipeline::spin()
  * @return void */
 void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
 {
-    std::cout << "Received nem image" << std::endl;
     // measure execution time
     ros::Time startingTime = ros::Time::now();
 
@@ -103,13 +102,15 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
         lostFrameCounter_ += seqNumber - seqNumberPrev_ - 1;
     }
 
+    std::vector<cv::Mat> imageRectReduced;
+    imageRectReduced.resize(NUM_OMNI_CAMERAS);
     for(int i=0; i<NUM_OMNI_CAMERAS; i++)
     {
         // reduce images to their ROI
-        cv::Mat imageRectReduced = imagesRect[i](cv::Rect(param_ROIs_[i][0], param_ROIs_[i][1], param_ROIs_[i][2], param_ROIs_[i][3]));
+        imageRectReduced[i] = imagesRect[i](cv::Rect(param_ROIs_[i][0], param_ROIs_[i][1], param_ROIs_[i][2], param_ROIs_[i][3]));
         
         // find features in the ROI
-        featuresAllCameras[i] = featureDetector_.detectFeatures(imageRectReduced, seqNumber, i, true, 1.0); 
+        featuresAllCameras[i] = featureDetector_.detectFeatures(imageRectReduced[i], seqNumber, i, true, 1.0); 
         
         // correct points coordinates: from the ROI to the full image 
         for(int j=0; j<featuresAllCameras[i].size(); j++)
@@ -134,6 +135,14 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
         std::vector<std::vector<Match>> inlierMatches;
         std::vector<std::vector<Eigen::Vector3f>> points3D;
         T = odometer_.estimateMotion(matches, bestCamera, inlierMatches, points3D);
+
+        for(int i=0; i<NUM_OMNI_CAMERAS; i++)
+        {
+            //FeatureDetector d(FAST, ORB);
+            //std::vector<Feature> fs = d.detectFeatures(imageRectReduced[i], seqNumber, i, false, 1.0);
+            std::vector<Match> matches = featureMatcher_.matchFeatures(stereoFeaturesPrev_[i], featuresAllCameras[i]); 
+            std::cout << "#MATCHES: " << matches.size() << std::endl;  
+        }
     }
     else
     {
@@ -147,6 +156,10 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
         first_ = false;
     }
 
+    // find out the best scale
+    std::vector<std::vector<Feature>> stereoFeatures;
+    std::vector<std::vector<Eigen::Vector3f>> stereoPoints = triangulateStereo(imageRectReduced, seqNumber, stereoFeatures);
+
     // publish motion
     nav_msgs::Odometry msgOdom = transform2OdometryMsg(T, bestCamera);
     msgOdom.header.stamp = msg->header.stamp;
@@ -156,11 +169,11 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
     imagesRectPrev_ = imagesRect;
     featuresAllCamerasPrev_ = featuresAllCameras;
     seqNumberPrev_ = seqNumber;
-
-    std::cout << "PROCESSED FRAME " << (seqNumber - seqNumberOffset_ + 1) << std::endl;
+    stereoPointsPrev_ = stereoPoints;
+    stereoFeaturesPrev_ = stereoFeatures;
 
     ros::Time endingTime = ros::Time::now();
-    std::cout << "EXECUTION TIME (SECONDS): " << (endingTime - startingTime).toSec() << std::endl;
+    std::cout << "Processed frame " << (seqNumber - seqNumberOffset_ + 1) << "\tin " << (endingTime - startingTime).toSec() << " seconds"<< std::endl;
 }    
 
 /** Triangulate stereo points, i.e. points that are visible in neighboring cameras at the same time.
@@ -198,7 +211,7 @@ std::vector<std::vector<Eigen::Vector3f>> MulticamVOPipeline::triangulateStereo(
         cv::Mat rightOverlap = imagesROI[iRight](cv::Rect(0, 0, cameraOverlaps_[iRight][0], imagesROI[iRight].rows));
         
         // detect features in each part
-        FeatureDetector stereoFeatureDetector(ORB, ORB);
+        FeatureDetector stereoFeatureDetector(FAST, ORB);
         std::vector<Feature> featuresLeft = stereoFeatureDetector.detectFeatures(leftOverlap, seqNumber, iLeft, false, 2.0);
         std::vector<Feature> featuresRight = stereoFeatureDetector.detectFeatures(rightOverlap, seqNumber, iRight, false, 2.0);
 
@@ -232,9 +245,6 @@ std::vector<std::vector<Eigen::Vector3f>> MulticamVOPipeline::triangulateStereo(
             kpRight.pt.y += param_ROIs_[iRight][1];
             fRight.setKeypoint(kpRight);
 
-            features[iLeft].push_back(fLeft);
-            features[iRight].push_back(fRight);
-
             matchesStereo[j] = Match(fLeft, fRight, d);
         }
 
@@ -264,16 +274,9 @@ std::vector<std::vector<Eigen::Vector3f>> MulticamVOPipeline::triangulateStereo(
         }*/
 
         std::vector<Match> inlierMatches = matchesStereo;
-        /*std::cout << i << "  MATCHES: " << inlierMatches.size()  << " / " << matchesStereo.size() << std::endl;
-
-        cv::Mat imMatches = featureMatcher_.highlightMatches(imagesROI[iLeft], imagesROI[iRight], matchesStereoROI, cv::Scalar(0, 255, 0));
-        char name[20];
-        sprintf(name, "m_%d", i);
-        cv::namedWindow(std::string(name), CV_WINDOW_AUTOSIZE);
-        cv::imshow(std::string(name), imMatches);
-        cv::waitKey(10);*/
 
         // triangulate 3D points
+        std::vector<bool> valid;
         for(int j=0; j<inlierMatches.size(); j++)
         {
             // get right and left 3D rays of each point, in right and left camera coordinates respectively
@@ -309,8 +312,22 @@ std::vector<std::vector<Eigen::Vector3f>> MulticamVOPipeline::triangulateStereo(
             {
                 points[i].push_back(point3D);
                 validPointCounter++;
+                valid.push_back(true);
+                features[iLeft].push_back(inlierMatches[j].getFirstFeature());
+                features[iRight].push_back(inlierMatches[j].getSecondFeature());
             }            
-        }        
+            else
+            {
+                valid.push_back(false);
+            }
+        }
+
+        cv::Mat imMatches = featureMatcher_.highlightMatches(imagesROI[iLeft], imagesROI[iRight], matchesStereoROI, valid);
+        char name[20];
+        sprintf(name, "m_%d", i);
+        cv::namedWindow(std::string(name), CV_WINDOW_AUTOSIZE);
+        cv::imshow(std::string(name), imMatches);
+        cv::waitKey(10);        
     }
 
     std::cout << "----------------- # VALID POINTS: " << validPointCounter << std::endl;

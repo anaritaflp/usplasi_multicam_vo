@@ -101,9 +101,9 @@ cv::Mat FeatureMatcher::highlightOpticalFlow(cv::Mat image, std::vector<Match> m
  * @param cv::Mat first image
  * @param cv::Mat second image
  * @param std::vector<Match> matches
- * @param cv::Scalar BGR color
+ * @param std::vector<bool> vector indicating whether matches are valid (true) or not (false)
  * @return cv::Mat image with highlighted optical flow */
-cv::Mat FeatureMatcher::highlightMatches(cv::Mat image1, cv::Mat image2, std::vector<Match> matches, cv::Scalar color)
+cv::Mat FeatureMatcher::highlightMatches(cv::Mat image1, cv::Mat image2, std::vector<Match> matches, std::vector<bool> validMatch)
 {
     // leverage images in case of different heights
     if(image1.rows > image2.rows)
@@ -130,6 +130,16 @@ cv::Mat FeatureMatcher::highlightMatches(cv::Mat image1, cv::Mat image2, std::ve
         cv::Point2f pt1 = matches[i].getFirstFeature().getKeypoint().pt;
         cv::Point2f pt2 = matches[i].getSecondFeature().getKeypoint().pt;
         pt2 += cv::Point2f(image1.cols, 0);
+
+        cv::Scalar color;
+        if(validMatch[i] == true)
+        {
+            color = cv::Scalar(0, 255, 0);
+        }
+        else
+        {
+            color = cv::Scalar(0, 0, 255);
+        }
 
         cv::line(cat, pt1, pt2, color);
         cv::circle(cat, pt1, 3, color);

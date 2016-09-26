@@ -185,7 +185,6 @@ bool ISAMOptimizer::addData(std::vector<Eigen::Vector3f> points, std::vector<Mat
                     }
                     catch (const gtsam::ValuesKeyAlreadyExists& eVKAE)
                     {   
-                        //std::cout << "***************** INDETERMINANT LINEAR SYSTEM EXCEPTION ***************************" << std::endl;
                         std::cout << "*** VALUES KEY ALREADY EXISTS" << std::endl;
                         std::cout << "\tEXISTING KEY: " << eVKAE.key() << std::endl;
                     }

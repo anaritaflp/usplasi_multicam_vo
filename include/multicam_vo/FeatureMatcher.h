@@ -55,9 +55,9 @@ class FeatureMatcher
         * @param cv::Mat first image
         * @param cv::Mat second image
         * @param std::vector<Match> matches
-        * @param cv::Scalar BGR color
+        * @param std::vector<bool> vector indicating whether matches are valid (true) or not (false)
         * @return cv::Mat image with highlighted optical flow */
-        cv::Mat highlightMatches(cv::Mat image1, cv::Mat image2, std::vector<Match> matches, cv::Scalar color);
+        cv::Mat highlightMatches(cv::Mat image1, cv::Mat image2, std::vector<Match> matches, std::vector<bool> validMatch);
     
     private:
 

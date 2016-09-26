@@ -71,7 +71,7 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
         // estimate monocular visual odometry
         if(i == 0)
         {
-            success[i] = monoOdometers_[i].estimateMotion(matches[i],R[i], t[i], true, inlierMatches[i], points3D[i]);
+            success[i] = monoOdometers_[i].estimateMotion(matches[i],R[i], t[i], false, inlierMatches[i], points3D[i]);
         }
         else
         {

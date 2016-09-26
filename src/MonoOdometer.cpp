@@ -149,12 +149,12 @@ bool MonoOdometer::estimateMotion(std::vector<Match> matches, Eigen::Matrix3f &R
     }
 
     // local bundle adjustment
-    Eigen::Matrix4f pose = Rt2T(R, t);
+    /*Eigen::Matrix4f pose = Rt2T(R, t);
     if(!optimizer_.addData(points3D, inlierMatches, pose))
     {
         optimizer_.reset();
         optimizer_.addData(points3D, inlierMatches, pose);
-    }
+    }*/
     
     return true;
 }

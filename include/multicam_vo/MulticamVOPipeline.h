@@ -76,6 +76,8 @@ namespace odom
         int seqNumberOffset_;										/*!< Sequence number of the first frame (it's not always zero) */
 		std::vector<cv::Mat> imagesRectPrev_;						/*!< Vector with previous rectified images */
         std::vector<std::vector<Feature>> featuresAllCamerasPrev_;	/*!< Vector with each cameras' features in previous frame */
+        std::vector<std::vector<Eigen::Vector3f>> stereoPointsPrev_;
+        std::vector<std::vector<Feature>> stereoFeaturesPrev_;
             
 		FeatureDetector featureDetector_;							/*!< Feature detector */
         FeatureMatcher featureMatcher_;							    /*!< Feature matcher */	

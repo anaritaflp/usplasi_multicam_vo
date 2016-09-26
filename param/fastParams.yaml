@@ -1,2 +1,2 @@
-FAST_threshold: 30
+FAST_threshold: 10
 FAST_nonMaxSup: true
