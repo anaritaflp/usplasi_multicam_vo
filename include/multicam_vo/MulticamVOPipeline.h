@@ -55,12 +55,19 @@ namespace odom
         void imageCallback(const sensor_msgs::Image::ConstPtr &msg);
 
         /** Triangulate stereo points, i.e. points that are visible in neighboring cameras at the same time.
-         * @param std::vector<cv::Mat vector with images, already reduced to their ROI (i.e. without the black borders)
-         * @param int sequence number of the current frame
-         * @param std::vector<std::vector<Feature>> output vector with stereo features in each camera, for matching with the next image
-         * @return std::vector<std::vector<Eigen::Vector3f>> vector with 3D stereo points in each neighboring camera pair. I.e, position 0 has points triangulated using camera 0 and 1. Position 1 has points triangulated using camera 1 and 2. etc. **/
-        std::vector<std::vector<Eigen::Vector3f>> triangulateStereo(std::vector<cv::Mat> imagesROI, int seqNumber, std::vector<std::vector<Feature>> &features);
-
+         * @param cv::Mat left image, already reduced to their ROI (i.e. without the black borders)
+         * @param cv::Mat right image, already reduced to their ROI (i.e. without the black borders)
+         * @param int number of overlapping pixels in the left image
+         * @param int number of overlapping pixels in the right image
+         * @param std::vector<double> vector with horizontal and vertical offset in left image
+         * @param std::vector<double> vector with horizontal and vertical offset in right image
+         * @param Eigen::Matrix3f left camera matrix
+         * @param Eigen::Matrix3f right camera matrix
+         * @param Eigen::Matrix4f transformation of right camera relatively to left camera
+         * @param std::vector<Feature> output vector with stereo features in the left camera
+         * @param std::vector<Feature> output vector with stereo features in the right camera
+         * @return std::vector<Eigen::Vector3f> vector with triuangulated 3D stereo points. **/
+        std::vector<Eigen::Vector3f> triangulateStereo(cv::Mat leftImage, cv::Mat rightImage, int overlapLeft, int overlapRight, std::vector<double> offsetLeft, std::vector<double> offsetRight, Eigen::Matrix3f KLeft, Eigen::Matrix3f KRight, Eigen::Matrix4f TLeftRight, std::vector<Feature> &featuresLeft, std::vector<Feature> &featuresRight);
         Ladybug2 lb2_;                                               /*!< Ladybug2 object */    
 
         ros::NodeHandle node_;										/*!< ROS node for reading parameters */
@@ -75,9 +82,11 @@ namespace odom
         int seqNumberPrev_;											/*!< Number of the previously processed frame */
         int seqNumberOffset_;										/*!< Sequence number of the first frame (it's not always zero) */
 		std::vector<cv::Mat> imagesRectPrev_;						/*!< Vector with previous rectified images */
+        std::vector<cv::Mat> imagesRectReducedPrev_;
         std::vector<std::vector<Feature>> featuresAllCamerasPrev_;	/*!< Vector with each cameras' features in previous frame */
-        std::vector<std::vector<Eigen::Vector3f>> stereoPointsPrev_;
-        std::vector<std::vector<Feature>> stereoFeaturesPrev_;
+        std::vector<Eigen::Vector3f> stereoPointsPrev_;
+        std::vector<Feature> featuresStereoLeftPrev_;
+        std::vector<Feature> featuresStereoRightPrev_;
             
 		FeatureDetector featureDetector_;							/*!< Feature detector */
         FeatureMatcher featureMatcher_;							    /*!< Feature matcher */	

@@ -145,6 +145,7 @@ cv::Mat FeatureMatcher::highlightMatches(cv::Mat image1, cv::Mat image2, std::ve
         cv::circle(cat, pt1, 3, color);
         cv::circle(cat, pt2, 3, color);
     }
+
     return cat;
 }
 
