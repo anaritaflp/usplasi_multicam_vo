@@ -59,7 +59,7 @@ class MulticamOdometer
 		* @param Eigen::Vector3f translation vector
 		* @param Eigen::Matrix3f intrinsics matrix
 		* @return Eigen::Matrix3f fundamental matrix */
-		Eigen::Matrix3f Rt2F(Eigen::Matrix3f R, Eigen::Vector3f t, Eigen::Matrix3f K);
+		Eigen::Matrix3f Rt2F(Eigen::Matrix3f R, Eigen::Vector3f t, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr);
     
     private:
 

@@ -8,6 +8,8 @@
 // Eigen includes
 #include <Eigen/Eigen>
 
+#include "ceres/ceres.h"
+
 // ROS includes
 #include <ros/ros.h>
 #include <image_transport/image_transport.h>
@@ -68,6 +70,12 @@ namespace odom
          * @param std::vector<Feature> output vector with stereo features in the right camera
          * @return std::vector<Eigen::Vector3f> vector with triuangulated 3D stereo points. **/
         std::vector<Eigen::Vector3f> triangulateStereo(cv::Mat leftImage, cv::Mat rightImage, int overlapLeft, int overlapRight, std::vector<double> offsetLeft, std::vector<double> offsetRight, Eigen::Matrix3f KLeft, Eigen::Matrix3f KRight, Eigen::Matrix4f TLeftRight, std::vector<Feature> &featuresLeft, std::vector<Feature> &featuresRight);
+
+        std::vector<Feature> displaceFeatures(std::vector<Feature> features, double offsetX, double offsetY);
+
+        std::vector<Match> displaceMatches(std::vector<Match> matches, double offsetPrevX, double offsetPrevY, double offsetCurrX, double offsetCurrY);
+
+
         Ladybug2 lb2_;                                               /*!< Ladybug2 object */    
 
         ros::NodeHandle node_;										/*!< ROS node for reading parameters */

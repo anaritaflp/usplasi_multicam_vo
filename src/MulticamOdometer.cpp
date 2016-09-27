@@ -125,7 +125,7 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
                 Eigen::Matrix3f RLocal;
                 Eigen::Vector3f tLocal;
                 T2Rt(TLocal, RLocal, tLocal);
-                Eigen::Matrix3f Fj = Rt2F(RLocal, tLocal, lb2_.cameraMatrices_[j]);
+                Eigen::Matrix3f Fj = Rt2F(RLocal, tLocal, lb2_.cameraMatrices_[j], lb2_.cameraMatrices_[j]);
 
                 // count inliers of camera j for motion estimation of camera i
                 std::vector<int> inlierIndices = getInliers(matches[j], Fj, param_odometerInlierThreshold_);
@@ -193,7 +193,7 @@ std::vector<int> MulticamOdometer::getInliers(std::vector<Match> matches, Eigen:
  * @param Eigen::Vector3f translation vector
  * @param Eigen::Matrix3f intrinsics matrix
  * @return Eigen::Matrix3f fundamental matrix */
-Eigen::Matrix3f MulticamOdometer::Rt2F(Eigen::Matrix3f R, Eigen::Vector3f t, Eigen::Matrix3f K)
+Eigen::Matrix3f MulticamOdometer::Rt2F(Eigen::Matrix3f R, Eigen::Vector3f t, Eigen::Matrix3f KPrev, Eigen::Matrix3f KCurr)
 {
     // get skew symmetric matrix of translation vector
     Eigen::Matrix3f S;
@@ -202,7 +202,7 @@ Eigen::Matrix3f MulticamOdometer::Rt2F(Eigen::Matrix3f R, Eigen::Vector3f t, Eig
     // testar R*S
     Eigen::Matrix3f E = S * R;
 
-    Eigen::Matrix3f F = (K.transpose()).inverse() * E * K.inverse();
+    Eigen::Matrix3f F = (KCurr.transpose()).inverse() * E * KPrev.inverse();
 
     // re-enforce rank 2 constraint on fundamental matrix
     Eigen::JacobiSVD<Eigen::Matrix3f> svdF(F, Eigen::ComputeFullU | Eigen::ComputeFullV);

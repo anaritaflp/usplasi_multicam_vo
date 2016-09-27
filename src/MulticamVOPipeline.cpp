@@ -1,5 +1,11 @@
 #include <multicam_vo/MulticamVOPipeline.h>
 
+using ceres::AutoDiffCostFunction;
+using ceres::CostFunction;
+using ceres::Problem;
+using ceres::Solver;
+using ceres::Solve;
+
 namespace odom
 {
     
@@ -149,18 +155,71 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
     }
 
     // track previously triangulated stereo points in the current left and right images
-    FeatureDetector detectorScale(SHI_TOMASI, ORB);
-    std::vector<Feature> featuresScaleLeft = detectorScale.detectFeatures(imagesRect[1], seqNumber, 1, false, 1.0);
-    std::vector<Feature> featuresScaleRight = detectorScale.detectFeatures(imagesRect[2], seqNumber, 2, false, 1.0);
+    double offset = 100;
+    cv::Mat fullLeft = imagesRectReduced[1];
+    cv::Mat fullRight = imagesRectReduced[2];
+    cv::Mat partLeft = fullLeft(cv::Rect(fullLeft.cols-offset, 0, offset, fullLeft.rows));
+    cv::Mat partRight = fullRight(cv::Rect(0, 0, offset, fullRight.rows));
+
+    FeatureDetector detectorScale(FAST, ORB);
+    std::vector<Feature> featuresScaleLeft = detectorScale.detectFeatures(partLeft, seqNumber, 1, false, 3.0);
+    std::vector<Feature> featuresScaleRight = detectorScale.detectFeatures(partRight, seqNumber, 2, false, 3.0);
+
+    featuresScaleLeft = displaceFeatures(featuresScaleLeft, fullLeft.cols - offset + param_ROIs_[1][0], param_ROIs_[1][1]);
+    featuresScaleRight = displaceFeatures(featuresScaleRight, param_ROIs_[2][0], param_ROIs_[2][1]);
+
     std::vector<Match> matchesLeftScale = featureMatcher_.matchFeatures(featuresStereoLeftPrev_, featuresScaleLeft);
     std::vector<Match> matchesRightScale = featureMatcher_.matchFeatures(featuresStereoRightPrev_, featuresScaleRight);
 
-    cv::Mat ofLeft = featureMatcher_.highlightOpticalFlow(imagesRect[1], matchesLeftScale, cv::Scalar(0, 255, 0));
-    cv::Mat ofRight = featureMatcher_.highlightOpticalFlow(imagesRect[2], matchesRightScale, cv::Scalar(0, 255, 0));
+    // test for inliers
+    Eigen::Matrix3f R;
+    Eigen::Vector3f t;
+    T2Rt(T, R, t);
+    Eigen::Matrix3f FLeft = odometer_.Rt2F(R, t, lb2_.cameraMatrices_[1], lb2_.cameraMatrices_[1]);
+    Eigen::Matrix3f FRight = odometer_.Rt2F(R, t, lb2_.cameraMatrices_[2], lb2_.cameraMatrices_[2]);
+    std::vector<int> inlierIndicesLeft = odometer_.getInliers(matchesLeftScale, FLeft, 40.0);
+    std::vector<int> inlierIndicesRight = odometer_.getInliers(matchesRightScale, FRight, 40.0);
+
+    std::vector<Match> inlierMatchesLeft, outlierMatchesLeft, inlierMatchesRight, outlierMatchesRight;
+    for(int i=0; i<matchesLeftScale.size(); i++)
+    {
+        if(elemInVec(inlierIndicesLeft, i))
+        {
+            inlierMatchesLeft.push_back(matchesLeftScale[i]);
+        }
+        else
+        {
+            outlierMatchesLeft.push_back(matchesLeftScale[i]);
+        }
+    }
+    for(int i=0; i<matchesRightScale.size(); i++)
+    {
+        if(elemInVec(inlierIndicesRight, i))
+        {
+            inlierMatchesRight.push_back(matchesRightScale[i]);
+        }
+        else
+        {
+            outlierMatchesRight.push_back(matchesRightScale[i]);
+        }
+    }
+
+    std::cout << "******************************* # MOTION INLIERS LEFT:  " << inlierIndicesLeft.size() << std::endl;
+    std::cout << "******************************* # MOTION INLIERS RIGHT: " << inlierIndicesRight.size() << std::endl;
+
+    inlierMatchesLeft = displaceMatches(inlierMatchesLeft, -param_ROIs_[1][0], -param_ROIs_[1][1], -param_ROIs_[1][0], -param_ROIs_[1][1]);
+    outlierMatchesLeft = displaceMatches(outlierMatchesLeft, -param_ROIs_[1][0], -param_ROIs_[1][1], -param_ROIs_[1][0], -param_ROIs_[1][1]);
+    inlierMatchesRight = displaceMatches(inlierMatchesRight, -param_ROIs_[2][0], -param_ROIs_[2][1], -param_ROIs_[2][0], -param_ROIs_[2][1]);
+    outlierMatchesRight = displaceMatches(outlierMatchesRight, -param_ROIs_[2][0], -param_ROIs_[2][1], -param_ROIs_[2][0], -param_ROIs_[2][1]);
+
+    fullLeft = featureMatcher_.highlightOpticalFlow(fullLeft, inlierMatchesLeft, cv::Scalar(0, 255, 0));
+    fullLeft = featureMatcher_.highlightOpticalFlow(fullLeft, outlierMatchesLeft, cv::Scalar(0, 0, 255));
+    fullRight = featureMatcher_.highlightOpticalFlow(fullRight, inlierMatchesRight, cv::Scalar(0, 255, 0));
+    fullRight = featureMatcher_.highlightOpticalFlow(fullRight, outlierMatchesRight, cv::Scalar(0, 0, 255));
     cv::namedWindow("optical flow left", CV_WINDOW_AUTOSIZE);
-    cv::imshow("optical flow left", ofLeft);
+    cv::imshow("optical flow left", fullLeft);
     cv::namedWindow("optical flow right", CV_WINDOW_AUTOSIZE);
-    cv::imshow("optical flow right", ofRight);
+    cv::imshow("optical flow right", fullRight);
 
     std::cout << "STEREO MATCHES LEFT:  " << matchesLeftScale.size() << std::endl;
     std::cout << "STEREO MATCHES RIGHT: " << matchesRightScale.size() << std::endl;
@@ -185,7 +244,7 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
     featuresStereoRightPrev_ = featuresStereoRight;
 
     ros::Time endingTime = ros::Time::now();
-    std::cout << "Processed frame " << (seqNumber - seqNumberOffset_ + 1) << "\tin " << (endingTime - startingTime).toSec() << " seconds"<< std::endl;
+    std::cout << "Processed frame " << (seqNumber - seqNumberOffset_ + 1) << "\tin " << (endingTime - startingTime).toSec() << " seconds" << std::endl;
 }    
 
 /** Triangulate stereo points, i.e. points that are visible in neighboring cameras at the same time.
@@ -222,92 +281,135 @@ std::vector<Eigen::Vector3f> MulticamVOPipeline::triangulateStereo(cv::Mat leftI
     cv::Mat rightOverlap = rightImage(cv::Rect(0, 0, overlapRight, rightImage.rows));
 
     // detect features in each part
-    FeatureDetector stereoFeatureDetector(SHI_TOMASI, ORB);
-    std::vector<Feature> featuresLeftAll = stereoFeatureDetector.detectFeatures(leftOverlap, -1, 1, false, 2.0);
-    std::vector<Feature> featuresRightAll = stereoFeatureDetector.detectFeatures(rightOverlap, -1, 2, false, 2.0);
+    FeatureDetector stereoFeatureDetector(FAST, ORB);
+    std::vector<Feature> featuresLeftAll = stereoFeatureDetector.detectFeatures(leftOverlap, 1, 1, false, 3.0);
+    std::vector<Feature> featuresRightAll = stereoFeatureDetector.detectFeatures(rightOverlap, 2, 2, false, 3.0);
+
+    // update features' positions in the full image
+    featuresLeftAll = displaceFeatures(featuresLeftAll, offsetLeft[0] + overlapLeft, offsetLeft[1]);
+    featuresRightAll = displaceFeatures(featuresRightAll, offsetRight[0], offsetRight[1]);
 
     // feature matching
-    std::vector<Match> matchesStereoROI = featureMatcher_.matchFeatures(featuresLeftAll, featuresRightAll);
+    std::vector<Match> matchesStereo = featureMatcher_.matchFeatures(featuresLeftAll, featuresRightAll);
+
+    Eigen::Matrix3f FStereo = odometer_.Rt2F(RRightLeft, tRightLeft, KLeft, KRight);
+    std::vector<int> inlierIndices = odometer_.getInliers(matchesStereo, FStereo, 50.0);
+    std::cout << "***************** # STEREO INLIERS: " << inlierIndices.size() << std::endl;
 
     std::vector<bool> valid;
     std::vector<Eigen::Vector3f> points;
-    for(int i=0; i<matchesStereoROI.size(); i++)
+    for(int i=0; i<matchesStereo.size(); i++)
     {
-        // update features' positions in the full image
-        Feature fLeft = matchesStereoROI[i].getFirstFeature();
-        Feature fRight = matchesStereoROI[i].getSecondFeature();
-        float d = matchesStereoROI[i].getDistance();
-
-        cv::KeyPoint kpLeft = fLeft.getKeypoint();
-        cv::KeyPoint kpRight = fRight.getKeypoint();
-
-        kpLeft.pt.x += overlapLeft;
-        fLeft.setKeypoint(kpLeft);
-        Match m(fLeft, fRight, d);
-        matchesStereoROI[i] = m;
-
-        kpLeft.pt.x += offsetLeft[0];
-        kpLeft.pt.y += offsetLeft[1];
-        fLeft.setKeypoint(kpLeft);
-
-        kpRight.pt.x += offsetRight[0];
-        kpRight.pt.y += offsetRight[1];
-        fRight.setKeypoint(kpRight);
-
-        // get right and left 3D rays of each point, in right and left camera coordinates respectively
-        cv::Point2f ptLeft = fLeft.getKeypoint().pt;
-        cv::Point2f ptRight = fRight.getKeypoint().pt;
-
-        double fxLeft = KLeft(0, 0);
-        double fyLeft = KLeft(1, 1);
-        double cxLeft = KLeft(0, 2);
-        double cyLeft = KLeft(1, 2);
-
-        double fxRight = KRight(0, 0);
-        double fyRight = KRight(1, 1);
-        double cxRight = KRight(0, 2);
-        double cyRight = KRight(1, 2);
-
-        Eigen::Vector3f rayLeft, rayRight;            
-        rayLeft << ((ptLeft.x - cxLeft) / fxLeft), ((ptLeft.y - cyLeft) / fyLeft), 1.0;
-        rayRight << ((ptRight.x - cxRight) / fxRight), ((ptRight.y - cyRight) / fyRight), 1.0;
-
-        // get approximate intersection of both rays in right camera coordinates
-        Eigen::Matrix3f M;
-        Eigen::Vector3f mc1, mc2, mc3;
-        mc1 = rayLeft;
-        mc2 = - (RRightLeft.transpose() * rayRight);
-        mc3 = rayLeft.cross(RRightLeft.transpose() * rayRight);
-        M << mc1, mc2, mc3;
-
-        Eigen::Vector3f abc = M.colPivHouseholderQr().solve(tLeftRight);
-        Eigen::Vector3f point3D = abc(0)*rayLeft + (abc(2)/2) * rayLeft.cross(RRightLeft.transpose() * rayRight);
-        
-        if(point3D(2) > 0)
+        if(elemInVec(inlierIndices, i))
         {
-            points.push_back(point3D);
-            validPointCounter++;
-            valid.push_back(true);
+            Feature fLeft = matchesStereo[i].getFirstFeature();
+            Feature fRight = matchesStereo[i].getSecondFeature();
 
-            featuresLeft.push_back(fLeft);
-            featuresRight.push_back(fRight);
-        }            
+            // get right and left 3D rays of each point, in right and left camera coordinates respectively
+            cv::Point2f ptLeft = fLeft.getKeypoint().pt;
+            cv::Point2f ptRight = fRight.getKeypoint().pt;
+
+            double fxLeft = KLeft(0, 0);
+            double fyLeft = KLeft(1, 1);
+            double cxLeft = KLeft(0, 2);
+            double cyLeft = KLeft(1, 2);
+
+            double fxRight = KRight(0, 0);
+            double fyRight = KRight(1, 1);
+            double cxRight = KRight(0, 2);
+            double cyRight = KRight(1, 2);
+
+            Eigen::Vector3f rayLeft, rayRight;            
+            rayLeft << ((ptLeft.x - cxLeft) / fxLeft), ((ptLeft.y - cyLeft) / fyLeft), 1.0;
+            rayRight << ((ptRight.x - cxRight) / fxRight), ((ptRight.y - cyRight) / fyRight), 1.0;
+
+            // get approximate intersection of both rays in right camera coordinates
+            Eigen::Matrix3f M;
+            Eigen::Vector3f mc1, mc2, mc3;
+            mc1 = rayLeft;
+            mc2 = - (RRightLeft.transpose() * rayRight);
+            mc3 = rayLeft.cross(RRightLeft.transpose() * rayRight);
+            M << mc1, mc2, mc3;
+
+            Eigen::Vector3f abc = M.colPivHouseholderQr().solve(tLeftRight);
+            Eigen::Vector3f point3D = abc(0)*rayLeft + (abc(2)/2) * rayLeft.cross(RRightLeft.transpose() * rayRight);
+            
+            if(point3D(2) > 0)
+            {
+                points.push_back(point3D);
+                validPointCounter++;
+                valid.push_back(true);
+
+                featuresLeft.push_back(fLeft);
+                featuresRight.push_back(fRight);
+            }            
+            else
+            {
+                valid.push_back(false);
+            }
+        }
         else
         {
-            valid.push_back(false);
+            matchesStereo.erase(matchesStereo.begin() + i);
+            i--;
         }
     }
 
-    cv::Mat imMatches = featureMatcher_.highlightMatches(leftImage, rightImage, matchesStereoROI, valid);
+    matchesStereo = displaceMatches(matchesStereo, -offsetLeft[0], -offsetLeft[1], -offsetRight[0], -offsetRight[1]);
+
+    cv::Mat imMatches = featureMatcher_.highlightMatches(leftImage, rightImage, matchesStereo, valid);
     cv::namedWindow("Stereo matches", CV_WINDOW_AUTOSIZE);
     cv::imshow("Stereo matches", imMatches);
-    cv::waitKey(10);     
+    cv::waitKey(10);
 
     std::cout << "----------------- # VALID POINTS: " << validPointCounter << std::endl;
 
     ros::Time end = ros::Time::now();
 
     return points;
+}
+
+std::vector<Feature> MulticamVOPipeline::displaceFeatures(std::vector<Feature> features, double offsetX, double offsetY)
+{
+    std::vector<Feature> displacedFeatures;
+    for(int i=0; i<features.size(); i++)
+    {
+        cv::KeyPoint kp = features[i].getKeypoint();
+        kp.pt.x += offsetX;
+        kp.pt.y += offsetY;
+        Feature f = features[i];
+        f.setKeypoint(kp);
+        displacedFeatures.push_back(f);
+    }
+    return displacedFeatures;
+}
+
+std::vector<Match> MulticamVOPipeline::displaceMatches(std::vector<Match> matches, double offsetPrevX, double offsetPrevY, double offsetCurrX, double offsetCurrY)
+{
+    std::vector<Match> displacedMatches;
+    for(int i=0; i<matches.size(); i++)
+    {
+        Feature fPrev = matches[i].getFirstFeature();
+        Feature fCurr = matches[i].getSecondFeature();
+        double d = matches[i].getDistance();
+
+        cv::KeyPoint kpPrev = fPrev.getKeypoint();
+        cv::KeyPoint kpCurr = fCurr.getKeypoint();
+
+        kpPrev.pt.x += offsetPrevX;
+        kpPrev.pt.y += offsetPrevY;
+
+        kpCurr.pt.x += offsetCurrX;
+        kpCurr.pt.y += offsetCurrY;
+
+        fPrev.setKeypoint(kpPrev);
+        fCurr.setKeypoint(kpCurr);
+
+        Match m(fPrev, fCurr, d);
+        displacedMatches.push_back(m);
+    }
+
+    return displacedMatches;
 }
 
 }
