@@ -41,8 +41,9 @@ class FeatureMatcher
         /** Match two sets of features.
          * @param std::vector<Feature> vector with features in the first image
          * @param std::vector<Feature> vector with features in the second image
+         * @param double minimum descriptor distance
          * @return std::vector<Match> vector with feature matches */
-        std::vector<Match> matchFeatures(std::vector<Feature> features1, std::vector<Feature> features2);
+        std::vector<Match> matchFeatures(std::vector<Feature> features1, std::vector<Feature> features2, double minDescriptorDistance);
 
         /** Highlight optical flow in an image.
         * @param cv::Mat original image

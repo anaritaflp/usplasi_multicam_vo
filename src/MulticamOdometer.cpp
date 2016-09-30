@@ -41,14 +41,16 @@ MulticamOdometer::~MulticamOdometer()
  * @param std::vector<std::vector<Match>> a vector with each camera's matches
  * @param vector of output matlab files to be filled with the estimated poses
  * @param int& output index of the camera with the most successful motion estimation
- * @param std::vector<std::vector<Match>> output vector with each camera's inlier matches
- * @param std::vector<std::vector<Eigen::Vector3f>> output vector with each camera's 3D points triangulated from inlier matches
- * @return Eigen::Matrix4f transformation with the relative motion of the multi-camera system */
-Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>> matches, int &bestCamera, std::vector<std::vector<Match>> &inlierMatches, std::vector<std::vector<Eigen::Vector3f>> &points3D)
+ * @param std::vector<std::vector<Match>>& output vector with each camera's inlier matches
+ * @param std::vector<std::vector<Eigen::Vector3f>>& output vector with each camera's 3D points triangulated from inlier matches
+ * @param std::vector<Eigen::Matrix4f>& output vector with each camera's pose estimation, obtained from monocular VO
+ * @return Eigen::Matrix4f transformation with the best relative motion estimate */
+Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>> matches, int &bestCamera, std::vector<std::vector<Match>> &inlierMatches, std::vector<std::vector<Eigen::Vector3f>> &points3D, std::vector<Eigen::Matrix4f> &monoPoses)
 {
     // rotation and translation estimates obtained with the correspondences between each combination of cameras
     std::vector<Eigen::Matrix3f> R;
     std::vector<Eigen::Vector3f> t;
+    monoPoses.resize(NUM_OMNI_CAMERAS);
 	
 	// flags indicating whether R,t was successfully obtained or not
 	std::vector<bool> success(NUM_OMNI_CAMERAS, false);
@@ -76,7 +78,7 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
         {
             success[i] = monoOdometers_[i].estimateMotion(matches[i], R[i], t[i], false, inlierMatches[i], points3D[i]);
         }
-        
+        monoPoses[i] = Rt2T(R[i], t[i]);        
     }
 
 	// let ALL matches vote for the best R,t estimated in the previous mono visual odometry step

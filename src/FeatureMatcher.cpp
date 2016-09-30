@@ -35,8 +35,9 @@ FeatureMatcher::~FeatureMatcher()
 /** Find matches in an omnidirectional multi-camera system. Matches are search in each camera and between onsecutive cameras.
  * @param std::vector<Feature> vector with features in the first image
  * @param std::vector<Feature> vector with features in the second image
+ * @param double minimum descriptor distance
  * @return std::vector<Match> vector with feature matches */
-std::vector<Match> FeatureMatcher::matchFeatures(std::vector<Feature> features1, std::vector<Feature> features2)
+std::vector<Match> FeatureMatcher::matchFeatures(std::vector<Feature> features1, std::vector<Feature> features2, double minDescriptorDistance)
 {
     std::vector<Match> matches;
 
@@ -56,7 +57,7 @@ std::vector<Match> FeatureMatcher::matchFeatures(std::vector<Feature> features1,
     std::vector<cv::DMatch> goodDMatches;
     for(int i=0; i<dmatches.size(); i++)
     {
-        if(dmatches[i].distance < param_matchingDescriptorDistance_)
+        if(dmatches[i].distance < minDescriptorDistance)
         {
             goodDMatches.push_back(dmatches[i]);
         }
@@ -92,6 +93,7 @@ cv::Mat FeatureMatcher::highlightOpticalFlow(cv::Mat image, std::vector<Match> m
         cv::Point2f pt_2 = matches[i].getSecondFeature().getKeypoint().pt;
         
         cv::line(imageOptFlow, pt_1, pt_2, color);
+        cv::circle(imageOptFlow, pt_2, 2, color);
     }
     
     return imageOptFlow;

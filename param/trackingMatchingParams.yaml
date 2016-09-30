@@ -1,5 +1,5 @@
 
-param_matchingDescriptorDistance: 30
+param_matchingDescriptorDistance: 50
 param_trackingWindowSize: 21
 param_trackingMaxLevel: 0
 param_trackingMinEigThreshold: 0.001

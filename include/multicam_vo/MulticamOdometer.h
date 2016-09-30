@@ -42,10 +42,11 @@ class MulticamOdometer
 		* @param std::vector<std::vector<Match>> a vector with each camera's matches
 		* @param vector of output matlab files to be filled with the estimated poses
 		* @param int& output index of the camera with the most successful motion estimation
-		* @param std::vector<std::vector<Match>> output vector with each camera's inlier matches
-		* @param std::vector<std::vector<Eigen::Vector3f>> output vector with each camera's 3D points triangulated from inlier matches
- 		* @return Eigen::Matrix4f transformation with the relative motion of the multi-camera system */
-		Eigen::Matrix4f estimateMotion(std::vector<std::vector<Match>> matches, int &bestCamera, std::vector<std::vector<Match>> &inlierMatches, std::vector<std::vector<Eigen::Vector3f>> &points3D);
+		* @param std::vector<std::vector<Match>>& output vector with each camera's inlier matches
+		* @param std::vector<std::vector<Eigen::Vector3f>>& output vector with each camera's 3D points triangulated from inlier matches
+		* @param std::vector<Eigen::Matrix4f>& output vector with each camera's pose estimation, obtained from monocular VO
+ 		* @return Eigen::Matrix4f transformation with the best relative motion estimate */
+		Eigen::Matrix4f estimateMotion(std::vector<std::vector<Match>> matches, int &bestCamera, std::vector<std::vector<Match>> &inlierMatches, std::vector<std::vector<Eigen::Vector3f>> &points3D, std::vector<Eigen::Matrix4f> &monoPoses);
 
 		/** Get the inliers among all matches that comply with a given fundamental matrix.
 		 * @param std::vector<Match> vector with feature matches

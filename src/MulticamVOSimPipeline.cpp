@@ -265,7 +265,8 @@ void MulticamVOSimPipeline::loop(std::vector<std::ofstream*> files)
         int bestCamera;
         std::vector<std::vector<Match>> inlierMatches;
         std::vector<std::vector<Eigen::Vector3f>> points3D;
-        Eigen::Matrix4f TRelative = odometer_.estimateMotion(matches, bestCamera, inlierMatches, points3D);
+        std::vector<Eigen::Matrix4f> monoPoses;
+        Eigen::Matrix4f TRelative = odometer_.estimateMotion(matches, bestCamera, inlierMatches, points3D, monoPoses);
 
         // concatenate motion estimation of the best camera to absolute pose and return result
         absolutePoseGlobal_ = absolutePoseGlobal_ * TRelative;
