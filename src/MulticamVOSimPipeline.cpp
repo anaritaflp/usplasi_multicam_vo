@@ -39,6 +39,8 @@ MulticamVOSimPipeline::MulticamVOSimPipeline(std::vector<std::ofstream*> files)
         flag = !allDescriptorsDifferent();
     }*/
     createDescriptors();
+
+    absolutePoseGlobal_ = Eigen::Matrix4f::Identity();
 }
         
 /** Default MulticamVOSimPipeline destructor. */
@@ -263,10 +265,13 @@ void MulticamVOSimPipeline::loop(std::vector<std::ofstream*> files)
         int bestCamera;
         std::vector<std::vector<Match>> inlierMatches;
         std::vector<std::vector<Eigen::Vector3f>> points3D;
-        Eigen::Matrix4f T = odometer_.estimateMotion(matches, bestCamera, inlierMatches, points3D);
+        Eigen::Matrix4f TRelative = odometer_.estimateMotion(matches, bestCamera, inlierMatches, points3D);
+
+        // concatenate motion estimation of the best camera to absolute pose and return result
+        absolutePoseGlobal_ = absolutePoseGlobal_ * TRelative;
 
         // publish optimal motion estimation
-        nav_msgs::Odometry msgOdom = transform2OdometryMsg(T, bestCamera);
+        nav_msgs::Odometry msgOdom = transform2OdometryMsg(absolutePoseGlobal_, bestCamera);
         pubOdom_.publish(msgOdom);
 
         frameCounter++;

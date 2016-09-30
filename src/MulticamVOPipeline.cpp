@@ -6,9 +6,29 @@ using ceres::Problem;
 using ceres::Solver;
 using ceres::Solve;
 
+
+struct ReprojectionError
+{
+    ReprojectionError(Eigen::Matrix<float, 3, 4> P, Eigen::Vector3f p3, cv::Point2f p2): P_(P), p3_(p3), p2_(p2)
+    {
+
+    }
+    template<typename T> bool operator()(const T* const scale, T* residual) const
+    {
+        residual[0] = T(p2_.x) - T(P_(0, 0))*T(p3_(0)) - T(P_(0, 1))*T(p3_(1)) - T(P_(0, 2))*T(p3_(2)) - T(P_(0, 3))*scale[0];
+        residual[1] = T(p2_.y) - T(P_(1, 0))*T(p3_(0)) - T(P_(1, 1))*T(p3_(1)) - T(P_(1, 2))*T(p3_(2)) - T(P_(1, 3))*scale[0];
+        residual[2] = 1.0 - T(P_(2, 0))*T(p3_(0)) - T(P_(2, 1))*T(p3_(1)) - T(P_(2, 2))*T(p3_(2)) - T(P_(2, 3))*scale[0];
+        return true;
+    }
+    private:
+        const Eigen::Matrix<float, 3, 4> P_;
+        const Eigen::Vector3f p3_;
+        const cv::Point2f p2_;
+};
+
 namespace odom
 {
-    
+
 /** Default MulticamVOPipeline constructor.
  * @param std::vector<std::ofstream*> vector of files to write estimated poses
  * @return MulticamVOPipeline object */
@@ -59,6 +79,9 @@ MulticamVOPipeline::MulticamVOPipeline(std::vector<std::ofstream*> files): node_
     // subscribe to image topic
     image_transport::ImageTransport it(node_);    
     subImage_ = it.subscribe(param_imageTopic_, 1, &MulticamVOPipeline::imageCallback, this);
+
+    absolutePoseGlobal_ = Eigen::Matrix4f::Identity();
+    scale_ = 1.0;
 }
     
 /** Default MulticamVOPipeline destructor. */
@@ -134,18 +157,140 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
     }
 
     // estimate motion (T)
-    Eigen::Matrix4f T;
+    Eigen::Matrix4f TRelative;
     int bestCamera;
     if(!first_)
     {
         std::vector<std::vector<Match>> inlierMatches;
         std::vector<std::vector<Eigen::Vector3f>> points3D;
-        T = odometer_.estimateMotion(matches, bestCamera, inlierMatches, points3D);
+        TRelative = odometer_.estimateMotion(matches, bestCamera, inlierMatches, points3D);
+
+        // track previously triangulated stereo points in the current left and right images
+        double offset = 100;
+        cv::Mat fullLeft = imagesRectReduced[1];
+        cv::Mat fullRight = imagesRectReduced[2];
+        cv::Mat partLeft = fullLeft(cv::Rect(fullLeft.cols-offset, 0, offset, fullLeft.rows));
+        cv::Mat partRight = fullRight(cv::Rect(0, 0, offset, fullRight.rows));
+
+        FeatureDetector detectorScale(FAST, ORB);
+        std::vector<Feature> featuresScaleLeft = detectorScale.detectFeatures(partLeft, seqNumber, 1, false, 3.0);
+        std::vector<Feature> featuresScaleRight = detectorScale.detectFeatures(partRight, seqNumber, 2, false, 3.0);
+
+        featuresScaleLeft = displaceFeatures(featuresScaleLeft, fullLeft.cols - offset + param_ROIs_[1][0], param_ROIs_[1][1]);
+        featuresScaleRight = displaceFeatures(featuresScaleRight, param_ROIs_[2][0], param_ROIs_[2][1]);
+
+        std::vector<Match> matchesLeftScale = featureMatcher_.matchFeatures(featuresStereoLeftPrev_, featuresScaleLeft);
+        std::vector<Match> matchesRightScale = featureMatcher_.matchFeatures(featuresStereoRightPrev_, featuresScaleRight);
+
+        // test for inliers
+        Eigen::Matrix3f R;
+        Eigen::Vector3f t;
+        T2Rt(TRelative, R, t);
+        Eigen::Matrix3f FLeft = odometer_.Rt2F(R, t, lb2_.cameraMatrices_[1], lb2_.cameraMatrices_[1]);
+        Eigen::Matrix3f FRight = odometer_.Rt2F(R, t, lb2_.cameraMatrices_[2], lb2_.cameraMatrices_[2]);
+        std::vector<int> inlierIndicesLeft = odometer_.getInliers(matchesLeftScale, FLeft, 30.0);
+        std::vector<int> inlierIndicesRight = odometer_.getInliers(matchesRightScale, FRight, 30.0);
+
+        std::vector<Match> inlierMatchesLeft, outlierMatchesLeft, inlierMatchesRight, outlierMatchesRight;
+        for(int i=0; i<matchesLeftScale.size(); i++)
+        {
+            if(elemInVec(inlierIndicesLeft, i))
+            {
+                inlierMatchesLeft.push_back(matchesLeftScale[i]);
+            }
+            else
+            {
+                outlierMatchesLeft.push_back(matchesLeftScale[i]);
+            }
+        }
+        for(int i=0; i<matchesRightScale.size(); i++)
+        {
+            if(elemInVec(inlierIndicesRight, i))
+            {
+                inlierMatchesRight.push_back(matchesRightScale[i]);
+            }
+            else
+            {
+                outlierMatchesRight.push_back(matchesRightScale[i]);
+            }
+        }
+
+        Problem problem;
+        Eigen::Matrix4f extLeft4x4 = TRelative.inverse();
+        Eigen::Matrix4f extRight4x4 = (lb2_.extrinsics_[2]).inverse() * lb2_.extrinsics_[1] * TRelative.inverse();
+        Eigen::Matrix<float, 3, 4> extLeft3x4 = extLeft4x4.block(0, 0, 3, 4);
+        Eigen::Matrix<float, 3, 4> extRight3x4 = extRight4x4.block(0, 0, 3, 4);
+        Eigen::Matrix<float, 3, 4> PLeft = lb2_.cameraMatrices_[1] * extLeft3x4;
+        Eigen::Matrix<float, 3, 4> PRight = lb2_.cameraMatrices_[2] * extRight3x4;
+        Eigen::Vector3f p3;
+        cv::Point2f p2;
+        double scale = scale_;
+        if(inlierMatchesLeft.size() + inlierMatchesRight.size() > 0)
+        {
+            for(int i=0; i<inlierMatchesLeft.size(); i++)
+            {
+                int index = findFeatureIndex(featuresStereoLeftPrev_, inlierMatchesLeft[i], 1);
+                if(index != -1)
+                {
+                    p3 = stereoPointsPrev_[index];
+                    p2 = inlierMatchesLeft[i].getSecondFeature().getKeypoint().pt;
+                }
+                problem.AddResidualBlock(new AutoDiffCostFunction<ReprojectionError, 3, 1>(new ReprojectionError(PLeft, p3, p2)), NULL, &scale);
+            }
+            for(int i=0; i<inlierMatchesRight.size(); i++)
+            {
+                int index = findFeatureIndex(featuresStereoRightPrev_, inlierMatchesRight[i], 1);
+                if(index != -1)
+                {
+                    p3 = stereoPointsPrev_[index];
+                    p2 = inlierMatchesRight[i].getSecondFeature().getKeypoint().pt;
+                }
+                problem.AddResidualBlock(new AutoDiffCostFunction<ReprojectionError, 3, 1>(new ReprojectionError(PRight, p3, p2)), NULL, &scale);
+            }
+
+            Solver::Options options;
+            options.max_num_iterations = 25;
+            options.linear_solver_type = ceres::DENSE_QR;
+            options.minimizer_progress_to_stdout = true;
+            Solver::Summary summary;
+            Solve(options, &problem, &summary);
+            std::cout << summary.BriefReport() << "\n";
+        }
+
+        std::cout << "Final scale: " << scale << std::endl;
+
+        Eigen::Matrix3f RFinal = R;
+        Eigen::Vector3f tFinal = scale * t;
+        Eigen::Matrix4f TFinal = Rt2T(RFinal, tFinal);
+        scale_ = scale;
+
+        // concatenate motion estimation of the best camera to absolute pose and return result
+        absolutePoseGlobal_ = absolutePoseGlobal_ * TFinal;
+
+        //std::cout << "******************************* # MOTION INLIERS LEFT:  " << inlierIndicesLeft.size() << std::endl;
+        //std::cout << "******************************* # MOTION INLIERS RIGHT: " << inlierIndicesRight.size() << std::endl;
+
+        inlierMatchesLeft = displaceMatches(inlierMatchesLeft, -param_ROIs_[1][0], -param_ROIs_[1][1], -param_ROIs_[1][0], -param_ROIs_[1][1]);
+        outlierMatchesLeft = displaceMatches(outlierMatchesLeft, -param_ROIs_[1][0], -param_ROIs_[1][1], -param_ROIs_[1][0], -param_ROIs_[1][1]);
+        inlierMatchesRight = displaceMatches(inlierMatchesRight, -param_ROIs_[2][0], -param_ROIs_[2][1], -param_ROIs_[2][0], -param_ROIs_[2][1]);
+        outlierMatchesRight = displaceMatches(outlierMatchesRight, -param_ROIs_[2][0], -param_ROIs_[2][1], -param_ROIs_[2][0], -param_ROIs_[2][1]);
+
+        fullLeft = featureMatcher_.highlightOpticalFlow(fullLeft, inlierMatchesLeft, cv::Scalar(0, 255, 0));
+        fullLeft = featureMatcher_.highlightOpticalFlow(fullLeft, outlierMatchesLeft, cv::Scalar(0, 0, 255));
+        fullRight = featureMatcher_.highlightOpticalFlow(fullRight, inlierMatchesRight, cv::Scalar(0, 255, 0));
+        fullRight = featureMatcher_.highlightOpticalFlow(fullRight, outlierMatchesRight, cv::Scalar(0, 0, 255));
+        cv::namedWindow("optical flow left", CV_WINDOW_AUTOSIZE);
+        cv::imshow("optical flow left", fullLeft);
+        cv::namedWindow("optical flow right", CV_WINDOW_AUTOSIZE);
+        cv::imshow("optical flow right", fullRight);
+
+        //std::cout << "STEREO MATCHES LEFT:  " << matchesLeftScale.size() << std::endl;
+        //std::cout << "STEREO MATCHES RIGHT: " << matchesRightScale.size() << std::endl;
     }
     else
     {
         // no motion in first frame -> identity
-        T = Eigen::Matrix4f::Identity();
+        absolutePoseGlobal_ = Eigen::Matrix4f::Identity();
         bestCamera = -1;
 
         // make frames start at 0
@@ -154,83 +299,15 @@ void MulticamVOPipeline::imageCallback(const sensor_msgs::Image::ConstPtr &msg)
         first_ = false;
     }
 
-    // track previously triangulated stereo points in the current left and right images
-    double offset = 100;
-    cv::Mat fullLeft = imagesRectReduced[1];
-    cv::Mat fullRight = imagesRectReduced[2];
-    cv::Mat partLeft = fullLeft(cv::Rect(fullLeft.cols-offset, 0, offset, fullLeft.rows));
-    cv::Mat partRight = fullRight(cv::Rect(0, 0, offset, fullRight.rows));
-
-    FeatureDetector detectorScale(FAST, ORB);
-    std::vector<Feature> featuresScaleLeft = detectorScale.detectFeatures(partLeft, seqNumber, 1, false, 3.0);
-    std::vector<Feature> featuresScaleRight = detectorScale.detectFeatures(partRight, seqNumber, 2, false, 3.0);
-
-    featuresScaleLeft = displaceFeatures(featuresScaleLeft, fullLeft.cols - offset + param_ROIs_[1][0], param_ROIs_[1][1]);
-    featuresScaleRight = displaceFeatures(featuresScaleRight, param_ROIs_[2][0], param_ROIs_[2][1]);
-
-    std::vector<Match> matchesLeftScale = featureMatcher_.matchFeatures(featuresStereoLeftPrev_, featuresScaleLeft);
-    std::vector<Match> matchesRightScale = featureMatcher_.matchFeatures(featuresStereoRightPrev_, featuresScaleRight);
-
-    // test for inliers
-    Eigen::Matrix3f R;
-    Eigen::Vector3f t;
-    T2Rt(T, R, t);
-    Eigen::Matrix3f FLeft = odometer_.Rt2F(R, t, lb2_.cameraMatrices_[1], lb2_.cameraMatrices_[1]);
-    Eigen::Matrix3f FRight = odometer_.Rt2F(R, t, lb2_.cameraMatrices_[2], lb2_.cameraMatrices_[2]);
-    std::vector<int> inlierIndicesLeft = odometer_.getInliers(matchesLeftScale, FLeft, 40.0);
-    std::vector<int> inlierIndicesRight = odometer_.getInliers(matchesRightScale, FRight, 40.0);
-
-    std::vector<Match> inlierMatchesLeft, outlierMatchesLeft, inlierMatchesRight, outlierMatchesRight;
-    for(int i=0; i<matchesLeftScale.size(); i++)
-    {
-        if(elemInVec(inlierIndicesLeft, i))
-        {
-            inlierMatchesLeft.push_back(matchesLeftScale[i]);
-        }
-        else
-        {
-            outlierMatchesLeft.push_back(matchesLeftScale[i]);
-        }
-    }
-    for(int i=0; i<matchesRightScale.size(); i++)
-    {
-        if(elemInVec(inlierIndicesRight, i))
-        {
-            inlierMatchesRight.push_back(matchesRightScale[i]);
-        }
-        else
-        {
-            outlierMatchesRight.push_back(matchesRightScale[i]);
-        }
-    }
-
-    std::cout << "******************************* # MOTION INLIERS LEFT:  " << inlierIndicesLeft.size() << std::endl;
-    std::cout << "******************************* # MOTION INLIERS RIGHT: " << inlierIndicesRight.size() << std::endl;
-
-    inlierMatchesLeft = displaceMatches(inlierMatchesLeft, -param_ROIs_[1][0], -param_ROIs_[1][1], -param_ROIs_[1][0], -param_ROIs_[1][1]);
-    outlierMatchesLeft = displaceMatches(outlierMatchesLeft, -param_ROIs_[1][0], -param_ROIs_[1][1], -param_ROIs_[1][0], -param_ROIs_[1][1]);
-    inlierMatchesRight = displaceMatches(inlierMatchesRight, -param_ROIs_[2][0], -param_ROIs_[2][1], -param_ROIs_[2][0], -param_ROIs_[2][1]);
-    outlierMatchesRight = displaceMatches(outlierMatchesRight, -param_ROIs_[2][0], -param_ROIs_[2][1], -param_ROIs_[2][0], -param_ROIs_[2][1]);
-
-    fullLeft = featureMatcher_.highlightOpticalFlow(fullLeft, inlierMatchesLeft, cv::Scalar(0, 255, 0));
-    fullLeft = featureMatcher_.highlightOpticalFlow(fullLeft, outlierMatchesLeft, cv::Scalar(0, 0, 255));
-    fullRight = featureMatcher_.highlightOpticalFlow(fullRight, inlierMatchesRight, cv::Scalar(0, 255, 0));
-    fullRight = featureMatcher_.highlightOpticalFlow(fullRight, outlierMatchesRight, cv::Scalar(0, 0, 255));
-    cv::namedWindow("optical flow left", CV_WINDOW_AUTOSIZE);
-    cv::imshow("optical flow left", fullLeft);
-    cv::namedWindow("optical flow right", CV_WINDOW_AUTOSIZE);
-    cv::imshow("optical flow right", fullRight);
-
-    std::cout << "STEREO MATCHES LEFT:  " << matchesLeftScale.size() << std::endl;
-    std::cout << "STEREO MATCHES RIGHT: " << matchesRightScale.size() << std::endl;
-
     // triangulate stereo points for finding the scale in the next frame
     std::vector<Feature> featuresStereoLeft, featuresStereoRight;
     Eigen::Matrix4f tLeftRight = lb2_.getCamX2CamYTransform(1, 2);
     std::vector<Eigen::Vector3f> stereoPoints = triangulateStereo(imagesRectReduced[1], imagesRectReduced[2], cameraOverlaps_[1][1], cameraOverlaps_[2][0], param_ROIs_[1], param_ROIs_[2], lb2_.cameraMatrices_[1], lb2_.cameraMatrices_[2], tLeftRight, featuresStereoLeft, featuresStereoRight);
 
+
     // publish motion
-    nav_msgs::Odometry msgOdom = transform2OdometryMsg(T, bestCamera);
+    std::cout << absolutePoseGlobal_ << std::endl << std::endl;
+    nav_msgs::Odometry msgOdom = transform2OdometryMsg(absolutePoseGlobal_, bestCamera);
     msgOdom.header.stamp = msg->header.stamp;
     pubOdom_.publish(msgOdom);
         
@@ -294,7 +371,7 @@ std::vector<Eigen::Vector3f> MulticamVOPipeline::triangulateStereo(cv::Mat leftI
 
     Eigen::Matrix3f FStereo = odometer_.Rt2F(RRightLeft, tRightLeft, KLeft, KRight);
     std::vector<int> inlierIndices = odometer_.getInliers(matchesStereo, FStereo, 50.0);
-    std::cout << "***************** # STEREO INLIERS: " << inlierIndices.size() << std::endl;
+    //std::cout << "***************** # STEREO INLIERS: " << inlierIndices.size() << std::endl;
 
     std::vector<bool> valid;
     std::vector<Eigen::Vector3f> points;
@@ -362,7 +439,7 @@ std::vector<Eigen::Vector3f> MulticamVOPipeline::triangulateStereo(cv::Mat leftI
     cv::imshow("Stereo matches", imMatches);
     cv::waitKey(10);
 
-    std::cout << "----------------- # VALID POINTS: " << validPointCounter << std::endl;
+    //std::cout << "----------------- # VALID POINTS: " << validPointCounter << std::endl;
 
     ros::Time end = ros::Time::now();
 
@@ -410,6 +487,28 @@ std::vector<Match> MulticamVOPipeline::displaceMatches(std::vector<Match> matche
     }
 
     return displacedMatches;
+}
+
+int MulticamVOPipeline::findFeatureIndex(std::vector<Feature> features, Match match, int firstOrSecond)
+{
+    Feature f;
+    if(firstOrSecond == 1)
+    {
+        f = match.getFirstFeature();
+    }
+    else
+    {
+        f = match.getSecondFeature();
+    }
+
+    for(int i=0; i<features.size(); i++)
+    {
+        if(!cv::countNonZero(f.getDescriptor() != features[i].getDescriptor()))
+        {
+            return i;
+        }
+    }
+    return -1;
 }
 
 }

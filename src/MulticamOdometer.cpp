@@ -29,7 +29,6 @@ MulticamOdometer::MulticamOdometer(Ladybug2 lb2, std::vector<std::ofstream*> fil
         // initialize monocular odometers
         monoOdometers_[i] = MonoOdometer(lb2_.cameraMatrices_[i]);
     }
-    absolutePoseGlobal_ = Eigen::Matrix4f::Identity();
 }
 
 /** MulticamOdometer destructor. */
@@ -83,7 +82,7 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
 	// let ALL matches vote for the best R,t estimated in the previous mono visual odometry step
     int maxInliers = 0;
     bestCamera = 0;
-    Eigen::Matrix4f bestPose = Eigen::Matrix4f::Identity();
+    Eigen::Matrix4f relativePose;
     for(int i=0; i<NUM_OMNI_CAMERAS; i++)
     {
         Eigen::Matrix4f T = Rt2T(R[i], t[i]);
@@ -140,15 +139,12 @@ Eigen::Matrix4f MulticamOdometer::estimateMotion(std::vector<std::vector<Match>>
             {
                 maxInliers = sumInliers;
                 bestCamera = i;
-                bestPose = TGlobal;
+                relativePose = TGlobal;
             }
         }
     }
 
-    // concatenate motion estimation of the best camera to absolute pose and return result
-    absolutePoseGlobal_ = absolutePoseGlobal_ * bestPose;
-
-    return absolutePoseGlobal_;
+    return relativePose;
 }
 
 /** Get the inliers among all matches that comply with a given fundamental matrix.

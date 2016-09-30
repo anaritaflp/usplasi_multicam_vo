@@ -72,6 +72,8 @@ class MulticamVOSimPipeline
 
         void createDescriptors();
 
+        Eigen::Matrix4f absolutePoseGlobal_;
+
         std::vector<cv::Mat> descriptors_;
 
         ros::NodeHandle node_;										/*!< ROS node for reading parameters */

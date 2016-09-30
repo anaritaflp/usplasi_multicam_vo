@@ -29,14 +29,15 @@
     <!-- ############################################################################### -->
     <!-- ###### Plot VO -->
 
-    <node pkg="evaluate_vo" type="get_vogt_node" name="get_vogt" args="$(find multicam_vo)/matlab/set02_relevo_realtime odometry gps" output="screen">
-        <remap from="get_data/visual_odometry" to="/vo/multicam_vo/odometry" />
-        <remap from="get_data/ground_truth" to="/asterx2_node/lrm_gps" />
+    <node pkg="evaluate_vo" type="get_vogt_node" name="get_omni" args="/home/anaritapereira/evaluate_vo_plots/set27/bag2 omni odometry gps" output="screen">
+        <param name="topicname_vo" value="vo/multicam_vo/odometry" />
+        <param name="topicname_gps" value="asterx2_node/lrm_gps" />
+        <param name="topicname_imu" value="imu/data" />
     </node>
 
     <!-- ############################################################################### -->
     <!-- ###### Bagfile -->
     
-    <node pkg="rosbag" type="play" name="bag" args="-r 0.3 /home/anaritapereira/ROS/catkin_ws/bags_ladybug_bumblebee/bagfiles_0209/relevo_ladybug.bag" />
+    <node pkg="rosbag" type="play" name="bag" args="-r 0.2 /home/anaritapereira/ROS/catkin_ws/bags_ladybug_bumblebee/BAGS_SET27/campus1_2.bag" />
 
 </launch>

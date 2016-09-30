@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(OpenCV REQUIRED)
+find_package(Ceres REQUIRED)
 find_package(cmake_modules REQUIRED)
 find_package(Eigen REQUIRED)
 find_package(Boost REQUIRED COMPONENTS
@@ -35,6 +36,7 @@ catkin_package(
 include_directories(
     ${catkin_INCLUDE_DIRS}
     ${Eigen_INCLUDE_DIRS} 
+    ${CERES_INCLUDE_DIRS}
     ${OpenCV_INCLUDE_DIRS}
     ${Boost_INCLUDE_DIRS}
     include
@@ -92,6 +94,7 @@ add_library(MulticamVOPipeline
 target_link_libraries(MulticamVOPipeline
     ${catkin_LIBRARIES}
     ${OpenCV_LIBS}    
+    ${CERES_LIBRARIES}
     MultiFeatures
     MulticamOdometer    
 )
@@ -127,4 +130,11 @@ target_link_libraries(multicam_vo_sim_node
     MulticamVOSimPipeline
 )
 
+add_executable(ceres_test
+    src/ceresTest.cpp
+)
+
+target_link_libraries(ceres_test
+    ${CERES_LIBRARIES}
+)
 

@@ -75,6 +75,8 @@ namespace odom
 
         std::vector<Match> displaceMatches(std::vector<Match> matches, double offsetPrevX, double offsetPrevY, double offsetCurrX, double offsetCurrY);
 
+        int findFeatureIndex(std::vector<Feature> features, Match match, int firstOrSecond);
+
 
         Ladybug2 lb2_;                                               /*!< Ladybug2 object */    
 
@@ -86,6 +88,9 @@ namespace odom
             
 		bool first_;												/*!< Flag for indicating the first frame */
         int lostFrameCounter_;										/*!< Lost frame counter */
+
+        Eigen::Matrix4f absolutePoseGlobal_;
+        double scale_;
 			
         int seqNumberPrev_;											/*!< Number of the previously processed frame */
         int seqNumberOffset_;										/*!< Sequence number of the first frame (it's not always zero) */

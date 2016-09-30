@@ -74,7 +74,6 @@ class MulticamOdometer
 		std::vector<bool> firstRow_;						/*!< For debugging: auxiliary flag for writing MatLab files */
 
 		std::vector<Eigen::Matrix4f> absolutePosesLocal_;	/*!< Vector of absolute poses estimated by intra- and consecutive inter-camera matches */
-		Eigen::Matrix4f absolutePoseGlobal_;				/*!< Absolute pose estimated in the previous frame */
 };
 
 #endif
