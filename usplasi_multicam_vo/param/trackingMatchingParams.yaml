@@ -1,0 +1,8 @@
+
+param_matchingDescriptorDistance: 5
+param_trackingWindowSize: 21
+param_trackingMaxLevel: 0
+param_trackingMinEigThreshold: 0.00001
+param_trackingTermcritCount: 20
+param_trackingTermcritEPS: 0.03
+param_borderPercentage: 0.3
